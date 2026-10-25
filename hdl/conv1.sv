@@ -122,7 +122,30 @@ module conv1 (
     logic channel_last_pack;
     logic [1:0] done_delay;
 
-    assign conv1_done = channel_last_pack && (kernel_group == 4'd5);
+    // Main enable and activation-read qualification.
+    assign s1_valid = enable;
+    assign init_valid = (strip_idx == 5'd0) && (fill_cnt < 5'd24);
+    assign new_valid = (strip_idx != 5'd0) && (fill_cnt < 5'd8);
+    assign load_valid_s1 = s1_valid && (init_valid || new_valid);
+    assign act_read_fire = load_valid_s1 && !pack_valid;
+
+    // Activation word index decoding for Stage 1 and delayed Stage 4 writeback.
+    assign act_row_pair_s1 = fill_cnt[4:3];  // Row pairs 0/1, 2/3, and 4/5.
+    assign act_col_blk_s1  = fill_cnt[2:0];  // Column block 0 through 7.
+    assign act_row_pair_s4 = load_idx_s4[4:3];
+    assign act_col_blk_s4  = load_idx_s4[2:0];
+
+    // Output-channel transition and processing-valid control.
+    assign channel_last_pack = pack_valid && (write_addr == (kernel_group * 16'd56 + 16'd55));
+    assign change_out_ch = channel_last_pack && (kernel_group < 4'd5);
+    assign pe_valid = s3_valid && line_buffer_ready && weight_ready && !channel_mac_done;
+    assign flush = pe_valid && (row_sel == 1'b1) && (col == 5'd27) && (strip_idx < 5'd13);
+
+    // Pooling and output-packing validity.
+    assign pool_valid = s4_valid && (pool_cnt == 3'd3);
+    assign full_word_valid = pool_valid && (package_cnt == 2'd3);
+    assign row_tail_valid = pool_valid && (pool_out_col == 4'd13);
+    assign pack_valid = full_word_valid || row_tail_valid;
 
     // Generate-loop index for the processing elements.
     genvar i;
@@ -158,8 +181,6 @@ module conv1 (
     // Main four-stage valid pipeline.
     // Stage 1 is driven directly by enable; each following stage advances
     // one clock later, with Stage 4 marking registered PE output timing.
-    assign s1_valid = enable;
-
     always_ff @(posedge clk or negedge rst_n) begin : valid_pipeline
         if (!rst_n) begin
             s2_valid <= 1'b0;
@@ -175,12 +196,6 @@ module conv1 (
     // Stage 1 activation-read qualification.
     // The request is suppressed while an output word is being packed so that
     // activation SRAM address and write traffic do not conflict.
-    assign init_valid = (strip_idx == 5'd0) && (fill_cnt < 5'd24);
-    assign new_valid = (strip_idx != 5'd0) && (fill_cnt < 5'd8);
-    assign load_valid_s1 = s1_valid && (init_valid || new_valid);
-
-    assign act_read_fire = load_valid_s1 && !pack_valid;
-
     // Activation side pipeline: Stage 1 -> Stage 2 -> Stage 3 -> Stage 4.
     // The Stage 4 pulse performs the delayed line-buffer write.
     always_ff @(posedge clk or negedge rst_n) begin : load_valid_pipeline
@@ -208,6 +223,7 @@ module conv1 (
         end
     end : load_idx_pipeline
 
+    // Qualify Stage 1 weight reads while the packed kernel words are valid.
     assign weight_valid_s1 = s1_valid && (kernel_idx < 4'd10);
 
     // Weight side pipeline: Stage 1 -> Stage 2 -> Stage 3 -> Stage 4.
@@ -239,12 +255,6 @@ module conv1 (
 
     // Stage 1 activation address generation. The delayed index is decoded at
     // Stage 4 when the corresponding SRAM data reaches the line buffer.
-    assign act_row_pair_s1 = fill_cnt[4:3];  // Row pairs 0/1, 2/3, and 4/5.
-    assign act_col_blk_s1  = fill_cnt[2:0];  // Column block 0 through 7.
-
-    assign act_row_pair_s4 = load_idx_s4[4:3];
-    assign act_col_blk_s4  = load_idx_s4[2:0];
-
     // Stage 1 address issue and output-write address update. Activation
     // reads have priority unless the packing path is writing an output word.
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
@@ -316,7 +326,7 @@ module conv1 (
         end
     end : line_counter
 
-    // Stage 1 packed-weight address generation.
+    // Stage 1 packed-weight address generation: ten words per output channel.
     assign w_offset = kernel_group * 10;
 
     // The weight SRAM address is issued in Stage 1 and held until the next
@@ -345,10 +355,6 @@ module conv1 (
 
     // Kernel sequencing: advance through ten packed words, then move to the
     // next output channel after its final packed activation word.
-    assign channel_last_pack = pack_valid && (write_addr == (kernel_group * 16'd56 + 16'd55));
-
-    assign change_out_ch = channel_last_pack && (kernel_group < 4'd5);
-
     always_ff @(posedge clk or negedge rst_n) begin : kernel_counter
         if (!rst_n) begin
             kernel_idx <= 4'd0;
@@ -422,7 +428,7 @@ module conv1 (
     // Stage 3 PE issue control and end-of-channel detection.
     // A PE operation is issued only after the Stage 2/3 control pipeline,
     // activation line buffer, and weight registers are all ready.
-    assign pe_valid = s3_valid && line_buffer_ready && weight_ready && !channel_mac_done;
+    // Detect the final MAC operation of the final strip for this channel.
     assign last_mac_fire = pe_valid && (strip_idx == 5'd13) && (row_sel == 1'b1) && (col == 5'd27);
 
     always_ff @(posedge clk or negedge rst_n) begin : channel_mac_done_ff
@@ -460,9 +466,6 @@ module conv1 (
             end
         end
     end : compute_counter
-
-    // End of a strip: flush after the lower row position of the last column.
-    assign flush = pe_valid && (row_sel == 1'b1) && (col == 5'd27) && (strip_idx < 5'd13);
 
     // Stage 3 parallel convolution. Five PE instances calculate one
     // 5x5 channel result in parallel from the selected sliding window.
@@ -515,10 +518,6 @@ module conv1 (
         end
     end
 
-    // Stage 4 pooling cadence. Every four valid quantized results produces
-    // one pooled value for the output packer.
-    assign pool_valid = s4_valid && (pool_cnt == 3'd3);
-
     // Compare the current quantized result with the running 2x2 pool maximum.
     always_comb begin : compare_max
         if (pool_cnt == 3'd0) current_max = quant_out;
@@ -536,10 +535,6 @@ module conv1 (
             pool_cnt <= (pool_cnt == 3'd3) ? 3'd0 : pool_cnt + 1'b1;
         end
     end
-
-    assign full_word_valid = pool_valid && (package_cnt == 2'd3);
-    assign row_tail_valid = pool_valid && (pool_out_col == 4'd13);
-    assign pack_valid = full_word_valid || row_tail_valid;
 
     // Output packer. Four pooled bytes form one 32-bit word; the final item
     // in each row emits a padded tail word.
@@ -562,11 +557,12 @@ module conv1 (
         end
     end
 
+    // Activation SRAM writeback for packed CONV1 output words.
+    // Place the current pooled bytes into the full word or padded tail format.
     assign pack_data = row_tail_valid
                  ? {16'd0, current_max, result_reg[0]}
                  : {current_max, result_reg[2:0]};
 
-    // Activation SRAM writeback for packed CONV1 output words.
     always_ff @(posedge clk or negedge rst_n) begin : act_sram_write
         if (!rst_n) begin
             sram_act_wea0   <= 4'd0;
@@ -585,6 +581,9 @@ module conv1 (
 
     // Completion delay. Keep done as a one-cycle pulse aligned with the
     // final packed word after the output-channel sequence is complete.
+    // The completion flag is asserted only for the last output channel.
+    assign conv1_done = channel_last_pack && (kernel_group == 4'd5);
+
     always_ff @(posedge clk or negedge rst_n) begin : done_delay_ff
         if (!rst_n) done_delay <= 1'b0;
         else begin

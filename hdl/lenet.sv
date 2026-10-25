@@ -134,9 +134,11 @@ module lenet (
     // incomplete. The done registers prevent a completed layer from restarting.
     assign all_layers_done = conv1_done_reg && conv2_done_reg && conv3_done_reg;
 
+
+
     assign conv1_enable = (cs == CONV1) && !conv1_done_reg;
     assign conv2_enable = (cs == CONV2) && conv1_done_reg && !conv2_done_reg;
-    assign conv3_enable = (cs == CONV3) && conv2_done_reg && !conv3_done_reg;
+    //assign conv3_enable = (cs == CONV3) && conv2_done_reg && !conv3_done_reg;
 
 
     always_ff @(posedge clk or negedge rst_n) begin : layer_done_ff
@@ -203,6 +205,7 @@ module lenet (
         .sram_act_rdata1(sram_act_rdata1)
     );
 
+
     conv3 u_conv3 (
         .clk(clk),
         .rst_n(rst_n),
@@ -229,6 +232,7 @@ module lenet (
         .sram_act_wdata1(c3_act_wdata1),
         .sram_act_rdata1(sram_act_rdata1)
     );
+
 
     // Select the active layer's requests onto the shared physical SRAM pins.
     // Address, write-enable, and write-data for each port must come from the

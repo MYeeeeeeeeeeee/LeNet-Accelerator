@@ -1,34 +1,39 @@
-# ==================================
-# VCS Simulation (sim/)
-# ==================================
+# ==========================================
+# VCS Simulation - sim/
+# ==========================================
+
+/sim/csrc/
 /sim/simv
 /sim/simv.daidir/
-/sim/csrc/
-/sim/DVEfiles/
 /sim/ucli.key
-/sim/verdiLog/
-/sim/novas.*
+/sim/novas_dump.log
+
+# Waveforms
+/sim/*.fsdb
 /sim/*.vcd
 /sim/*.vpd
-/sim/*.fsdb
-/sim/*.trn
 
-# ==================================
-# Design Compiler (syn/)
-# ==================================
+# Verdi Debug
+/sim/verdiLog/
+/sim/novas.*
+/sim/signal.rc
+/sim/verdi_config_file
+
+# Simulation Logs
+/sim/*.log
+
+# ==========================================
+# Design Compiler - syn/
+# ==========================================
+
 /syn/WORK/
 /syn/*.ddc
 /syn/*.svf
 
-# ==================================
-# Innovus (if used)
-# ==================================
-/syn/innovus.log*
-/syn/*.cmdlog
+# ==========================================
+# Temporary Files
+# ==========================================
 
-# ==================================
-# Temporary Files (all folders)
-# ==================================
 *.swp
 *.tmp
 *~
