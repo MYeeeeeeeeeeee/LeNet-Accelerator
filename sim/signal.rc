@@ -1,0 +1,187 @@
+Magic 271485
+Revision Verdi_T-2022.06
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 25 1536 505 324 236
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / "" "/home/lab911_1/Desktop/7114064519/NTHU_VSD/HW3/sim/lenet.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 73505125.686566 73688851.470563
+cursor 73530000.000000
+marker 11970000.000000
+
+; user define markers
+; userMarker time_pos marker_name color linestyle
+; visible top row signal index
+top 49
+; marker line index
+markerPos 69
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByChange
+
+
+addGroup "G1"
+activeDirFile "" "/home/lab911_1/Desktop/7114064519/NTHU_VSD/HW3/sim/lenet.fsdb"
+addSignal -h 15 /tb_lenet/lenet_inst/clk
+addSignal -h 15 -holdScope rst_n
+addSignal -h 15 -holdScope compute_start
+addSignal -h 15 -holdScope compute_finish
+addGroup "FSM"
+addSignal -h 15 -UNSIGNED /tb_lenet/lenet_inst/cs[2:0]
+addSignal -h 15 -UNSIGNED -holdScope ns[2:0]
+addSignal -h 15 /tb_lenet/lenet_inst/u_conv2/strip_next
+addSignal -h 15 -UNSIGNED -HEX -holdScope in_ch[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope out_ch[3:0]
+addGroup "Stage 1"
+addSignal -h 15 /tb_lenet/lenet_inst/u_conv1/conv1_done
+addSignal -h 15 /tb_lenet/lenet_inst/u_conv2/s1_valid
+addSubGroup "act"
+addSubGroup "act_addr_gen" -e FALSE
+addSignal -h 15 -UNSIGNED -HEX /tb_lenet/lenet_inst/u_conv2/act_col_blk_s1[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope act_row_pair_s1[2:0]
+addSignal -h 15 -holdScope load_valid_s1
+endSubGroup "act_addr_gen"
+addSignal -h 15 -UNSIGNED -HEX /tb_lenet/lenet_inst/u_conv2/fill_cnt[4:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope in_ch_offset[16:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope sram_act_addr0[15:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope sram_act_addr1[15:0]
+endSubGroup "act"
+addSubGroup "weight"
+addSubGroup "weight_addr_gen"
+addSignal -h 15 -UNSIGNED -UDEC /tb_lenet/lenet_inst/u_conv2/global_w_offset[15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope local_w_offset[15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope kernel_idx[3:0]
+addSignal -h 15 -UNSIGNED -UDEC -holdScope sram_weight_addr0[15:0]
+endSubGroup "weight_addr_gen"
+endSubGroup "weight"
+addGroup "Stage 2"
+addSubGroup "act_from_sram"
+endSubGroup "act_from_sram"
+addSubGroup "act line buffer"
+addSignal -h 15 /tb_lenet/lenet_inst/u_conv2/line_buffer_ready
+addSignal -expanded -h 15 -holdScope line_buffer[0:5]
+addSignal -h 15 -holdScope line_buffer[0][31:0]
+addSignal -h 15 -holdScope line_buffer[1][31:0]
+addSignal -h 15 -holdScope line_buffer[2][31:0]
+addSignal -h 15 -holdScope line_buffer[3][31:0]
+addSignal -h 15 -holdScope line_buffer[4][31:0]
+addSignal -h 15 -holdScope line_buffer[5][31:0]
+endSubGroup "act line buffer"
+addSubGroup "weight_from_sram"
+endSubGroup "weight_from_sram"
+addSubGroup "weight array"
+addSignal -h 15 /tb_lenet/lenet_inst/u_conv2/weight_ready
+addSignal -expanded -h 15 -holdScope weight_reg[0:4]
+addSignal -h 15 -holdScope weight_reg[0][4:0]
+addSignal -h 15 -holdScope weight_reg[1][4:0]
+addSignal -h 15 -holdScope weight_reg[2][4:0]
+addSignal -h 15 -holdScope weight_reg[3][4:0]
+addSignal -h 15 -holdScope weight_reg[4][4:0]
+endSubGroup "weight array"
+addGroup "Stage 3"
+addSubGroup "PE singal"
+endSubGroup "PE singal"
+addSubGroup "PE compute"
+endSubGroup "PE compute"
+addSubGroup "PE 5*5 window" -e FALSE
+addSignal -expanded -h 15 /tb_lenet/lenet_inst/u_conv2/pe_window[0:4]
+addSignal -h 15 -holdScope pe_window[0][4:0]
+addSignal -h 15 -holdScope pe_window[1][4:0]
+addSignal -h 15 -holdScope pe_window[2][4:0]
+addSignal -h 15 -holdScope pe_window[3][4:0]
+addSignal -h 15 -holdScope pe_window[4][4:0]
+endSubGroup "PE 5*5 window"
+addSignal -h 15 /tb_lenet/lenet_inst/u_conv2/pe_window[0:4]
+addGroup "Stage 4"
+addSubGroup "pesum"
+addSignal -expanded -h 15 /tb_lenet/lenet_inst/u_conv2/ch_temp_psum[0:1]
+addSignal -h 15 -holdScope ch_temp_psum[0][9:0]
+addSignal -h 15 -holdScope ch_temp_psum[1][9:0]
+addSignal -h 15 -holdScope psum_reg_full
+endSubGroup "pesum"
+addSubGroup "max pool"
+addSignal -h 15 /tb_lenet/lenet_inst/u_conv2/pool_emit_active
+addSignal -h 15 -UNSIGNED -HEX -holdScope pool_emit_idx[2:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope pool_out_col[3:0]
+endSubGroup "max pool"
+addSubGroup "pack 4 data"
+endSubGroup "pack 4 data"
+addSubGroup "write back"
+endSubGroup "write back"
+addGroup "G8"
+addGroup "G9"
+addGroup "G10"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "/home/lab911_1/Desktop/7114064519/NTHU_VSD/HW3/sim/lenet.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/tb_lenet"
+"/tb_lenet/lenet_inst"
+"/tb_lenet/lenet_inst/u_conv2"
+"/tb_lenet/lenet_inst/u_conv2/line_counter"
+"/tb_lenet/lenet_inst/u_conv2/weight_reg_ff"
+
+SCOPE_LIST_BEGIN
+"/tb_lenet"
+"/tb_lenet/lenet_inst"
+"/tb_lenet/lenet_inst/u_conv2/input_buffer"
+"/tb_lenet/lenet_inst/u_conv2/input_flag"
+"/tb_lenet/lenet_inst/u_conv2/weight_reg_ff"
+"/tb_lenet/lenet_inst/u_conv2/weight_reg_ff/Unnamed_$lenet_sv_292"
+"/tb_lenet/lenet_inst/u_conv2/weight_reg_ff/Unnamed_$lenet_sv_299"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[0]"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[0]/pe_inst"
+"/tb_lenet/lenet_inst/u_conv2/line_buffer_ff"
+"/tb_lenet/lenet_inst/u_conv2/line_buffer_ff/unnamed$$_1"
+"/tb_lenet/lenet_inst/u_conv2/line_buffer_ff/unnamed$$_0"
+"/tb_lenet/act_sram"
+"/tb_lenet/lenet_inst/u_conv2/line_counter"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[1]"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[2]"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[3]"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[4]"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[0]/pe_inst/add"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[0]/pe_inst/compute_product"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[1]/pe_inst"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[2]/pe_inst"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[3]/pe_inst"
+"/tb_lenet/lenet_inst/u_conv2/gen_pe[4]/pe_inst"
+"/tb_lenet/lenet_inst/u_conv2"
+"/tb_lenet/lenet_inst/u_conv1"
+"/tb_lenet/lenet_inst/compute_finish_ff"
+"/tb_lenet/lenet_inst/u_conv2/weight_status"
+"/tb_lenet/lenet_inst/u_conv2/weight_reg_ff/unnamed$$_0"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

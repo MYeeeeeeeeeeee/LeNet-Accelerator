@@ -1,0 +1,34 @@
+# ==================================
+# VCS Simulation (sim/)
+# ==================================
+/sim/simv
+/sim/simv.daidir/
+/sim/csrc/
+/sim/DVEfiles/
+/sim/ucli.key
+/sim/verdiLog/
+/sim/novas.*
+/sim/*.vcd
+/sim/*.vpd
+/sim/*.fsdb
+/sim/*.trn
+
+# ==================================
+# Design Compiler (syn/)
+# ==================================
+/syn/WORK/
+/syn/*.ddc
+/syn/*.svf
+
+# ==================================
+# Innovus (if used)
+# ==================================
+/syn/innovus.log*
+/syn/*.cmdlog
+
+# ==================================
+# Temporary Files (all folders)
+# ==================================
+*.swp
+*.tmp
+*~
