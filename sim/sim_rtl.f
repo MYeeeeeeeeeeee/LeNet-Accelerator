@@ -9,6 +9,7 @@ sram_model/SRAM_weight_16384x32b.v
 ../hdl/lenet.sv
 ../hdl/conv1.sv
 ../hdl/conv2.sv
+../hdl/conv3.sv
 ../hdl/PE.sv
 
 

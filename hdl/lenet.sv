@@ -1,3 +1,5 @@
+import pkg::*;
+
 module lenet (
     input logic clk,
     input logic rst_n,
@@ -53,16 +55,8 @@ module lenet (
     localparam shortint fc3_weight_offset   = 16'd15750;
 
     // The controller advances through the layers in network order.
-    typedef enum logic [2:0] {
-        IDLE,
-        CONV1,
-        CONV2,
-        CONV3,
-        FC1,
-        FC2
-    } state_t;
+    pkg::state_t cs, ns;
 
-    state_t cs, ns;
     logic compute_start_buf;  // Delayed start request used by the FSM.
 
     logic conv1_enable;
@@ -120,10 +114,18 @@ module lenet (
                 if (compute_start_buf) ns = CONV1;
                 else ns = IDLE;
             end
-            CONV1:   if (conv1_done) ns = CONV2;
-            // Later states remain here until their completion transitions are added.
-            CONV2:   ns = CONV2;
-            CONV3:   ns = CONV3;
+            CONV1: begin
+                if (conv1_done) ns = CONV2;
+                else ns = CONV1;
+            end
+            CONV2: begin
+                if (conv2_done) ns = CONV3;
+                else ns = CONV2;
+            end
+            CONV3: begin
+                if (conv3_done) ns = FC1;
+                else ns = CONV3;
+            end
             FC1:     ns = FC1;
             FC2:     ns = FC2;
             default: ns = IDLE;
@@ -138,7 +140,7 @@ module lenet (
 
     assign conv1_enable = (cs == CONV1) && !conv1_done_reg;
     assign conv2_enable = (cs == CONV2) && conv1_done_reg && !conv2_done_reg;
-    //assign conv3_enable = (cs == CONV3) && conv2_done_reg && !conv3_done_reg;
+    assign conv3_enable = (cs == CONV3) && conv2_done_reg && !conv3_done_reg;
 
 
     always_ff @(posedge clk or negedge rst_n) begin : layer_done_ff

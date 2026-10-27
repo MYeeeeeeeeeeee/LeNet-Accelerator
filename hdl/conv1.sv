@@ -1,6 +1,8 @@
 // CONV1 layer engine split from lenet(20261021-103200).sv.
 // Existing pipeline, read/write arbitration, packing and SRAM timing retained.
 // "enable" is a LEVEL while Top is in CONV1, not an additional start pulse.
+import pkg::*;
+
 module conv1 (
     input  logic        clk,
     input  logic        rst_n,
@@ -26,6 +28,7 @@ module conv1 (
     output logic [31:0] sram_act_wdata1,
     input  logic [31:0] sram_act_rdata1
 );
+
 
     localparam shortint conv1_in_offset  = 16'd0;
     localparam shortint conv1_out_offset = 16'd256;
@@ -57,19 +60,19 @@ module conv1 (
 
     // Processing-stage validity pipeline.
     // Main pipeline stages:
-    //   Stage 1: issue SRAM reads and capture the current control state.
-    //   Stage 2: align the read request with the first pipeline delay.
-    //   Stage 3: present a valid sliding-window operation to the PE array.
-    //   Stage 4: register PE results before quantization and pooling.
+    //   Pipeline 1: issue SRAM reads and capture the current control state.
+    //   Pipeline 2: align read data and sideband signals.
+    //   Pipeline 3: present a valid sliding-window operation to the PE array.
+    //   Pipeline 4: register PE results before quantization and pooling.
     logic s1_valid, s2_valid, s3_valid, s4_valid;
 
     // Four-stage activation-load side pipeline.
-    // These signals carry one activation read from Stage 1 through Stages 2,
-    // 3, and 4 so that SRAM data and line-buffer writes remain aligned.
+    // These signals carry one activation read from Pipeline 1 through
+    // Pipelines 2-4 so SRAM data and line-buffer writes remain aligned.
     logic load_valid_s1, load_valid_s2, load_valid_s3, load_valid_s4;
 
     // Four-stage weight-load side pipeline.
-    // The validity and kernel index travel through the same four stages as
+    // The validity and kernel index travel through the same four pipelines as
     // the packed weight data returned by SRAM.
     logic weight_valid_s1, weight_valid_s2, weight_valid_s3, weight_valid_s4;
 
@@ -99,7 +102,7 @@ module conv1 (
 
     // Sliding-window data path.
     // PE inputs are selected from six buffered rows; PE results are registered
-    // at Stage 4 before the arithmetic post-processing block.
+    // at Pipeline 4 before the arithmetic post-processing block.
     logic [4:0][7:0] pe_window[0:4];
     logic signed [18:0] pe_out_s4[0:4];
     logic [31:0][7:0] line_buffer[0:5];
@@ -122,18 +125,18 @@ module conv1 (
     logic channel_last_pack;
     logic [1:0] done_delay;
 
-    // Main enable and activation-read qualification.
+    // Pipeline 1: enable and activation-read qualification.
     assign s1_valid = enable;
     assign init_valid = (strip_idx == 5'd0) && (fill_cnt < 5'd24);
     assign new_valid = (strip_idx != 5'd0) && (fill_cnt < 5'd8);
     assign load_valid_s1 = s1_valid && (init_valid || new_valid);
     assign act_read_fire = load_valid_s1 && !pack_valid;
 
-    // Activation word index decoding for Stage 1 and delayed Stage 4 writeback.
+    // Pipeline 1 address fields and delayed Pipeline 4 writeback fields.
     assign act_row_pair_s1 = fill_cnt[4:3];  // Row pairs 0/1, 2/3, and 4/5.
-    assign act_col_blk_s1  = fill_cnt[2:0];  // Column block 0 through 7.
+    assign act_col_blk_s1 = fill_cnt[2:0];  // Column block 0 through 7.
     assign act_row_pair_s4 = load_idx_s4[4:3];
-    assign act_col_blk_s4  = load_idx_s4[2:0];
+    assign act_col_blk_s4 = load_idx_s4[2:0];
 
     // Output-channel transition and processing-valid control.
     assign channel_last_pack = pack_valid && (write_addr == (kernel_group * 16'd56 + 16'd55));
@@ -152,13 +155,21 @@ module conv1 (
 
     // Static SRAM output assignments. CONV1 reads weights only; activation
     // writes are generated later by the output-packing path.
-    assign sram_weight_wea0   = 4'b0000;
-    assign sram_weight_wea1   = 4'b0000;
-
-    assign sram_weight_wdata0 = 32'd0;
-    assign sram_weight_wdata1 = 32'd0;
-
-    assign sram_weight_addr1  = 16'd0;
+    always_ff @(posedge clk or negedge rst_n) begin : unused_sram_ff
+        if (!rst_n) begin
+            sram_weight_addr1  <= 16'd0;
+            sram_weight_wdata0 <= 32'd0;
+            sram_weight_wdata1 <= 32'd0;
+            sram_weight_wea0   <= 4'd0;
+            sram_weight_wea1   <= 4'd0;
+        end else begin
+            sram_weight_addr1  <= sram_weight_addr1;
+            sram_weight_wdata0 <= sram_weight_wdata0;
+            sram_weight_wdata1 <= sram_weight_wdata1;
+            sram_weight_wea0   <= sram_weight_wea0;
+            sram_weight_wea1   <= sram_weight_wea1;
+        end
+    end : unused_sram_ff
 
     // Input buffering remains one register deep, preserving the original
     // SRAM timing from the former combined lenet module.
@@ -178,85 +189,8 @@ module conv1 (
         end
     end : input_buffer
 
-    // Main four-stage valid pipeline.
-    // Stage 1 is driven directly by enable; each following stage advances
-    // one clock later, with Stage 4 marking registered PE output timing.
-    always_ff @(posedge clk or negedge rst_n) begin : valid_pipeline
-        if (!rst_n) begin
-            s2_valid <= 1'b0;
-            s3_valid <= 1'b0;
-            s4_valid <= 1'b0;
-        end else begin
-            s2_valid <= s1_valid;
-            s3_valid <= s2_valid;
-            s4_valid <= pe_valid;
-        end
-    end : valid_pipeline
-
-    // Stage 1 activation-read qualification.
-    // The request is suppressed while an output word is being packed so that
-    // activation SRAM address and write traffic do not conflict.
-    // Activation side pipeline: Stage 1 -> Stage 2 -> Stage 3 -> Stage 4.
-    // The Stage 4 pulse performs the delayed line-buffer write.
-    always_ff @(posedge clk or negedge rst_n) begin : load_valid_pipeline
-        if (!rst_n) begin
-            load_valid_s2 <= 1'b0;
-            load_valid_s3 <= 1'b0;
-            load_valid_s4 <= 1'b0;
-        end else begin
-            load_valid_s2 <= act_read_fire;
-            load_valid_s3 <= load_valid_s2;
-            load_valid_s4 <= load_valid_s3;
-        end
-    end : load_valid_pipeline
-
-    // Activation side pipeline: delay the SRAM word index alongside valid.
-    always_ff @(posedge clk or negedge rst_n) begin : load_idx_pipeline
-        if (!rst_n) begin
-            load_idx_s2 <= 5'd0;
-            load_idx_s3 <= 5'd0;
-            load_idx_s4 <= 5'd0;
-        end else begin
-            load_idx_s2 <= fill_cnt;
-            load_idx_s3 <= load_idx_s2;
-            load_idx_s4 <= load_idx_s3;
-        end
-    end : load_idx_pipeline
-
-    // Qualify Stage 1 weight reads while the packed kernel words are valid.
-    assign weight_valid_s1 = s1_valid && (kernel_idx < 4'd10);
-
-    // Weight side pipeline: Stage 1 -> Stage 2 -> Stage 3 -> Stage 4.
-    // Stage 4 updates the packed five-byte kernel register.
-    always_ff @(posedge clk or negedge rst_n) begin : weight_valid_pipeline
-        if (!rst_n) begin
-            weight_valid_s2 <= 1'b0;
-            weight_valid_s3 <= 1'b0;
-            weight_valid_s4 <= 1'b0;
-        end else begin
-            weight_valid_s2 <= weight_valid_s1;
-            weight_valid_s3 <= weight_valid_s2;
-            weight_valid_s4 <= weight_valid_s3;
-        end
-    end : weight_valid_pipeline
-
-    // Weight side pipeline: delay the packed-kernel word index with validity.
-    always_ff @(posedge clk or negedge rst_n) begin : kernel_idx_pipeline
-        if (!rst_n) begin
-            kernel_idx_s2 <= 4'd0;
-            kernel_idx_s3 <= 4'd0;
-            kernel_idx_s4 <= 4'd0;
-        end else begin
-            kernel_idx_s2 <= kernel_idx;
-            kernel_idx_s3 <= kernel_idx_s2;
-            kernel_idx_s4 <= kernel_idx_s3;
-        end
-    end : kernel_idx_pipeline
-
-    // Stage 1 activation address generation. The delayed index is decoded at
-    // Stage 4 when the corresponding SRAM data reaches the line buffer.
-    // Stage 1 address issue and output-write address update. Activation
-    // reads have priority unless the packing path is writing an output word.
+    // Pipeline 1 control: activation read address and fill counter.
+    // The address block also services Pipeline 4 output writeback.
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
         if (!rst_n) begin
             sram_act_addr0 <= '0;
@@ -283,29 +217,6 @@ module conv1 (
         end
     end : act_addr_gen
 
-    // Stage 4 activation writeback: store six input rows used by the
-    // 5x5 sliding window after the four-stage activation side pipeline.
-    always_ff @(posedge clk or negedge rst_n) begin : line_buffer_ff
-        if (!rst_n) begin
-            foreach (line_buffer[i]) line_buffer[i] <= '0;
-        end else if (load_valid_s4) begin
-            if (strip_idx == 5'd0) begin
-                line_buffer[act_row_pair_s4*2][(act_col_blk_s4*4)+:4] <= sram_act_rdata0_buf;
-                line_buffer[(act_row_pair_s4*2)+1][(act_col_blk_s4*4)+:4] <= sram_act_rdata1_buf;
-            end else begin
-                if (load_idx_s4 == 5'd0) begin
-                    for (int i = 0; i < 4; i++) line_buffer[i] <= line_buffer[i+2];
-                end else begin
-                end
-                line_buffer[4][(act_col_blk_s4*4)+:4] <= sram_act_rdata0_buf;
-                line_buffer[5][(act_col_blk_s4*4)+:4] <= sram_act_rdata1_buf;
-            end
-        end else begin
-            foreach (line_buffer[i]) line_buffer[i] <= line_buffer[i];
-        end
-    end : line_buffer_ff
-
-    // Control counter for activation words loaded by the current strip.
     always_ff @(posedge clk or negedge rst_n) begin : line_counter
         if (!rst_n) begin
             fill_cnt <= 5'd0;
@@ -326,11 +237,9 @@ module conv1 (
         end
     end : line_counter
 
-    // Stage 1 packed-weight address generation: ten words per output channel.
+    // Pipeline 1 control: packed-weight address and kernel counters.
     assign w_offset = kernel_group * 10;
 
-    // The weight SRAM address is issued in Stage 1 and held until the next
-    // valid kernel word is requested.
     always_ff @(posedge clk or negedge rst_n) begin : weight_addr_gen
         if (!rst_n) begin
             sram_weight_addr0 <= '0;
@@ -341,20 +250,6 @@ module conv1 (
         end
     end : weight_addr_gen
 
-    // Stage 4 packed-weight writeback: assemble five 8-bit weights from the
-    // SRAM words delayed through the four-stage weight side pipeline.
-    always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
-        if (!rst_n) begin
-            foreach (weight_reg[i]) weight_reg[i] <= '0;
-        end else if (weight_valid_s4) begin
-            if (kernel_idx_s4[0] == 1'b0)
-                weight_reg[kernel_idx_s4[3:1]][3:0] <= sram_weight_rdata0_buf;
-            else weight_reg[kernel_idx_s4[3:1]][4] <= sram_weight_rdata0_buf[7:0];
-        end
-    end : weight_reg_ff
-
-    // Kernel sequencing: advance through ten packed words, then move to the
-    // next output channel after its final packed activation word.
     always_ff @(posedge clk or negedge rst_n) begin : kernel_counter
         if (!rst_n) begin
             kernel_idx <= 4'd0;
@@ -386,7 +281,84 @@ module conv1 (
         end
     end : kernel_group_counter
 
-    // Processing readiness: Stage 3 cannot issue PE work until both the
+    // Main four-pipeline valid path.
+    // Pipeline 1 is driven directly by enable; each following pipeline
+    // advances one clock later, with Pipeline 4 marking PE output timing.
+    always_ff @(posedge clk or negedge rst_n) begin : valid_pipeline
+        if (!rst_n) begin
+            s2_valid <= 1'b0;
+            s3_valid <= 1'b0;
+            s4_valid <= 1'b0;
+        end else begin
+            s2_valid <= s1_valid;
+            s3_valid <= s2_valid;
+            s4_valid <= pe_valid;
+        end
+    end : valid_pipeline
+
+    // Pipeline 1 activation-read qualification.
+    // The request is suppressed while an output word is being packed so that
+    // activation SRAM address and write traffic do not conflict.
+    // Activation side pipeline: Pipeline 1 -> Pipeline 2 -> Pipeline 3
+    // -> Pipeline 4. The Pipeline 4 pulse performs the delayed write.
+    // Pipeline 2-1 carries activation valid.
+    always_ff @(posedge clk or negedge rst_n) begin : load_valid_pipeline
+        if (!rst_n) begin
+            load_valid_s2 <= 1'b0;
+            load_valid_s3 <= 1'b0;
+            load_valid_s4 <= 1'b0;
+        end else begin
+            load_valid_s2 <= act_read_fire;
+            load_valid_s3 <= load_valid_s2;
+            load_valid_s4 <= load_valid_s3;
+        end
+    end : load_valid_pipeline
+
+    // Pipeline 2-2: delay the SRAM word index alongside activation valid.
+    always_ff @(posedge clk or negedge rst_n) begin : load_idx_pipeline
+        if (!rst_n) begin
+            load_idx_s2 <= 5'd0;
+            load_idx_s3 <= 5'd0;
+            load_idx_s4 <= 5'd0;
+        end else begin
+            load_idx_s2 <= fill_cnt;
+            load_idx_s3 <= load_idx_s2;
+            load_idx_s4 <= load_idx_s3;
+        end
+    end : load_idx_pipeline
+
+    // Pipeline 1: qualify weight reads while packed kernel words are valid.
+    assign weight_valid_s1 = s1_valid && (kernel_idx < 4'd10);
+
+    // Weight side pipeline: Pipeline 1 -> Pipeline 2 -> Pipeline 3
+    // -> Pipeline 4. Pipeline 4 updates the packed kernel register.
+    // Pipeline 2-3 carries weight valid.
+    always_ff @(posedge clk or negedge rst_n) begin : weight_valid_pipeline
+        if (!rst_n) begin
+            weight_valid_s2 <= 1'b0;
+            weight_valid_s3 <= 1'b0;
+            weight_valid_s4 <= 1'b0;
+        end else begin
+            weight_valid_s2 <= weight_valid_s1;
+            weight_valid_s3 <= weight_valid_s2;
+            weight_valid_s4 <= weight_valid_s3;
+        end
+    end : weight_valid_pipeline
+
+    // Pipeline 2-4: delay the packed-kernel word index with weight valid.
+    always_ff @(posedge clk or negedge rst_n) begin : kernel_idx_pipeline
+        if (!rst_n) begin
+            kernel_idx_s2 <= 4'd0;
+            kernel_idx_s3 <= 4'd0;
+            kernel_idx_s4 <= 4'd0;
+        end else begin
+            kernel_idx_s2 <= kernel_idx;
+            kernel_idx_s3 <= kernel_idx_s2;
+            kernel_idx_s4 <= kernel_idx_s3;
+        end
+    end : kernel_idx_pipeline
+
+    // Processing readiness: Pipeline 3 cannot issue PE work until both the
     // activation line buffer and the complete packed kernel are available.
     always_ff @(posedge clk or negedge rst_n) begin : line_buffer_status
         if (!rst_n) begin
@@ -409,7 +381,7 @@ module conv1 (
         else if (weight_valid_s4 && kernel_idx_s4 == 4'd9) weight_ready <= 1'b1;
     end
 
-    // Stage 3 sliding-window selection. The row selector chooses the upper
+    // Pipeline 3 sliding-window selection. The row selector chooses the upper
     // or lower five-row view while the column counter selects the window.
     always_comb begin : PE_window
         for (int r = 0; r < 5; r++) begin
@@ -425,8 +397,8 @@ module conv1 (
         end
     end : PE_window
 
-    // Stage 3 PE issue control and end-of-channel detection.
-    // A PE operation is issued only after the Stage 2/3 control pipeline,
+    // Pipeline 3 PE issue control and end-of-channel detection.
+    // A PE operation is issued only after the Pipeline 2/3 control path,
     // activation line buffer, and weight registers are all ready.
     // Detect the final MAC operation of the final strip for this channel.
     assign last_mac_fire = pe_valid && (strip_idx == 5'd13) && (row_sel == 1'b1) && (col == 5'd27);
@@ -438,7 +410,7 @@ module conv1 (
         else channel_mac_done <= channel_mac_done;
     end
 
-    // Stage 3 window traversal. Each valid PE operation processes two row
+    // Pipeline 3 window traversal. Each valid PE operation processes two row
     // positions before moving to the next column or strip.
     always_ff @(posedge clk or negedge rst_n) begin : compute_counter
         if (!rst_n) begin
@@ -467,7 +439,7 @@ module conv1 (
         end
     end : compute_counter
 
-    // Stage 3 parallel convolution. Five PE instances calculate one
+    // Pipeline 3 parallel convolution. Five PE instances calculate one
     // 5x5 channel result in parallel from the selected sliding window.
     generate
         for (i = 0; i < 5; i++) begin : gen_pe
@@ -478,12 +450,47 @@ module conv1 (
                 .weight(weight_reg[i]),
                 .activation(pe_window[i]),
                 .valid(pe_valid),
+                .mode(CONV),
                 .result(pe_out[i])
             );
         end : gen_pe
     endgenerate
 
-    // Stage 4 result register. This register isolates the PE combinational
+    // Pipeline 4: register activation data returned through the activation
+    // side pipeline before it is consumed by the sliding-window PE.
+    always_ff @(posedge clk or negedge rst_n) begin : line_buffer_ff
+        if (!rst_n) begin
+            foreach (line_buffer[i]) line_buffer[i] <= '0;
+        end else if (load_valid_s4) begin
+            if (strip_idx == 5'd0) begin
+                line_buffer[act_row_pair_s4*2][(act_col_blk_s4*4)+:4] <= sram_act_rdata0_buf;
+                line_buffer[(act_row_pair_s4*2)+1][(act_col_blk_s4*4)+:4] <= sram_act_rdata1_buf;
+            end else begin
+                if (load_idx_s4 == 5'd0) begin
+                    for (int i = 0; i < 4; i++) line_buffer[i] <= line_buffer[i+2];
+                end else begin
+                end
+                line_buffer[4][(act_col_blk_s4*4)+:4] <= sram_act_rdata0_buf;
+                line_buffer[5][(act_col_blk_s4*4)+:4] <= sram_act_rdata1_buf;
+            end
+        end else begin
+            foreach (line_buffer[i]) line_buffer[i] <= line_buffer[i];
+        end
+    end : line_buffer_ff
+
+    // Pipeline 4: assemble the packed weight word returned through the
+    // weight side pipeline before it is consumed by the PE.
+    always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
+        if (!rst_n) begin
+            foreach (weight_reg[i]) weight_reg[i] <= '0;
+        end else if (weight_valid_s4) begin
+            if (kernel_idx_s4[0] == 1'b0)
+                weight_reg[kernel_idx_s4[3:1]][3:0] <= sram_weight_rdata0_buf;
+            else weight_reg[kernel_idx_s4[3:1]][4] <= sram_weight_rdata0_buf[7:0];
+        end
+    end : weight_reg_ff
+
+    // Pipeline 4 result register. This register isolates the PE combinational
     // result from the quantization and pooling logic.
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
@@ -495,7 +502,7 @@ module conv1 (
         end
     end
 
-    // Stage 4 arithmetic post-processing: accumulate the five PE results,
+    // Pipeline 4 arithmetic post-processing: accumulate the five PE results,
     // apply ReLU, multiply by the layer scale, shift, and saturate to 8 bits.
     always_comb begin : relu_quant
         if (s4_valid) begin

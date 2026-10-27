@@ -10,6 +10,12 @@ package pkg;
         FC2
     } state_t;
 
+    // PE mode
+    typedef enum logic {
+        CONV,
+        FC
+    } mode_t;
+
     // Activation SRAM map. Offsets are word addresses reserved by each layer.
     localparam shortint conv1_in_offset  = 16'd0;
     localparam shortint conv2_in_offset  = 16'd256;
