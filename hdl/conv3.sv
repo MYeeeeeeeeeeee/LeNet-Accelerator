@@ -1,7 +1,5 @@
 // Read/write arbitration and packing retained.
 // "enable" is a LEVEL while Top is in CONV3, not an additional start pulse.
-import pkg::*;
-
 module conv3 (
     input  logic        clk,
     input  logic        rst_n,
@@ -25,12 +23,12 @@ module conv3 (
     output logic [ 3:0] sram_act_wea1,
     output logic [15:0] sram_act_addr1,
     output logic [31:0] sram_act_wdata1,
-    input  logic [31:0] sram_act_rdata1
-);
+    input  logic [31:0] sram_act_rdata1,
 
-    localparam shortint conv3_in_offset = 16'd592;
-    localparam shortint conv3_weight_offset = 16'd1020;
-    localparam shortint conv3_out_offset = 16'd692;
+    output logic       fc_buf_we,
+    output logic [6:0] fc_buf_waddr,
+    output logic [7:0] fc_buf_wdata
+);
 
     // Buffered inputs and scale.
     logic [31:0] scale_CONV3_buf;
@@ -38,8 +36,7 @@ module conv3 (
     logic [31:0] sram_act_rdata0_buf, sram_act_rdata1_buf;
 
     // Read counters, weight offset, and output address.
-    logic [4:0] fill_cnt;
-    logic [4:0] load_idx_s2, load_idx_s3, load_idx_s4;
+    logic [ 4:0] fill_cnt;
     logic [15:0] global_w_offset;
     logic [16:0] write_addr;
 
@@ -84,7 +81,7 @@ module conv3 (
     logic [1:0] done_delay;
 
     // Output-neuron and activation indices.
-    logic [7:0] out_ch;
+    logic [6:0] out_ch;
     logic [6:0] act_idx;
 
     // Vector-group index pipeline.
@@ -126,8 +123,8 @@ module conv3 (
     assign pack_valid = neuron_valid && (package_cnt == 2'd3);
 
     // Pipeline 1: decode and issue activation addresses.
-    assign act_0_idex   = {act_idx, 1'b0};
-    assign act_1_idex   = {act_idx, 1'b1};
+    assign act_0_idex = {act_idx, 1'b0};
+    assign act_1_idex = {act_idx, 1'b1};
 
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
         if (!rst_n) begin
@@ -173,6 +170,7 @@ module conv3 (
             sram_weight_addr1 <= global_w_offset + w_1_idex;
         end else begin
             sram_weight_addr0 <= sram_weight_addr0;
+            sram_weight_addr1 <= sram_weight_addr1;
         end
     end : weight_addr_gen
 
@@ -182,7 +180,7 @@ module conv3 (
             weight_idx <= '0;
         end else if (change_out_ch) begin
             weight_idx <= '0;
-        end         else if (vector_read_fire) begin
+        end else if (vector_read_fire) begin
             weight_idx <= weight_idx + 1;
         end else begin
             weight_idx <= weight_idx;
@@ -238,8 +236,8 @@ module conv3 (
         end
     end : valid_pipeline
 
-    // Pipeline 2 local paths: 2-1 to 2-4 delay data, valid, and index
-    // signals together; their *_s4 results are consumed by Pipeline 4.
+    // Pipeline 2 local paths delay data and valid signals together; their
+    // *_s4 results are consumed by Pipeline 4.
 
     // Pipeline 2-1: delay activation-read valid to the SRAM return stage,
     // then use it to write the activation buffer.
@@ -255,21 +253,7 @@ module conv3 (
         end
     end : load_valid_pipeline
 
-    // Pipeline 2-2: carry the activation index with read valid so the
-    // returned vector keeps its source group.
-    always_ff @(posedge clk or negedge rst_n) begin : load_idx_pipeline
-        if (!rst_n) begin
-            load_idx_s2 <= 5'd0;
-            load_idx_s3 <= 5'd0;
-            load_idx_s4 <= 5'd0;
-        end else begin
-            load_idx_s2 <= fill_cnt;
-            load_idx_s3 <= load_idx_s2;
-            load_idx_s4 <= load_idx_s3;
-        end
-    end : load_idx_pipeline
-
-    // Pipeline 2-3: delay weight valid to the returned-weight stage before
+    // Pipeline 2-2: delay weight valid to the returned-weight stage before
     // loading the weight registers.
     always_ff @(posedge clk or negedge rst_n) begin : weight_valid_pipeline
         if (!rst_n) begin
@@ -283,7 +267,7 @@ module conv3 (
         end
     end : weight_valid_pipeline
 
-    // Pipeline 2-4: carry the vector-group index through the activation-read
+    // Pipeline 2-3: carry the vector-group index through the activation-read
     // latency for PSUM accumulation.
     always_ff @(posedge clk or negedge rst_n) begin : group_idx_pipeline
         if (!rst_n) begin
@@ -401,7 +385,7 @@ module conv3 (
     // Pipeline 4 control: advance to the next output neuron after completion.
     always_ff @(posedge clk or negedge rst_n) begin : ch_counter
         if (!rst_n) begin
-            out_ch <= 8'd0;
+            out_ch <= 7'd0;
         end else if (change_out_ch) begin
             out_ch <= out_ch + 1'b1;
         end else begin
@@ -437,6 +421,23 @@ module conv3 (
             package_cnt <= package_cnt + 1'b1;
         end
     end : package_act
+
+    // Pipeline 4 output: write the quantized neuron to the FC buffer.
+    always_ff @(posedge clk or negedge rst_n) begin : write_fc_buffer
+        if (!rst_n) begin
+            fc_buf_we    <= 1'b0;
+            fc_buf_waddr <= 7'd0;
+            fc_buf_wdata <= 8'd0;
+        end else if (neuron_valid) begin
+            fc_buf_we    <= 1'b1;
+            fc_buf_waddr <= out_ch;
+            fc_buf_wdata <= neuron_data;
+        end else begin
+            fc_buf_we    <= 1'b0;
+            fc_buf_waddr <= fc_buf_waddr;
+            fc_buf_wdata <= fc_buf_wdata;
+        end
+    end
 
     // Pipeline 4 output: write the packed neuron word to activation SRAM.
     assign pack_data = {neuron_data, result_reg[2:0]};

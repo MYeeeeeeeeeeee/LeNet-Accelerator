@@ -83,41 +83,45 @@ ANF: vhdi_enc_ist_get_module_id('simv: undefined symbol: vhdi_enc_ist_get_module
 ANF: vhdi_enc_def_get_handle_by_module_id('simv: undefined symbol: vhdi_enc_def_get_handle_by_module_id')
 VCS compile option:
  option[0]: simv
- option[1]: /usr/cad/synopsys/vcs/2022.06/linux/bin/vcs1
- option[2]: -Mcc=gcc
- option[3]: -Mcplusplus=g++
- option[4]: -Masflags=--32
- option[5]: -Mcfl= -pipe -m32 -O -I/usr/cad/synopsys/vcs/2022.06/include 
- option[6]: -Mxllcflags=
- option[7]: -Mxcflags= -pipe -m32 -I/usr/cad/synopsys/vcs/2022.06/include
- option[8]: -Mldflags= -m32 -m32 -rdynamic 
- option[9]: -Mout=simv
- option[10]: -Mamsrun=
- option[11]: -Mvcsaceobjs=
- option[12]: -Mobjects= /usr/cad/synopsys/vcs/2022.06/linux/lib/libvirsim.so /usr/cad/synopsys/vcs/2022.06/linux/lib/liberrorinf.so /usr/cad/synopsys/vcs/2022.06/linux/lib/libsnpsmalloc.so /usr/cad/synopsys/vcs/2022.06/linux/lib/libvfs.so 
- option[13]: -Mexternalobj=
- option[14]: -Msaverestoreobj=/usr/cad/synopsys/vcs/2022.06/linux/lib/vcs_save_restore_new.o
- option[15]: -Mcrt0=
- option[16]: -Mcrtn=
- option[17]: -Mcsrc=
- option[18]: -Msyslibs=/usr/cad/synopsys/verdi/2022.06//share/PLI/VCS/LINUX/pli.a /usr/cad/synopsys/vcs/2022.06/linux/lib/ctype-stubs_32.a -ldl 
- option[19]: -Xvcs_run_simv=1
- option[20]: -debug_access+all
- option[21]: +vpi
- option[22]: +vcsd1
- option[23]: +itf+/usr/cad/synopsys/vcs/2022.06/linux/lib/vcsdp_lite.tab
- option[24]: -kdb
- option[25]: -Xufe=2steps
- option[26]: -picarchive
- option[27]: -P
- option[28]: /usr/cad/synopsys/verdi/2022.06//share/PLI/VCS/LINUX/verdi.tab
- option[29]: -fsdb
- option[30]: -sverilog
- option[31]: -gen_obj
- option[32]: -f
- option[33]: sim_rtl.f
- option[34]: -load
- option[35]: /usr/cad/synopsys/verdi/2022.06//share/PLI/VCS/LINUX/libnovas.so:FSDBDumpCmd
+ option[1]: -licwait
+ option[2]: 5
+ option[3]: /usr/cad/synopsys/vcs/2022.06/linux/bin/vcs1
+ option[4]: -Mcc=gcc
+ option[5]: -Mcplusplus=g++
+ option[6]: -Masflags=--32
+ option[7]: -Mcfl= -pipe -m32 -O -I/usr/cad/synopsys/vcs/2022.06/include 
+ option[8]: -Mxllcflags=
+ option[9]: -Mxcflags= -pipe -m32 -I/usr/cad/synopsys/vcs/2022.06/include
+ option[10]: -Mldflags= -m32 -m32 -rdynamic 
+ option[11]: -Mout=simv
+ option[12]: -Mamsrun=
+ option[13]: -Mvcsaceobjs=
+ option[14]: -Mobjects= /usr/cad/synopsys/vcs/2022.06/linux/lib/libvirsim.so /usr/cad/synopsys/vcs/2022.06/linux/lib/liberrorinf.so /usr/cad/synopsys/vcs/2022.06/linux/lib/libsnpsmalloc.so /usr/cad/synopsys/vcs/2022.06/linux/lib/libvfs.so 
+ option[15]: -Mexternalobj=
+ option[16]: -Msaverestoreobj=/usr/cad/synopsys/vcs/2022.06/linux/lib/vcs_save_restore_new.o
+ option[17]: -Mcrt0=
+ option[18]: -Mcrtn=
+ option[19]: -Mcsrc=
+ option[20]: -Msyslibs=/usr/cad/synopsys/verdi/2022.06//share/PLI/VCS/LINUX/pli.a /usr/cad/synopsys/vcs/2022.06/linux/lib/ctype-stubs_32.a -ldl 
+ option[21]: -Xvcs_run_simv=1
+ option[22]: -debug_access+all
+ option[23]: +vpi
+ option[24]: +vcsd1
+ option[25]: +itf+/usr/cad/synopsys/vcs/2022.06/linux/lib/vcsdp_lite.tab
+ option[26]: -kdb
+ option[27]: -Xufe=2steps
+ option[28]: -licwait
+ option[29]: 5
+ option[30]: -picarchive
+ option[31]: -P
+ option[32]: /usr/cad/synopsys/verdi/2022.06//share/PLI/VCS/LINUX/verdi.tab
+ option[33]: -fsdb
+ option[34]: -sverilog
+ option[35]: -gen_obj
+ option[36]: -f
+ option[37]: sim_rtl.f
+ option[38]: -load
+ option[39]: /usr/cad/synopsys/verdi/2022.06//share/PLI/VCS/LINUX/libnovas.so:FSDBDumpCmd
 Chronologic Simulation VCS Release T-2022.06
 Linux 3.10.0-1160.80.1.el7.x86_64 #1 SMP Tue Nov 8 15:48:59 UTC 2022 x86_64
 CPU cores: 4
@@ -139,120 +143,122 @@ maxproc		4096
 Cannot get runtime environment variables: environ is NULL
 Runtime command line arguments:
 argv[0]=simv
-141 profile - 100
-          CPU/Mem usage: 0.080 sys,  0.330 user,  170.54M mem
-142 Elapsed time:    0:00:02    Wed Oct 28 00:24:59 2026
-143 User CPU time used: 0 seconds
-144 System CPU time used: 0 seconds
-145 pliAppInit
-146 [SC]Init: MemoryConsumed=0.00MB ElapsedTime=0hour 0min. 0sec.
-147 FSDB_GATE is set.
-148 FSDB_RTL is set.
-149 FSDB_ALIAS_ARRAY_ELEM is set to 4294967295.
-150 Enable Parallel Dumping.
-151 pliAppMiscSet: New Sim Round
-152 pliEntryInit
-153 LIBSSCORE=found /usr/cad/synopsys/verdi/2022.06//share/PLI/lib/LINUX/libsscore_vcs202206.so through $NOVAS_HOME setting.
-154 FSDB Dumper for VCS, Release Verdi_T-2022.06, Linux, 05/29/2022
-155 (C) 1996 - 2022 by Synopsys, Inc.
-156 sps_call_fsdbDumpfile_main at 0 : lenet_tb.v(109)
-157 argv[0]: (lenet.fsdb)
-158 *Verdi* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
-159 *Verdi* : Create FSDB file 'lenet.fsdb'
-160 [spi_vcs_vd_ppi_create_root]: no upf option
-161 compile option from '/home/lab911_1/Desktop/7114064519/NTHU_VSD/HW3/sim/simv.daidir/vcs_rebuild'.
-162   "vcs '-sverilog' '-f' 'sim_rtl.f' '-debug_access+all' '-R' '-kdb' 2>&1"
-163 DVDI_is_vir_unload_enabled is enable
-164 FSDB_VCS_ENABLE_VC_TIME_CB is enable
-165 sps_call_fsdbDumpvars_vd_main at 0 : lenet_tb.v(110)
-166 argv[0]: (0)
-167 argv[1]: (handle) tb_lenet
-168 argv[2]: (+all)
-169 *Verdi* : Begin traversing the scope (tb_lenet), layer (0).
-170 *Verdi* : Enable +all dumping.
-171 *Verdi* : End of traversing.
-172 pliAppHDL_DumpVarComplete traverse var: profile - 
-          CPU/Mem usage: 0.090 sys,  0.340 user,  266.74M mem
-                   incr: 0.010 sys,  0.010 user,  7.52M mem
-                   accu: 0.010 sys,  0.010 user,  7.52M mem
-              accu incr: 0.010 sys,  0.010 user,  7.52M mem
+argv[1]=-licwait
+argv[2]=5
+147 profile - 100
+          CPU/Mem usage: 0.070 sys,  0.320 user,  170.63M mem
+148 Elapsed time:    0:00:00    Sat Oct 31 01:00:00 2026
+149 User CPU time used: 0 seconds
+150 System CPU time used: 0 seconds
+151 pliAppInit
+152 [SC]Init: MemoryConsumed=0.00MB ElapsedTime=0hour 0min. 0sec.
+153 FSDB_GATE is set.
+154 FSDB_RTL is set.
+155 FSDB_ALIAS_ARRAY_ELEM is set to 4294967295.
+156 Enable Parallel Dumping.
+157 pliAppMiscSet: New Sim Round
+158 pliEntryInit
+159 LIBSSCORE=found /usr/cad/synopsys/verdi/2022.06//share/PLI/lib/LINUX/libsscore_vcs202206.so through $NOVAS_HOME setting.
+160 FSDB Dumper for VCS, Release Verdi_T-2022.06, Linux, 05/29/2022
+161 (C) 1996 - 2022 by Synopsys, Inc.
+162 sps_call_fsdbDumpfile_main at 0 : lenet_tb.v(109)
+163 argv[0]: (lenet.fsdb)
+164 *Verdi* FSDB WARNING: The FSDB file already exists. Overwriting the FSDB file may crash the programs that are using this file.
+165 *Verdi* : Create FSDB file 'lenet.fsdb'
+166 [spi_vcs_vd_ppi_create_root]: no upf option
+167 compile option from '/home/lab911_1/Desktop/7114064519/NTHU_VSD/HW3/sim/simv.daidir/vcs_rebuild'.
+168   "vcs '-sverilog' '-f' 'sim_rtl.f' '-debug_access+all' '-R' '-kdb' '-licwait' '5' 2>&1"
+169 DVDI_is_vir_unload_enabled is enable
+170 FSDB_VCS_ENABLE_VC_TIME_CB is enable
+171 sps_call_fsdbDumpvars_vd_main at 0 : lenet_tb.v(110)
+172 argv[0]: (0)
+173 argv[1]: (handle) tb_lenet
+174 argv[2]: (+all)
+175 *Verdi* : Begin traversing the scope (tb_lenet), layer (0).
+176 *Verdi* : Enable +all dumping.
+177 *Verdi* : End of traversing.
+178 pliAppHDL_DumpVarComplete traverse var: profile - 
+          CPU/Mem usage: 0.080 sys,  0.340 user,  266.85M mem
+                   incr: 0.000 sys,  0.020 user,  7.53M mem
+                   accu: 0.000 sys,  0.020 user,  7.53M mem
+              accu incr: 0.000 sys,  0.020 user,  7.53M mem
 
-          Count usage: 19782 var,  19771 idcode,  281 callback
-                 incr: 19782 var,  19771 idcode,  281 callback
-                 accu: 19782 var,  19771 idcode,  281 callback
-            accu incr: 19782 var,  19771 idcode,  281 callback
-173 Elapsed time:    0:00:02    Wed Oct 28 00:24:59 2026
-174 User CPU time used: 0 seconds
-175 System CPU time used: 0 seconds
-176 pliAppHDL_DumpVarComplete: profile - 
-          CPU/Mem usage: 0.090 sys,  0.340 user,  268.48M mem
-                   incr: 0.000 sys,  0.000 user,  1.75M mem
-                   accu: 0.010 sys,  0.010 user,  9.27M mem
-              accu incr: 0.000 sys,  0.000 user,  1.75M mem
+          Count usage: 20103 var,  20092 idcode,  371 callback
+                 incr: 20103 var,  20092 idcode,  371 callback
+                 accu: 20103 var,  20092 idcode,  371 callback
+            accu incr: 20103 var,  20092 idcode,  371 callback
+179 Elapsed time:    0:00:00    Sat Oct 31 01:00:00 2026
+180 User CPU time used: 0 seconds
+181 System CPU time used: 0 seconds
+182 pliAppHDL_DumpVarComplete: profile - 
+          CPU/Mem usage: 0.090 sys,  0.350 user,  268.60M mem
+                   incr: 0.010 sys,  0.010 user,  1.75M mem
+                   accu: 0.010 sys,  0.030 user,  9.28M mem
+              accu incr: 0.010 sys,  0.010 user,  1.75M mem
 
-          Count usage: 19782 var,  19771 idcode,  281 callback
+          Count usage: 20103 var,  20092 idcode,  371 callback
                  incr: 0 var,  0 idcode,  0 callback
-                 accu: 19782 var,  19771 idcode,  281 callback
+                 accu: 20103 var,  20092 idcode,  371 callback
             accu incr: 0 var,  0 idcode,  0 callback
-177 Elapsed time:    0:00:02    Wed Oct 28 00:24:59 2026
-178 User CPU time used: 0 seconds
-179 System CPU time used: 0 seconds
-180 sps_call_fsdbDumpMDA_vd_main at 0 : lenet_tb.v(111)
-181 argv[0]: (0)
-182 argv[1]: (handle) tb_lenet
-183 *Verdi* : Begin traversing the MDAs under scope (tb_lenet), layer (0).
-184 *Verdi* : Enable +mda and +packedmda dumping.
-185 *Verdi* : End of traversing the MDAs.
-186 pliAppHDL_DumpVarComplete traverse var: profile - 
-          CPU/Mem usage: 0.090 sys,  0.350 user,  268.48M mem
+183 Elapsed time:    0:00:00    Sat Oct 31 01:00:00 2026
+184 User CPU time used: 0 seconds
+185 System CPU time used: 0 seconds
+186 sps_call_fsdbDumpMDA_vd_main at 0 : lenet_tb.v(111)
+187 argv[0]: (0)
+188 argv[1]: (handle) tb_lenet
+189 *Verdi* : Begin traversing the MDAs under scope (tb_lenet), layer (0).
+190 *Verdi* : Enable +mda and +packedmda dumping.
+191 *Verdi* : End of traversing the MDAs.
+192 pliAppHDL_DumpVarComplete traverse var: profile - 
+          CPU/Mem usage: 0.090 sys,  0.350 user,  268.60M mem
+                   incr: 0.000 sys,  0.000 user,  0.00M mem
+                   accu: 0.000 sys,  0.000 user,  0.00M mem
+              accu incr: 0.000 sys,  0.000 user,  0.00M mem
+
+          Count usage: 39667 var,  20092 idcode,  371 callback
+                 incr: 19564 var,  0 idcode,  0 callback
+                 accu: 19564 var,  0 idcode,  0 callback
+            accu incr: 19564 var,  0 idcode,  0 callback
+193 Elapsed time:    0:00:00    Sat Oct 31 01:00:00 2026
+194 User CPU time used: 0 seconds
+195 System CPU time used: 0 seconds
+196 pliAppHDL_DumpVarComplete: profile - 
+          CPU/Mem usage: 0.090 sys,  0.360 user,  268.60M mem
                    incr: 0.000 sys,  0.010 user,  0.00M mem
                    accu: 0.000 sys,  0.010 user,  0.00M mem
               accu incr: 0.000 sys,  0.010 user,  0.00M mem
 
-          Count usage: 39157 var,  19771 idcode,  281 callback
-                 incr: 19375 var,  0 idcode,  0 callback
-                 accu: 19375 var,  0 idcode,  0 callback
-            accu incr: 19375 var,  0 idcode,  0 callback
-187 Elapsed time:    0:00:02    Wed Oct 28 00:24:59 2026
-188 User CPU time used: 0 seconds
-189 System CPU time used: 0 seconds
-190 pliAppHDL_DumpVarComplete: profile - 
-          CPU/Mem usage: 0.090 sys,  0.350 user,  268.48M mem
-                   incr: 0.000 sys,  0.000 user,  0.00M mem
-                   accu: 0.000 sys,  0.010 user,  0.00M mem
-              accu incr: 0.000 sys,  0.000 user,  0.00M mem
-
-          Count usage: 39157 var,  19771 idcode,  281 callback
+          Count usage: 39667 var,  20092 idcode,  371 callback
                  incr: 0 var,  0 idcode,  0 callback
-                 accu: 19375 var,  0 idcode,  0 callback
+                 accu: 19564 var,  0 idcode,  0 callback
             accu incr: 0 var,  0 idcode,  0 callback
-191 Elapsed time:    0:00:02    Wed Oct 28 00:24:59 2026
-192 User CPU time used: 0 seconds
-193 System CPU time used: 0 seconds
-194 End of simulation at 355410000
-195 Memory usage: 293.720 M
-196 Maximum resident set size: 149 MB
-197 Hard page faults: 0
-198 Soft page faults: 61855
-199 Elapsed time:    0:00:02    Wed Oct 28 00:24:59 2026
-200 User CPU time used: 1 seconds
-201 System CPU time used: 0 seconds
-202 Begin FSDB profile info:
-203 FSDB Writer : bc1(95620) bcn(9042090) mtf/stf(0/0)
-FSDB Writer elapsed time : flush(0.177373) io wait(0.000000) theadpool wait(0.000000)
+197 Elapsed time:    0:00:00    Sat Oct 31 01:00:00 2026
+198 User CPU time used: 0 seconds
+199 System CPU time used: 0 seconds
+200 End of simulation at 376602000
+201 Memory usage: 294.887 M
+202 Maximum resident set size: 151 MB
+203 Hard page faults: 0
+204 Soft page faults: 62340
+205 Elapsed time:    0:00:01    Sat Oct 31 01:00:01 2026
+206 User CPU time used: 1 seconds
+207 System CPU time used: 0 seconds
+208 Begin FSDB profile info:
+209 FSDB Writer : bc1(101362) bcn(9213268) mtf/stf(0/0)
+FSDB Writer elapsed time : flush(0.196261) io wait(0.000000) theadpool wait(0.000000)
 FSDB Writer cpu time : MT Compression : 0
-204 End FSDB profile info
-205 FSDB closed. Name: lenet.fsdb Size: 459563173386
-206 Parallel profile     - ProducerThread:1 ConsumerThread:1 Buffer:64MB
-207                      - BlockUsed:18 Acquire:1953285 BufferUsed:33048130
-208                      - Flush:4 Expand:0 ProducerWait:0 ConsumerWait:0
-209                      - MainProducerTime:0.952597032 TotalConsumerTime:0.589958141
-210                      - ElapsedTime:0.888312000
-211 Producer   0 profile - BlockUsed:18 Acquire:1953285 BufferUsed:33048130
-212 Consumer   0 profile - Affinity:-1 CPUTime:0.589958141 LifeTime:0.589978255 (1.00%)
-213                      - BlockUsed:18 Acquire:1953285 BufferUsed:33048130
-214 SimExit
-215 Elapsed time:    0:00:02    Wed Oct 28 00:24:59 2026
-216 User CPU time used: 1 seconds
-217 System CPU time used: 0 seconds
-218 Sim process exit
+210 End FSDB profile info
+211 FSDB closed. Name: lenet.fsdb Size: 459563408820
+212 Parallel profile     - ProducerThread:1 ConsumerThread:1 Buffer:64MB
+213                      - BlockUsed:19 Acquire:2076889 BufferUsed:34582795
+214                      - Flush:4 Expand:0 ProducerWait:0 ConsumerWait:0
+215                      - MainProducerTime:1.023370045 TotalConsumerTime:0.585295869
+216                      - ElapsedTime:0.946555000
+217 Producer   0 profile - BlockUsed:19 Acquire:2076889 BufferUsed:34582795
+218 Consumer   0 profile - Affinity:-1 CPUTime:0.585295869 LifeTime:0.585262787 (1.00%)
+219                      - BlockUsed:19 Acquire:2076889 BufferUsed:34582795
+220 SimExit
+221 Elapsed time:    0:00:01    Sat Oct 31 01:00:01 2026
+222 User CPU time used: 1 seconds
+223 System CPU time used: 0 seconds
+224 Sim process exit

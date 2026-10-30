@@ -1,7 +1,5 @@
 // Existing pipeline, read/write arbitration, packing and SRAM timing retained.
 // "enable" is a LEVEL while Top is in CONV2, not an additional start pulse.
-import pkg::*;
-
 module conv2 (
     input  logic        clk,
     input  logic        rst_n,
@@ -28,9 +26,6 @@ module conv2 (
     input  logic [31:0] sram_act_rdata1
 );
 
-    localparam shortint conv2_in_offset = 16'd256;
-    localparam shortint conv2_weight_offset = 16'd60;
-    localparam shortint conv2_out_offset = 16'd592;
 
     // Inputs buffered inside layer, at the SAME edge as in former lenet.sv.
     logic [31:0] scale_CONV2_buf;

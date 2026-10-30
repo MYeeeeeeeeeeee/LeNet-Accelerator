@@ -20,11 +20,14 @@ package pkg;
     localparam shortint conv1_in_offset  = 16'd0;
     localparam shortint conv2_in_offset  = 16'd256;
     localparam shortint conv3_in_offset  = 16'd592;
+
     localparam shortint fc1_in_offset    = 16'd692;
     localparam shortint fc2_in_offset    = 16'd722;
+
     localparam shortint conv1_out_offset = 16'd256;
     localparam shortint conv2_out_offset = 16'd592;
     localparam shortint conv3_out_offset = 16'd692;
+    
     localparam shortint fc1_out_offset   = 16'd722;
     localparam shortint fc2_out_offset   = 16'd743;
 
@@ -32,6 +35,7 @@ package pkg;
     localparam shortint conv1_weight_offset = 16'd0;
     localparam shortint conv2_weight_offset = 16'd60;
     localparam shortint conv3_weight_offset = 16'd1020;
+
     localparam shortint fc1_weight_offset   = 16'd13020;
     localparam shortint fc2_weight_offset   = 16'd15540;
     localparam shortint fc3_weight_offset   = 16'd15750;

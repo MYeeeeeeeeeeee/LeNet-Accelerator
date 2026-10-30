@@ -68,9 +68,17 @@ module lenet (
     logic conv3_enable;
     logic conv3_done;
 
+    logic fc1_enable;
+    logic fc1_done;
+
+    logic fc2_enable;
+    logic fc2_done;
+
     logic conv1_done_reg;
     logic conv2_done_reg;
     logic conv3_done_reg;
+    logic fc1_done_reg;
+    logic fc2_done_reg;
 
     logic all_layers_done;
 
@@ -95,6 +103,38 @@ module lenet (
     logic [3:0] c3_act_wea0, c3_act_wea1;
     logic [15:0] c3_act_addr0, c3_act_addr1;
     logic [31:0] c3_act_wdata0, c3_act_wdata1;
+    // FC1's private SRAM request signals.
+    logic [3:0] fc1_weight_wea0, fc1_weight_wea1;
+    logic [15:0] fc1_weight_addr0, fc1_weight_addr1;
+    logic [31:0] fc1_weight_wdata0, fc1_weight_wdata1;
+    logic [3:0] fc1_act_wea0, fc1_act_wea1;
+    logic [15:0] fc1_act_addr0, fc1_act_addr1;
+    logic [31:0] fc1_act_wdata0, fc1_act_wdata1;
+    // FC2's private SRAM request signals.
+    logic [3:0] fc2_weight_wea0, fc2_weight_wea1;
+    logic [15:0] fc2_weight_addr0, fc2_weight_addr1;
+    logic [31:0] fc2_weight_wdata0, fc2_weight_wdata1;
+    logic [3:0] fc2_act_wea0, fc2_act_wea1;
+    logic [15:0] fc2_act_addr0, fc2_act_addr1;
+    logic [31:0] fc2_act_wdata0, fc2_act_wdata1;
+
+
+    // FC buffer interface signals.
+    logic        fc_buf_we;
+    logic [ 6:0] fc_buf_waddr;
+    logic [ 7:0] fc_buf_wdata;
+    logic        fc_buf_re;
+    logic [ 6:0] fc_buf_raddr;
+    logic [63:0] fc_buf_rdata;
+    // CONV3's interface to the FC buffer.
+    logic        conv3_fc_we;
+    logic [ 6:0] conv3_fc_waddr;
+    logic [ 7:0] conv3_fc_wdata;
+    // Reload controller private write interface
+    logic        reload_fc_we;
+    logic [ 6:0] reload_fc_waddr;
+    logic [ 7:0] reload_fc_wdata;
+
 
     // Delay the external start request by one clock before entering CONV1.
     always_ff @(posedge clk or negedge rst_n) begin : input_flag
@@ -126,21 +166,29 @@ module lenet (
                 if (conv3_done) ns = FC1;
                 else ns = CONV3;
             end
-            FC1:     ns = FC1;
-            FC2:     ns = FC2;
+            FC1: begin
+                if (fc1_done) ns = FC2;
+                else ns = FC1;
+            end
+            FC2: begin
+                if (fc2_done) ns = IDLE;
+                else ns = FC2;
+            end
             default: ns = IDLE;
         endcase
     end
 
     // Layer enables stay high while their state is active and the layer is
     // incomplete. The done registers prevent a completed layer from restarting.
-    assign all_layers_done = conv1_done_reg && conv2_done_reg && conv3_done_reg;
+    assign all_layers_done = conv1_done_reg & conv2_done_reg & conv3_done_reg & fc1_done_reg;
 
 
 
     assign conv1_enable = (cs == CONV1) && !conv1_done_reg;
     assign conv2_enable = (cs == CONV2) && conv1_done_reg && !conv2_done_reg;
     assign conv3_enable = (cs == CONV3) && conv2_done_reg && !conv3_done_reg;
+    assign fc1_enable = (cs == FC1) && conv3_done_reg && !fc1_done_reg;
+    assign fc2_enable = (cs == FC2) && fc1_done_reg && !fc2_done_reg;
 
 
     always_ff @(posedge clk or negedge rst_n) begin : layer_done_ff
@@ -148,9 +196,13 @@ module lenet (
             conv1_done_reg <= 1'b0;
             conv2_done_reg <= 1'b0;
             conv3_done_reg <= 1'b0;
+            fc1_done_reg   <= 1'b0;
+            fc2_done_reg   <= 1'b0;
         end else if (conv1_done) conv1_done_reg <= 1;
         else if (conv2_done) conv2_done_reg <= 1;
         else if (conv3_done) conv3_done_reg <= 1;
+        else if (fc1_done) fc1_done_reg <= 1;
+        else if (fc2_done) fc2_done_reg <= 1;
     end
 
     conv1 u_conv1 (
@@ -232,8 +284,60 @@ module lenet (
         .sram_act_wea1  (c3_act_wea1),
         .sram_act_addr1 (c3_act_addr1),
         .sram_act_wdata1(c3_act_wdata1),
-        .sram_act_rdata1(sram_act_rdata1)
+        .sram_act_rdata1(sram_act_rdata1),
+
+        .fc_buf_we(conv3_fc_we),
+        .fc_buf_waddr(conv3_fc_waddr),
+        .fc_buf_wdata(conv3_fc_wdata)
     );
+
+    fc_buffer u_fc_buffer (
+        .clk(clk),
+        .rst_n(rst_n),
+        .fc_buf_we(fc_buf_we),
+        .fc_buf_waddr(fc_buf_waddr),
+        .fc_buf_wdata(fc_buf_wdata),
+
+        .fc_buf_re(fc_buf_re),
+        .fc_buf_raddr(fc_buf_raddr),
+        .fc_buf_rdata(fc_buf_rdata)
+
+    );
+
+    fc1 u_fc1 (
+        .clk(clk),
+        .rst_n(rst_n),
+        .enable(fc1_enable),
+        .done(fc1_done),
+
+        .scale_FC1(scale_FC1),
+
+        .sram_weight_wea0  (fc1_weight_wea0),
+        .sram_weight_addr0 (fc1_weight_addr0),
+        .sram_weight_wdata0(fc1_weight_wdata0),
+        .sram_weight_rdata0(sram_weight_rdata0),
+        .sram_weight_wea1  (fc1_weight_wea1),
+        .sram_weight_addr1 (fc1_weight_addr1),
+        .sram_weight_wdata1(fc1_weight_wdata1),
+        .sram_weight_rdata1(sram_weight_rdata1),
+
+        .sram_act_wea0  (fc1_act_wea0),
+        .sram_act_addr0 (fc1_act_addr0),
+        .sram_act_wdata0(fc1_act_wdata0),
+        .sram_act_rdata0(sram_act_rdata0),
+        .sram_act_wea1  (fc1_act_wea1),
+        .sram_act_addr1 (fc1_act_addr1),
+        .sram_act_wdata1(fc1_act_wdata1),
+        .sram_act_rdata1(sram_act_rdata1),
+
+        .fc_buf_re(fc_buf_re),
+        .fc_buf_raddr(fc_buf_raddr),
+        .fc_buf_rdata(fc_buf_rdata),
+        .fc_buf_we(),
+        .fc_buf_waddr(),
+        .fc_buf_wdata()
+    );
+
 
 
     // Select the active layer's requests onto the shared physical SRAM pins.
@@ -297,7 +401,56 @@ module lenet (
                 sram_act_addr1     = c3_act_addr1;
                 sram_act_wdata1    = c3_act_wdata1;
             end
-            default: ;  // IDLE and future states keep the interface inactive.
+            FC1: begin
+                sram_weight_wea0   = fc1_weight_wea0;
+                sram_weight_addr0  = fc1_weight_addr0;
+                sram_weight_wdata0 = fc1_weight_wdata0;
+                sram_weight_wea1   = fc1_weight_wea1;
+                sram_weight_addr1  = fc1_weight_addr1;
+                sram_weight_wdata1 = fc1_weight_wdata1;
+                sram_act_wea0      = fc1_act_wea0;
+                sram_act_addr0     = fc1_act_addr0;
+                sram_act_wdata0    = fc1_act_wdata0;
+                sram_act_wea1      = fc1_act_wea1;
+                sram_act_addr1     = fc1_act_addr1;
+                sram_act_wdata1    = fc1_act_wdata1;
+            end
+            FC2: begin
+                sram_weight_wea0   = fc2_weight_wea0;
+                sram_weight_addr0  = fc2_weight_addr0;
+                sram_weight_wdata0 = fc2_weight_wdata0;
+                sram_weight_wea1   = fc2_weight_wea1;
+                sram_weight_addr1  = fc2_weight_addr1;
+                sram_weight_wdata1 = fc2_weight_wdata1;
+                sram_act_wea0      = fc2_act_wea0;
+                sram_act_addr0     = fc2_act_addr0;
+                sram_act_wdata0    = fc2_act_wdata0;
+                sram_act_wea1      = fc2_act_wea1;
+                sram_act_addr1     = fc2_act_addr1;
+                sram_act_wdata1    = fc2_act_wdata1;
+            end
+        endcase
+    end
+
+    always_comb begin : fc_buf_write_mux
+        fc_buf_we    = 1'b0;
+        fc_buf_waddr = '0;
+        fc_buf_wdata = '0;
+
+        case (cs)
+            CONV3: begin
+                fc_buf_we    = conv3_fc_we;
+                fc_buf_waddr = conv3_fc_waddr;
+                fc_buf_wdata = conv3_fc_wdata;
+            end
+
+            // FC2: begin
+            //     fc_buf_we    = reload_fc_we;
+            //     fc_buf_waddr = reload_fc_waddr;
+            //     fc_buf_wdata = reload_fc_wdata;
+            // end
+
+            default: ;
         endcase
     end
 

@@ -16,16 +16,16 @@ signalSpacing 5
 
 ; windowTimeUnit is used for zoom, cursor & marker
 ; waveform viewport range
-zoom 275267460.505203 275451186.289200
-cursor 275442000.000000
+zoom 275579794.337998 276314697.473986
+cursor 276090000.000000
 marker 11970000.000000
 
 ; user define markers
 ; userMarker time_pos marker_name color linestyle
 ; visible top row signal index
-top 38
+top 6
 ; marker line index
-markerPos 50
+markerPos 23
 
 ; event list
 ; addEvent event_name event_expression
@@ -56,50 +56,37 @@ addSignal -h 15 -UNSIGNED /tb_lenet/lenet_inst/cs[2:0]
 addSignal -h 15 -UNSIGNED -holdScope ns[2:0]
 addGroup "Stage 1"
 addSubGroup "act"
-addSubGroup "act_addr_gen" -e FALSE
-addSignal -h 15 -UNSIGNED -HEX /tb_lenet/lenet_inst/u_conv2/act_col_blk_s1[2:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope act_row_pair_s1[2:0]
-addSignal -h 15 -holdScope load_valid_s1
+addSubGroup "act_addr_gen"
 endSubGroup "act_addr_gen"
-addSignal -h 15 /tb_lenet/lenet_inst/u_conv3/vector_read_fire
-addSignal -h 15 -UNSIGNED -UDEC -holdScope act_idx[6:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope act_0_idex[16:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope act_1_idex[16:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope sram_act_addr0[15:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope sram_act_addr1[15:0]
+addSignal -h 15 -UNSIGNED -HEX /tb_lenet/lenet_inst/u_fc1/act_idx[4:0]
 endSubGroup "act"
 addSubGroup "weight"
 addSubGroup "weight_addr_gen"
-addSignal -h 15 /tb_lenet/lenet_inst/u_conv3/vector_buf_valid
-addSignal -h 15 -UNSIGNED -HEX -holdScope weight_idx[5:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope w_0_idex[15:0]
+addSignal -h 15 -UNSIGNED -HEX /tb_lenet/lenet_inst/u_fc1/w_0_idex[15:0]
 addSignal -h 15 -UNSIGNED -HEX -holdScope w_1_idex[15:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope sram_weight_addr0[15:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope sram_weight_addr1[15:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope weight_idx[5:0]
 endSubGroup "weight_addr_gen"
 endSubGroup "weight"
 addGroup "Stage 2"
 addSubGroup "act_from_sram"
-addSignal -h 15 -UNSIGNED -HEX /tb_lenet/lenet_inst/u_conv3/sram_act_rdata0[31:0]
-addSignal -h 15 -UNSIGNED -HEX -holdScope sram_act_rdata1[31:0]
+addSignal -h 15 -UNSIGNED -HEX /tb_lenet/lenet_inst/u_fc1/fc_buf_rdata[63:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope fc_act_d1[63:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope fc_act_d2[63:0]
 endSubGroup "act_from_sram"
 addSubGroup "act line buffer"
-addSignal -h 15 /tb_lenet/lenet_inst/u_conv3/line_buffer[0:5]
+addSignal -h 15 /tb_lenet/lenet_inst/u_fc1/load_valid_s4
+addSignal -h 15 -UNSIGNED -HEX -holdScope fc_act_vec_buf[63:0]
 endSubGroup "act line buffer"
 addSubGroup "weight_from_sram"
-addSignal -h 15 /tb_lenet/lenet_inst/u_conv3/vector_buf_valid
+addSignal -h 15 -UNSIGNED -HEX /tb_lenet/lenet_inst/u_fc1/sram_weight_rdata0[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope sram_weight_rdata1[31:0]
 endSubGroup "weight_from_sram"
 addSubGroup "weight array"
-addSignal -expanded -h 15 /tb_lenet/lenet_inst/u_conv3/weight_reg[0:4]
-addSignal -h 15 -holdScope weight_reg[0][4:0]
-addSignal -h 15 -holdScope weight_reg[1][4:0]
-addSignal -h 15 -holdScope weight_reg[2][4:0]
-addSignal -h 15 -holdScope weight_reg[3][4:0]
-addSignal -h 15 -holdScope weight_reg[4][4:0]
+addSignal -h 15 /tb_lenet/lenet_inst/u_fc1/weight_valid_s4
+addSignal -h 15 -holdScope weight_valid_s1
 endSubGroup "weight array"
 addGroup "Stage 3"
 addSubGroup "PE compute"
-addSignal -h 15 -UNSIGNED -UDEC /tb_lenet/lenet_inst/u_conv3/conv_sum[19:0]
 endSubGroup "PE compute"
 addGroup "Stage 4"
 addSubGroup "pesum"
@@ -109,7 +96,12 @@ endSubGroup "pack 4 data"
 addSubGroup "write back"
 endSubGroup "write back"
 addGroup "G8"
+addSignal -h 15 /tb_lenet/lenet_inst/u_conv3/neuron_valid
+addSignal -h 15 -holdScope fc_buf_we
+addSignal -h 15 -UNSIGNED -HEX -holdScope fc_buf_waddr[6:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope fc_buf_wdata[7:0]
 addGroup "G9"
+addSignal -h 15 /tb_lenet/lenet_inst/u_fc_buffer/fc_buf[119:0]
 addGroup "G10"
 
 ; getSignalForm Scope Hierarchy Status
@@ -121,7 +113,7 @@ getSignalForm close
 
 "/tb_lenet"
 "/tb_lenet/lenet_inst"
-"/tb_lenet/lenet_inst/u_conv3"
+"/tb_lenet/lenet_inst/u_fc_buffer"
 
 SCOPE_LIST_BEGIN
 "/tb_lenet"
@@ -154,6 +146,8 @@ SCOPE_LIST_BEGIN
 "/tb_lenet/lenet_inst/u_conv2/weight_status"
 "/tb_lenet/lenet_inst/u_conv2/weight_reg_ff/unnamed$$_0"
 "/tb_lenet/lenet_inst/u_conv3"
+"/tb_lenet/lenet_inst/u_fc_buffer"
+"/tb_lenet/lenet_inst/u_fc1"
 SCOPE_LIST_END
 
 GETSIGNALFORM_SCOPE_HIERARCHY_END

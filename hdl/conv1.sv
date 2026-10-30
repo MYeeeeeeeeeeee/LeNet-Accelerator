@@ -1,8 +1,6 @@
 // CONV1 layer engine split from lenet(20261021-103200).sv.
 // Existing pipeline, read/write arbitration, packing and SRAM timing retained.
 // "enable" is a LEVEL while Top is in CONV1, not an additional start pulse.
-import pkg::*;
-
 module conv1 (
     input  logic        clk,
     input  logic        rst_n,
@@ -29,9 +27,6 @@ module conv1 (
     input  logic [31:0] sram_act_rdata1
 );
 
-
-    localparam shortint conv1_in_offset  = 16'd0;
-    localparam shortint conv1_out_offset = 16'd256;
 
     // Inputs buffered inside layer, at the SAME edge as in former lenet.sv.
     logic [31:0] scale_CONV1_buf;
