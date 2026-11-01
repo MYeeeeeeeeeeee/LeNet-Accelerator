@@ -12,6 +12,8 @@ sram_model/SRAM_weight_16384x32b.v
 ../hdl/conv3.sv
 ../hdl/fc_buffer.sv
 ../hdl/fc1.sv
+../hdl/reload_controller.sv
+../hdl/fc2.sv
 ../hdl/PE.sv
 
 
