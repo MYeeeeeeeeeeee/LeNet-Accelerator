@@ -7,6 +7,7 @@ package pkg;
         CONV2,
         CONV3,
         FC1,
+        RELOAD84,
         FC2
     } state_t;
 
@@ -38,6 +39,7 @@ package pkg;
 
     localparam shortint fc1_weight_offset   = 16'd13020;
     localparam shortint fc2_weight_offset   = 16'd15540;
-    localparam shortint fc3_weight_offset   = 16'd15750;
+    
+    localparam shortint fc2_bias_offset   = 16'd15750;
 
 endpackage

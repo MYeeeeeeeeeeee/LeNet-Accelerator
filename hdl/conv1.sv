@@ -26,7 +26,8 @@ module conv1 (
     output logic [31:0] sram_act_wdata1,
     input  logic [31:0] sram_act_rdata1
 );
-
+    // input enable buffered to preserve SRAM timing
+    logic enable_buf;
 
     // Inputs buffered inside layer, at the SAME edge as in former lenet.sv.
     logic [31:0] scale_CONV1_buf;
@@ -121,7 +122,7 @@ module conv1 (
     logic [1:0] done_delay;
 
     // Pipeline 1: enable and activation-read qualification.
-    assign s1_valid = enable;
+    assign s1_valid = enable_buf;
     assign init_valid = (strip_idx == 5'd0) && (fill_cnt < 5'd24);
     assign new_valid = (strip_idx != 5'd0) && (fill_cnt < 5'd8);
     assign load_valid_s1 = s1_valid && (init_valid || new_valid);
@@ -170,12 +171,14 @@ module conv1 (
     // SRAM timing from the former combined lenet module.
     always_ff @(posedge clk or negedge rst_n) begin : input_buffer
         if (!rst_n) begin
+            enable_buf             <= 1'b0;
             scale_CONV1_buf        <= 32'd0;
             sram_weight_rdata0_buf <= 32'd0;
             sram_weight_rdata1_buf <= 32'd0;
             sram_act_rdata0_buf    <= 32'd0;
             sram_act_rdata1_buf    <= 32'd0;
         end else begin
+            enable_buf             <= enable;
             scale_CONV1_buf        <= scale_CONV1;
             sram_weight_rdata0_buf <= sram_weight_rdata0;
             sram_weight_rdata1_buf <= sram_weight_rdata1;

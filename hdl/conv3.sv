@@ -29,6 +29,9 @@ module conv3 (
     output logic [6:0] fc_buf_waddr,
     output logic [7:0] fc_buf_wdata
 );
+    // input enable buffered to preserve SRAM timing
+    logic enable_buf;
+
 
     // Buffered inputs and scale.
     logic [31:0] scale_CONV3_buf;
@@ -106,7 +109,7 @@ module conv3 (
     logic [7:0] neuron_data;
 
     // Pipeline 1: qualify the vector request and issue SRAM reads.
-    assign s1_valid = enable;
+    assign s1_valid = enable_buf;
     assign load_valid_s1 = s1_valid && (act_idx < 6'd50) && (out_ch < 'd120);
     assign vector_read_fire = load_valid_s1 && !pack_valid;
 
@@ -208,12 +211,14 @@ module conv3 (
     // Buffer SRAM inputs and scale.
     always_ff @(posedge clk or negedge rst_n) begin : input_buffer
         if (!rst_n) begin
+            enable_buf             <= 1'b0;
             scale_CONV3_buf        <= 32'd0;
             sram_weight_rdata0_buf <= 32'd0;
             sram_weight_rdata1_buf <= 32'd0;
             sram_act_rdata0_buf    <= 32'd0;
             sram_act_rdata1_buf    <= 32'd0;
         end else begin
+            enable_buf             <= enable;
             scale_CONV3_buf        <= scale_CONV3;
             sram_weight_rdata0_buf <= sram_weight_rdata0;
             sram_weight_rdata1_buf <= sram_weight_rdata1;

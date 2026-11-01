@@ -25,7 +25,8 @@ module conv2 (
     output logic [31:0] sram_act_wdata1,
     input  logic [31:0] sram_act_rdata1
 );
-
+    // input enable buffered to preserve SRAM timing
+    logic enable_buf;
 
     // Inputs buffered inside layer, at the SAME edge as in former lenet.sv.
     logic [31:0] scale_CONV2_buf;
@@ -131,7 +132,7 @@ module conv2 (
     // Pipeline 1 is valid whenever CONV2 is enabled. Activation reads are
     // issued only while the current strip still needs input words, and are
     // blocked when the output packer is using the activation SRAM port.
-    assign s1_valid = enable;
+    assign s1_valid = enable_buf;
     assign load_valid_s1 = s1_valid && (fill_cnt < 5'd12);
     assign act_read_fire = load_valid_s1 && !pack_valid;
 
@@ -196,11 +197,13 @@ module conv2 (
     // SRAM timing from the former combined lenet module.
     always_ff @(posedge clk or negedge rst_n) begin : input_buffer
         if (!rst_n) begin
+            enable_buf             <= 1'b0;
             scale_CONV2_buf        <= 32'd0;
             sram_weight_rdata0_buf <= 32'd0;
             sram_act_rdata0_buf    <= 32'd0;
             sram_act_rdata1_buf    <= 32'd0;
         end else begin
+            enable_buf             <= enable;
             scale_CONV2_buf        <= scale_CONV2;
             sram_weight_rdata0_buf <= sram_weight_rdata0;
             sram_act_rdata0_buf    <= sram_act_rdata0;

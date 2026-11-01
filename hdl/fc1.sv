@@ -38,9 +38,8 @@ module fc1 (
     output logic [7:0] fc_buf_wdata
 
 );
-
-    localparam shortint fc1_out_offset    = 16'd722;
-    localparam shortint fc1_weight_offset = 16'd13020;
+    // input enable buffered to preserve SRAM timing
+    logic enable_buf;
 
     // Registered external inputs. The activation SRAM read data is retained
     // for interface compatibility; the active vector path uses fc_buf_rdata.
@@ -94,7 +93,7 @@ module fc1 (
     logic [1:0] done_delay;
 
     // Common pipeline control assignments.
-    assign s1_valid = enable;
+    assign s1_valid = enable_buf;
     assign load_valid_s1 = s1_valid && (act_idx < 5'd15) && (out_ch < 'd84);
     assign vector_read_fire = load_valid_s1 && !pack_valid;
     assign weight_valid_s1 = vector_read_fire;
@@ -204,6 +203,7 @@ module fc1 (
     // to preserve the SRAM interface; activation vectors use fc_buf_rdata.
     always_ff @(posedge clk or negedge rst_n) begin : input_buffer
         if (!rst_n) begin
+            enable_buf             <= 1'b0;
             scale_FC1_buf          <= 32'd0;
             sram_weight_rdata0_buf <= 32'd0;
             sram_weight_rdata1_buf <= 32'd0;
@@ -211,6 +211,7 @@ module fc1 (
             sram_act_rdata1_buf    <= 32'd0;
 
         end else begin
+            enable_buf             <= enable;
             scale_FC1_buf          <= scale_FC1;
             sram_weight_rdata0_buf <= sram_weight_rdata0;
             sram_weight_rdata1_buf <= sram_weight_rdata1;
@@ -311,10 +312,10 @@ module fc1 (
     end : fc_act_vec_ff
 
     // Pipeline 3-4: mark the delayed activation vector as available to the PEs.
-    always_ff @(posedge clk or negedge rst_n) begin
+    always_ff @(posedge clk or negedge rst_n) begin : vector_buf_valid_ff
         if (!rst_n) vector_buf_valid <= 1'b0;
         else vector_buf_valid <= load_valid_s4;
-    end
+    end : vector_buf_valid_ff
 
     // Pipeline 3-4: register returned weight words before PE consumption.
     always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
@@ -351,7 +352,7 @@ module fc1 (
 
     // Pipeline 4: update PSUM and emit one quantized neuron per completed vector.
     // Group 14 is the final vector group for one output neuron.
-    always_ff @(posedge clk or negedge rst_n) begin
+    always_ff @(posedge clk or negedge rst_n) begin : psum_update
         if (!rst_n) begin
             scalar_psum  <= '0;
             neuron_valid <= 1'b0;
@@ -375,7 +376,7 @@ module fc1 (
                 neuron_valid <= 1'b0;
             end
         end
-    end
+    end : psum_update
 
     // Pipeline 4 control: advance to the next output neuron after completion.
     always_ff @(posedge clk or negedge rst_n) begin : ch_counter
