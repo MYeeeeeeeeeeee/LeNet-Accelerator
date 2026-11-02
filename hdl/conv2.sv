@@ -23,7 +23,25 @@ module conv2 (
     output logic [ 3:0] sram_act_wea1,
     output logic [15:0] sram_act_addr1,
     output logic [31:0] sram_act_wdata1,
-    input  logic [31:0] sram_act_rdata1
+    input  logic [31:0] sram_act_rdata1,
+
+
+    // Shared Line Buffer write request
+    output logic        lb_load_valid,
+    output logic        lb_init_load,
+    output logic        lb_shift_rows,
+    output logic [ 2:0] lb_row_pair,
+    output logic [ 3:0] lb_col_blk,
+    output logic [31:0] lb_wdata0,
+    output logic [31:0] lb_wdata1,
+
+    // Shared Line Buffer window selection
+    output logic       lb_row_sel,
+    output logic [4:0] lb_col,
+
+    // Window returned from the shared buffer
+    input logic [4:0][7:0] pe_window[0:4]
+
 );
     // input enable buffered to preserve SRAM timing
     logic enable_buf;
@@ -94,9 +112,7 @@ module conv2 (
     // Sliding-window data path.
     // PE inputs are selected from six buffered rows; PE results are registered
     // at Pipeline 4 before the arithmetic post-processing block.
-    logic [4:0][7:0] pe_window[0:4];
     logic signed [18:0] pe_out_s4[0:4];
-    logic [31:0][7:0] line_buffer[0:5];
     logic signed [4:0][7:0] weight_reg[0:4];
     logic signed [9:0][31:0] ch_temp_psum[0:1];
     logic signed [18:0] pe_out[0:4];
@@ -129,6 +145,8 @@ module conv2 (
     logic [4:0] col_s4;
     logic row_sel_s4;
 
+    // Shared combinational control. Keep cross-block assignments together;
+    // assignments used by one sequential block remain next to that block.
     // Pipeline 1 is valid whenever CONV2 is enabled. Activation reads are
     // issued only while the current strip still needs input words, and are
     // blocked when the output packer is using the activation SRAM port.
@@ -174,6 +192,21 @@ module conv2 (
 
     // Generate-loop index for the processing elements.
     genvar i;
+
+    assign lb_load_valid = load_valid_s4;
+
+    // CONV2 always reloads six rows
+    assign lb_init_load  = 1'b1;
+    assign lb_shift_rows = 1'b0;
+
+    assign lb_row_pair   = act_row_pair_s4;
+    assign lb_col_blk    = act_col_blk_s4;
+
+    assign lb_wdata0     = sram_act_rdata0_buf;
+    assign lb_wdata1     = sram_act_rdata1_buf;
+
+    assign lb_row_sel    = row_sel;
+    assign lb_col        = col;
 
     // Static SRAM output assignments. CONV2 reads weights only; activation
     // writes are generated later by the output-packing path.
@@ -387,22 +420,6 @@ module conv2 (
         else weight_ready <= weight_ready;
     end : weight_status
 
-    // Pipeline 3 sliding-window selection. The row selector chooses the upper
-    // or lower five-row view while the column counter selects the window.
-    always_comb begin : PE_window
-        for (int r = 0; r < 5; r++) begin
-            for (int c = 0; c < 5; c++) begin
-                if (row_sel == 1'b0) begin
-                    // Select rows 0 through 4.
-                    pe_window[r][c] = line_buffer[r][col+c];  // col is the window start.
-                end else begin
-                    // Select rows 1 through 5.
-                    pe_window[r][c] = line_buffer[r+1][col+c];
-                end
-            end
-        end
-    end : PE_window
-
     // Pipeline 3 PE issue control and end-of-channel detection.
     // A PE operation is issued only after the Pipeline 2/3 control path,
     // activation line buffer, and weight registers are all ready.
@@ -466,19 +483,6 @@ module conv2 (
             );
         end : gen_pe
     endgenerate
-
-    // Pipeline 4: register activation data returned through the activation
-    // side pipeline before it is consumed by the sliding-window PE.
-    always_ff @(posedge clk or negedge rst_n) begin : line_buffer_ff
-        if (!rst_n) begin
-            foreach (line_buffer[i]) line_buffer[i] <= '0;
-        end else if (load_valid_s4) begin
-            line_buffer[act_row_pair_s4*2][(act_col_blk_s4*4)+:4] <= sram_act_rdata0_buf;
-            line_buffer[(act_row_pair_s4*2)+1][(act_col_blk_s4*4)+:4] <= sram_act_rdata1_buf;
-        end else begin
-            foreach (line_buffer[i]) line_buffer[i] <= line_buffer[i];
-        end
-    end : line_buffer_ff
 
     // Pipeline 4: assemble the packed weight word returned by the weight
     // side pipeline before it is consumed by the PE.

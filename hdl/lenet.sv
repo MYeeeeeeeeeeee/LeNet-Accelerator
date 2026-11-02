@@ -143,9 +143,38 @@ module lenet (
 
     logic fc1_buf_re;
     logic [6:0] fc1_buf_raddr;
-    
+
     logic fc2_buf_re;
     logic [6:0] fc2_buf_raddr;
+
+
+
+    logic c1_lb_load_valid, c2_lb_load_valid;
+    logic c1_lb_init_load, c2_lb_init_load;
+    logic c1_lb_shift_rows, c2_lb_shift_rows;
+
+    logic [2:0] c1_lb_row_pair, c2_lb_row_pair;
+    logic [3:0] c1_lb_col_blk, c2_lb_col_blk;
+
+    logic [31:0] c1_lb_wdata0, c1_lb_wdata1;
+    logic [31:0] c2_lb_wdata0, c2_lb_wdata1;
+
+    logic c1_lb_row_sel, c2_lb_row_sel;
+    logic [4:0] c1_lb_col, c2_lb_col;
+
+    // Shared Buffer inputs
+    logic       lb_load_valid;
+    logic       lb_init_load;
+    logic       lb_shift_rows;
+    logic       lb_mode_conv1;
+    logic [2:0] lb_row_pair;
+    logic [3:0] lb_col_blk;
+    logic [31:0] lb_wdata0, lb_wdata1;
+    logic            lb_row_sel;
+    logic [4:0]      lb_col;
+
+    // Only one physical 5x5 window output
+    logic [4:0][7:0] shared_pe_window[0:4];
 
 
     // Delay the external start request by one clock before entering CONV1.
@@ -222,6 +251,14 @@ module lenet (
         else if (fc1_done) fc1_done_reg <= 1;
         else if (reload_done) reload_done_reg <= 1;
         else if (fc2_done) fc2_done_reg <= 1;
+        else begin
+            conv1_done_reg <= conv1_done_reg;
+            conv2_done_reg <= conv2_done_reg;
+            conv3_done_reg <= conv3_done_reg;
+            fc1_done_reg <= fc1_done_reg;
+            reload_done_reg <= reload_done_reg;
+            fc2_done_reg <= fc2_done_reg;
+        end
     end
 
     conv1 u_conv1 (
@@ -248,7 +285,18 @@ module lenet (
         .sram_act_wea1  (c1_act_wea1),
         .sram_act_addr1 (c1_act_addr1),
         .sram_act_wdata1(c1_act_wdata1),
-        .sram_act_rdata1(sram_act_rdata1)
+        .sram_act_rdata1(sram_act_rdata1),
+
+        .lb_load_valid(c1_lb_load_valid),
+        .lb_init_load (c1_lb_init_load),
+        .lb_shift_rows(c1_lb_shift_rows),
+        .lb_row_pair  (c1_lb_row_pair),
+        .lb_col_blk   (c1_lb_col_blk),
+        .lb_wdata0    (c1_lb_wdata0),
+        .lb_wdata1    (c1_lb_wdata1),
+        .lb_row_sel   (c1_lb_row_sel),
+        .lb_col       (c1_lb_col),
+        .pe_window    (shared_pe_window)
     );
 
     conv2 u_conv2 (
@@ -275,7 +323,41 @@ module lenet (
         .sram_act_wea1  (c2_act_wea1),
         .sram_act_addr1 (c2_act_addr1),
         .sram_act_wdata1(c2_act_wdata1),
-        .sram_act_rdata1(sram_act_rdata1)
+        .sram_act_rdata1(sram_act_rdata1),
+
+        .lb_load_valid(c2_lb_load_valid),
+        .lb_init_load (c2_lb_init_load),
+        .lb_shift_rows(c2_lb_shift_rows),
+        .lb_row_pair  (c2_lb_row_pair),
+        .lb_col_blk   (c2_lb_col_blk),
+        .lb_wdata0    (c2_lb_wdata0),
+        .lb_wdata1    (c2_lb_wdata1),
+        .lb_row_sel   (c2_lb_row_sel),
+        .lb_col       (c2_lb_col),
+        .pe_window    (shared_pe_window)
+
+    );
+
+    shared_line_buffer u_shared_line_buffer (
+        .clk  (clk),
+        .rst_n(rst_n),
+
+        .mode_conv1(lb_mode_conv1),
+
+        .load_valid(lb_load_valid),
+        .init_load (lb_init_load),
+        .shift_rows(lb_shift_rows),
+
+        .row_pair(lb_row_pair),
+        .col_blk (lb_col_blk),
+
+        .wdata0(lb_wdata0),
+        .wdata1(lb_wdata1),
+
+        .row_sel(lb_row_sel),
+        .col(lb_col),
+
+        .pe_window(shared_pe_window)
     );
 
 
@@ -516,6 +598,57 @@ module lenet (
             end
         endcase
     end
+
+
+    always_comb begin : line_buffer_mux
+        lb_mode_conv1 = 1'b0;
+        lb_load_valid = 1'b0;
+        lb_init_load  = 1'b0;
+        lb_shift_rows = 1'b0;
+
+        lb_row_pair   = '0;
+        lb_col_blk    = '0;
+        lb_wdata0     = '0;
+        lb_wdata1     = '0;
+
+        lb_row_sel    = 1'b0;
+        lb_col        = '0;
+
+        case (cs)
+            CONV1: begin
+                lb_mode_conv1 = 1'b1;
+                lb_load_valid = c1_lb_load_valid;
+                lb_init_load  = c1_lb_init_load;
+                lb_shift_rows = c1_lb_shift_rows;
+
+                lb_row_pair   = c1_lb_row_pair;
+                lb_col_blk    = c1_lb_col_blk;
+                lb_wdata0     = c1_lb_wdata0;
+                lb_wdata1     = c1_lb_wdata1;
+
+                lb_row_sel    = c1_lb_row_sel;
+                lb_col        = c1_lb_col;
+            end
+
+            CONV2: begin
+                lb_mode_conv1 = 1'b0;
+                lb_load_valid = c2_lb_load_valid;
+                lb_init_load  = c2_lb_init_load;
+                lb_shift_rows = c2_lb_shift_rows;
+
+                lb_row_pair   = c2_lb_row_pair;
+                lb_col_blk    = c2_lb_col_blk;
+                lb_wdata0     = c2_lb_wdata0;
+                lb_wdata1     = c2_lb_wdata1;
+
+                lb_row_sel    = c2_lb_row_sel;
+                lb_col        = c2_lb_col;
+            end
+
+            default: ;
+        endcase
+    end
+
 
     always_comb begin : fc_buf_write_mux
         fc_buf_we    = 1'b0;
