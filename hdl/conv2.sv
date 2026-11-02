@@ -40,7 +40,13 @@ module conv2 (
     output logic [4:0] lb_col,
 
     // Window returned from the shared buffer
-    input logic [4:0][7:0] pe_window[0:4]
+    input logic [4:0][7:0] pe_window[0:4],
+
+    output logic        wb_load_valid,
+    output logic [ 3:0] wb_kernel_idx,
+    output logic [31:0] wb_wdata0,
+
+    input logic signed [4:0][7:0] shared_weight[0:4]
 
 );
     // input enable buffered to preserve SRAM timing
@@ -113,7 +119,7 @@ module conv2 (
     // PE inputs are selected from six buffered rows; PE results are registered
     // at Pipeline 4 before the arithmetic post-processing block.
     logic signed [18:0] pe_out_s4[0:4];
-    logic signed [4:0][7:0] weight_reg[0:4];
+    //logic signed [4:0][7:0] weight_reg[0:4];
     logic signed [9:0][31:0] ch_temp_psum[0:1];
     logic signed [18:0] pe_out[0:4];
 
@@ -207,6 +213,11 @@ module conv2 (
 
     assign lb_row_sel    = row_sel;
     assign lb_col        = col;
+
+    // CONV2 weight buffer
+    assign wb_load_valid = weight_valid_s4;
+    assign wb_kernel_idx = kernel_idx_s4;
+    assign wb_wdata0     = sram_weight_rdata0_buf;
 
     // Static SRAM output assignments. CONV2 reads weights only; activation
     // writes are generated later by the output-packing path.
@@ -475,7 +486,7 @@ module conv2 (
                 .INPUT_WIDTH (8),
                 .OUTPUT_WIDTH(20)
             ) pe_inst (
-                .weight(weight_reg[i]),
+                .weight(shared_weight[i]),
                 .activation(pe_window[i]),
                 .valid(pe_valid),
                 .mode(CONV),
@@ -486,6 +497,7 @@ module conv2 (
 
     // Pipeline 4: assemble the packed weight word returned by the weight
     // side pipeline before it is consumed by the PE.
+    /*
     always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
         if (!rst_n) begin
             foreach (weight_reg[i]) weight_reg[i] <= '0;
@@ -495,6 +507,7 @@ module conv2 (
             else weight_reg[kernel_idx_s4[3:1]][4] <= sram_weight_rdata0_buf[7:0];
         end
     end : weight_reg_ff
+     */
 
     // Pipeline 4 result register. This register isolates the PE combinational
     // result from the quantization and pooling logic.

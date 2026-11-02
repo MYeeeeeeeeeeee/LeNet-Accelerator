@@ -41,7 +41,13 @@ module conv1 (
     output logic [4:0] lb_col,
 
     // Window returned from the shared buffer
-    input logic [4:0][7:0] pe_window[0:4]
+    input logic [4:0][7:0] pe_window[0:4],
+
+    output logic        wb_load_valid,
+    output logic [ 3:0] wb_kernel_idx,
+    output logic [31:0] wb_wdata0,
+
+    input logic signed [4:0][7:0] shared_weight[0:4]
 
 
 );
@@ -119,7 +125,7 @@ module conv1 (
     // PE inputs are selected from six buffered rows; PE results are registered
     // at Pipeline 4 before the arithmetic post-processing block.
     logic signed [18:0] pe_out_s4[0:4];
-    logic signed [4:0][7:0] weight_reg[0:4];
+    //logic signed [4:0][7:0] weight_reg[0:4];
     logic signed [18:0] pe_out[0:4];
 
     // Quantization, pooling, and output-packing data.
@@ -165,8 +171,7 @@ module conv1 (
     assign pack_valid = full_word_valid || row_tail_valid;
     assign w_offset = kernel_group * 10;
     assign weight_valid_s1 = s1_valid && (kernel_idx < 4'd10);
-    assign last_mac_fire = pe_valid && (strip_idx == 5'd13) &&
-                           (row_sel == 1'b1) && (col == 5'd27);
+    assign last_mac_fire = pe_valid && (strip_idx == 5'd13) && (row_sel == 1'b1) && (col == 5'd27);
     assign conv1_done = channel_last_pack && (kernel_group == 4'd5);
 
     // Generate-loop index for the processing elements.
@@ -186,6 +191,11 @@ module conv1 (
 
     assign lb_row_sel    = row_sel;
     assign lb_col        = col;
+
+    // CONV1 weight buffer
+    assign wb_load_valid = weight_valid_s4;
+    assign wb_kernel_idx = kernel_idx_s4;
+    assign wb_wdata0     = sram_weight_rdata0_buf;
 
     // Static SRAM output assignments. CONV1 reads weights only; activation
     // writes are generated later by the output-packing path.
@@ -290,7 +300,7 @@ module conv1 (
         end else if (s1_valid) begin
             if (change_out_ch) begin
                 kernel_idx <= 4'd0;
-            end else if (kernel_idx < 4'd9) begin
+            end else if (kernel_idx < 4'd10) begin
                 kernel_idx <= kernel_idx + 1;
             end else begin
                 kernel_idx <= kernel_idx;
@@ -460,7 +470,7 @@ module conv1 (
                 .INPUT_WIDTH (8),
                 .OUTPUT_WIDTH(20)
             ) pe_inst (
-                .weight(weight_reg[i]),
+                .weight(shared_weight[i]),
                 .activation(pe_window[i]),
                 .valid(pe_valid),
                 .mode(CONV),
@@ -471,6 +481,7 @@ module conv1 (
 
     // Pipeline 4: assemble the packed weight word returned through the
     // weight side pipeline before it is consumed by the PE.
+    /*
     always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
         if (!rst_n) begin
             foreach (weight_reg[i]) weight_reg[i] <= '0;
@@ -479,7 +490,7 @@ module conv1 (
                 weight_reg[kernel_idx_s4[3:1]][3:0] <= sram_weight_rdata0_buf;
             else weight_reg[kernel_idx_s4[3:1]][4] <= sram_weight_rdata0_buf[7:0];
         end
-    end : weight_reg_ff
+    end : weight_reg_ff*/
 
     // Pipeline 4 result register. This register isolates the PE combinational
     // result from the quantization and pooling logic.

@@ -183,6 +183,21 @@ module lenet (
     logic             lb_vector_mode;
     logic [63:0]      shared_vector_data;
 
+    // ------------------------------------------------------------------------
+    // Shared weight buffer interface
+    logic             wb_load_valid;
+    logic             wb_vector_mode;
+    logic [ 3:0]      wb_kernel_idx;
+    logic [31:0] wb_wdata0, wb_wdata1;
+    logic signed [4:0][7:0] shared_weight[0:4];
+
+    // CONV1 CONV2 CONV 3 weight interface
+    logic c1_wb_load_valid, c2_wb_load_valid, c3_wb_load_valid;
+    logic [3:0] c1_wb_kernel_idx, c2_wb_kernel_idx, c3_wb_kernel_idx;
+    logic [31:0] c1_wb_wdata0, c2_wb_wdata0, c3_wb_wdata0;
+    logic [31:0] c3_wb_wdata1;
+
+
 
     // Delay the external start request by one clock before entering CONV1.
     always_ff @(posedge clk or negedge rst_n) begin : input_flag
@@ -303,7 +318,12 @@ module lenet (
         .lb_wdata1    (c1_lb_wdata1),
         .lb_row_sel   (c1_lb_row_sel),
         .lb_col       (c1_lb_col),
-        .pe_window    (shared_pe_window)
+        .pe_window    (shared_pe_window),
+
+        .wb_load_valid(c1_wb_load_valid),
+        .wb_kernel_idx(c1_wb_kernel_idx),
+        .wb_wdata0    (c1_wb_wdata0),
+        .shared_weight(shared_weight)
     );
 
     conv2 u_conv2 (
@@ -341,7 +361,12 @@ module lenet (
         .lb_wdata1    (c2_lb_wdata1),
         .lb_row_sel   (c2_lb_row_sel),
         .lb_col       (c2_lb_col),
-        .pe_window    (shared_pe_window)
+        .pe_window    (shared_pe_window),
+
+        .wb_load_valid(c2_wb_load_valid),
+        .wb_kernel_idx(c2_wb_kernel_idx),
+        .wb_wdata0    (c2_wb_wdata0),
+        .shared_weight(shared_weight)
 
     );
 
@@ -367,6 +392,18 @@ module lenet (
 
         .pe_window  (shared_pe_window),
         .vector_data(shared_vector_data)
+
+    );
+
+    shared_weight_buffer u_shared_weight_buffer (
+        .clk(clk),
+        .rst_n(rst_n),
+        .load_valid(wb_load_valid),
+        .vector_mode(wb_vector_mode),
+        .kernel_idx(wb_kernel_idx),
+        .wdata0(wb_wdata0),
+        .wdata1(wb_wdata1),
+        .weight_reg(shared_weight)
     );
 
 
@@ -403,8 +440,12 @@ module lenet (
         .lb_load_valid (c3_lb_load_valid),
         .lb_wdata0     (c3_lb_wdata0),
         .lb_wdata1     (c3_lb_wdata1),
-        .lb_vector_data(shared_vector_data)
+        .lb_vector_data(shared_vector_data),
 
+        .wb_load_valid(c3_wb_load_valid),
+        .wb_wdata0    (c3_wb_wdata0),
+        .wb_wdata1    (c3_wb_wdata1),
+        .shared_weight(shared_weight)
     );
 
     fc_buffer u_fc_buffer (
@@ -616,18 +657,18 @@ module lenet (
 
 
     always_comb begin : line_buffer_mux
-        lb_mode_conv1 = 1'b0;
-        lb_load_valid = 1'b0;
-        lb_init_load  = 1'b0;
-        lb_shift_rows = 1'b0;
+        lb_mode_conv1  = 1'b0;
+        lb_load_valid  = 1'b0;
+        lb_init_load   = 1'b0;
+        lb_shift_rows  = 1'b0;
 
-        lb_row_pair   = '0;
-        lb_col_blk    = '0;
-        lb_wdata0     = '0;
-        lb_wdata1     = '0;
+        lb_row_pair    = '0;
+        lb_col_blk     = '0;
+        lb_wdata0      = '0;
+        lb_wdata1      = '0;
 
-        lb_row_sel    = 1'b0;
-        lb_col        = '0;
+        lb_row_sel     = 1'b0;
+        lb_col         = '0;
         lb_vector_mode = 1'b0;
 
         case (cs)
@@ -671,6 +712,43 @@ module lenet (
             default: ;
         endcase
     end
+
+
+
+
+
+    always_comb begin : weight_buffer_mux
+        wb_load_valid  = 1'b0;
+        wb_vector_mode = 1'b0;
+        wb_kernel_idx  = '0;
+        wb_wdata0      = '0;
+        wb_wdata1      = '0;
+
+        case (cs)
+            CONV1: begin
+                wb_load_valid = c1_wb_load_valid;
+                wb_kernel_idx = c1_wb_kernel_idx;
+                wb_wdata0     = c1_wb_wdata0;
+            end
+
+            CONV2: begin
+                wb_load_valid = c2_wb_load_valid;
+                wb_kernel_idx = c2_wb_kernel_idx;
+                wb_wdata0     = c2_wb_wdata0;
+            end
+
+            CONV3: begin
+                wb_vector_mode = 1'b1;
+                wb_load_valid  = c3_wb_load_valid;
+                wb_wdata0      = c3_wb_wdata0;
+                wb_wdata1      = c3_wb_wdata1;
+            end
+
+            default: ;
+        endcase
+    end
+
+
 
 
     always_comb begin : fc_buf_write_mux

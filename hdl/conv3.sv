@@ -33,7 +33,15 @@ module conv3 (
     output logic [31:0] lb_wdata0,
     output logic [31:0] lb_wdata1,
 
-    input logic [63:0] lb_vector_data
+    input logic [63:0] lb_vector_data,
+
+    output logic        wb_load_valid,
+    output logic [31:0] wb_wdata0,
+    output logic [31:0] wb_wdata1,
+
+    input logic signed [4:0][7:0] shared_weight[0:4]
+
+
 );
     // input enable buffered to preserve SRAM timing
     logic enable_buf;
@@ -75,7 +83,7 @@ module conv3 (
 
     // FC vector data path.
     logic signed [18:0] pe_out_s4[0:4];
-    logic signed [4:0][7:0] weight_reg[0:4];
+    //logic signed [4:0][7:0] weight_reg[0:4];
     logic signed [18:0] pe_out[0:4];
 
     // PSUM and output data.
@@ -123,6 +131,11 @@ module conv3 (
     assign lb_wdata0        = sram_act_rdata0_buf;
     assign lb_wdata1        = sram_act_rdata1_buf;
 
+    // Shared weight-buffer interface.
+    assign wb_load_valid    = weight_valid_s4;
+    assign wb_wdata0        = sram_weight_rdata0_buf;
+    assign wb_wdata1        = sram_weight_rdata1_buf;
+
     // Pipeline 1: activation and weight reads share the same request valid.
     assign weight_valid_s1  = vector_read_fire;
 
@@ -139,7 +152,7 @@ module conv3 (
     assign act_0_idex       = {act_idx, 1'b0};
     assign act_1_idex       = {act_idx, 1'b1};
 
-    
+
 
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
         if (!rst_n) begin
@@ -309,7 +322,7 @@ module conv3 (
                 .INPUT_WIDTH (8),
                 .OUTPUT_WIDTH(20)
             ) pe_inst (
-                .weight({8'd0, weight_reg[i][3:0]}),
+                .weight({8'd0, shared_weight[i][3:0]}),
                 .activation({8'd0, lb_vector_data[i*32+:32]}),
                 .valid(pe_valid),
                 .mode(FC),
@@ -326,6 +339,7 @@ module conv3 (
 
     // Pipeline 4: register weight words returned through Pipeline 2-3
     // before they are consumed by the PE.
+    /*
     always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
         if (!rst_n) begin
             foreach (weight_reg[i]) weight_reg[i] <= '0;
@@ -334,6 +348,7 @@ module conv3 (
             weight_reg[1][3:0] <= sram_weight_rdata1_buf;
         end
     end : weight_reg_ff
+     */
 
     // Pipeline 4: register PE results before summing and PSUM update.
     always_ff @(posedge clk or negedge rst_n) begin : pe_out_ff
