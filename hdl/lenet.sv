@@ -34,46 +34,29 @@ module lenet (
     output logic [31:0] sram_act_wdata1,
     input  logic [31:0] sram_act_rdata1
 );
-    // Activation SRAM map. Offsets are word addresses reserved by each layer.
-    localparam shortint conv1_in_offset  = 16'd0;
-    localparam shortint conv2_in_offset  = 16'd256;
-    localparam shortint conv3_in_offset  = 16'd592;
-    localparam shortint fc1_in_offset    = 16'd692;
-    localparam shortint fc2_in_offset    = 16'd722;
-    localparam shortint conv1_out_offset = 16'd256;
-    localparam shortint conv2_out_offset = 16'd592;
-    localparam shortint conv3_out_offset = 16'd692;
-    localparam shortint fc1_out_offset   = 16'd722;
-    localparam shortint fc2_out_offset   = 16'd743;
-
-    // Weight SRAM map. Offsets are word addresses reserved by each layer.
-    localparam shortint conv1_weight_offset = 16'd0;
-    localparam shortint conv2_weight_offset = 16'd60;
-    localparam shortint conv3_weight_offset = 16'd1020;
-    localparam shortint fc1_weight_offset   = 16'd13020;
-    localparam shortint fc2_weight_offset   = 16'd15540;
-    localparam shortint fc3_weight_offset   = 16'd15750;
-
+    // ------------------------------------------------------------------------
+    // Network controller
+    // ------------------------------------------------------------------------
     // The controller advances through the layers in network order.
-    pkg::state_t cs, ns;
+    state_t cs, ns;
 
-    logic compute_start_buf;  // Delayed start request used by the FSM.
+    // External control and controller state.
+    logic compute_start_buf;
+    logic all_layers_done;
 
+    // Per-layer start and completion handshakes.
     logic conv1_enable;
     logic conv1_done;
-
     logic conv2_enable;
     logic conv2_done;
-
     logic conv3_enable;
     logic conv3_done;
-
     logic fc1_enable;
     logic fc1_done;
-
     logic fc2_enable;
     logic fc2_done;
 
+    // Latched completion status prevents a completed layer from restarting.
     logic conv1_done_reg;
     logic conv2_done_reg;
     logic conv3_done_reg;
@@ -81,37 +64,44 @@ module lenet (
     logic reload_done_reg;
     logic fc2_done_reg;
 
-    logic all_layers_done;
-
-    // CONV1's private SRAM request signals.
+    // ------------------------------------------------------------------------
+    // Per-layer SRAM request signals
+    // ------------------------------------------------------------------------
+    // Each layer has private request signals that are selected by the
+    // shared SRAM multiplexer below.
+    // CONV1
     logic [3:0] c1_weight_wea0, c1_weight_wea1;
     logic [15:0] c1_weight_addr0, c1_weight_addr1;
     logic [31:0] c1_weight_wdata0, c1_weight_wdata1;
     logic [3:0] c1_act_wea0, c1_act_wea1;
     logic [15:0] c1_act_addr0, c1_act_addr1;
     logic [31:0] c1_act_wdata0, c1_act_wdata1;
-    // CONV2's private SRAM request signals.
+
+    // CONV2
     logic [3:0] c2_weight_wea0, c2_weight_wea1;
     logic [15:0] c2_weight_addr0, c2_weight_addr1;
     logic [31:0] c2_weight_wdata0, c2_weight_wdata1;
     logic [3:0] c2_act_wea0, c2_act_wea1;
     logic [15:0] c2_act_addr0, c2_act_addr1;
     logic [31:0] c2_act_wdata0, c2_act_wdata1;
-    // CONV3's private SRAM request signals.
+
+    // CONV3
     logic [3:0] c3_weight_wea0, c3_weight_wea1;
     logic [15:0] c3_weight_addr0, c3_weight_addr1;
     logic [31:0] c3_weight_wdata0, c3_weight_wdata1;
     logic [3:0] c3_act_wea0, c3_act_wea1;
     logic [15:0] c3_act_addr0, c3_act_addr1;
     logic [31:0] c3_act_wdata0, c3_act_wdata1;
-    // FC1's private SRAM request signals.
+
+    // FC1
     logic [3:0] fc1_weight_wea0, fc1_weight_wea1;
     logic [15:0] fc1_weight_addr0, fc1_weight_addr1;
     logic [31:0] fc1_weight_wdata0, fc1_weight_wdata1;
     logic [3:0] fc1_act_wea0, fc1_act_wea1;
     logic [15:0] fc1_act_addr0, fc1_act_addr1;
     logic [31:0] fc1_act_wdata0, fc1_act_wdata1;
-    // FC2's private SRAM request signals.
+
+    // FC2
     logic [3:0] fc2_weight_wea0, fc2_weight_wea1;
     logic [15:0] fc2_weight_addr0, fc2_weight_addr1;
     logic [31:0] fc2_weight_wdata0, fc2_weight_wdata1;
@@ -119,36 +109,44 @@ module lenet (
     logic [15:0] fc2_act_addr0, fc2_act_addr1;
     logic [31:0] fc2_act_wdata0, fc2_act_wdata1;
 
-
-    // FC buffer interface signals.
+    // ------------------------------------------------------------------------
+    // FC buffer and reload interfaces
+    // ------------------------------------------------------------------------
+    // Shared FC buffer interface.
     logic        fc_buf_we;
     logic [ 6:0] fc_buf_waddr;
     logic [ 7:0] fc_buf_wdata;
     logic        fc_buf_re;
     logic [ 6:0] fc_buf_raddr;
     logic [63:0] fc_buf_rdata;
-    // CONV3's interface to the FC buffer.
+
+    // CONV3 writes convolution results into the FC buffer.
     logic        conv3_fc_we;
     logic [ 6:0] conv3_fc_waddr;
     logic [ 7:0] conv3_fc_wdata;
-    // Reload controller private write interface
+
+    // Reload controller writes reloaded values into the FC buffer.
     logic        reload_fc_we;
     logic [ 6:0] reload_fc_waddr;
     logic [63:0] reload_fc_wdata;
     logic [ 7:0] reload_fc_wstrb;
     logic        reload_enable;
     logic        reload_done;
+
+    // Reload controller activation SRAM requests.
     logic [3:0] reload_act_wea0, reload_act_wea1;
     logic [15:0] reload_act_addr0, reload_act_addr1;
 
+    // FC layer read requests.
     logic fc1_buf_re;
     logic [6:0] fc1_buf_raddr;
-
     logic fc2_buf_re;
     logic [6:0] fc2_buf_raddr;
 
-
-
+    // ------------------------------------------------------------------------
+    // Line buffer requests
+    // ------------------------------------------------------------------------
+    // CONV1 and CONV2 use the shared 5x5 line-buffer window.
     logic c1_lb_load_valid, c2_lb_load_valid;
     logic c1_lb_init_load, c2_lb_init_load;
     logic c1_lb_shift_rows, c2_lb_shift_rows;
@@ -162,7 +160,7 @@ module lenet (
     logic c1_lb_row_sel, c2_lb_row_sel;
     logic [4:0] c1_lb_col, c2_lb_col;
 
-    // Shared Buffer inputs
+    // Requests selected onto the shared line-buffer instance.
     logic       lb_load_valid;
     logic       lb_init_load;
     logic       lb_shift_rows;
@@ -170,11 +168,20 @@ module lenet (
     logic [2:0] lb_row_pair;
     logic [3:0] lb_col_blk;
     logic [31:0] lb_wdata0, lb_wdata1;
-    logic            lb_row_sel;
-    logic [4:0]      lb_col;
+    logic             lb_row_sel;
+    logic [ 4:0]      lb_col;
 
-    // Only one physical 5x5 window output
-    logic [4:0][7:0] shared_pe_window[0:4];
+    // Only one physical 5x5 window is implemented and shared by CONV1/CONV2.
+    logic [ 4:0][7:0] shared_pe_window   [0:4];
+
+    // CONV3 uses vector mode to provide data for the FC buffer.
+    logic             c3_lb_load_valid;
+    logic [31:0]      c3_lb_wdata0;
+    logic [31:0]      c3_lb_wdata1;
+
+    // Shared line-buffer vector interface.
+    logic             lb_vector_mode;
+    logic [63:0]      shared_vector_data;
 
 
     // Delay the external start request by one clock before entering CONV1.
@@ -342,7 +349,8 @@ module lenet (
         .clk  (clk),
         .rst_n(rst_n),
 
-        .mode_conv1(lb_mode_conv1),
+        .mode_conv1 (lb_mode_conv1),
+        .vector_mode(lb_vector_mode),
 
         .load_valid(lb_load_valid),
         .init_load (lb_init_load),
@@ -357,7 +365,8 @@ module lenet (
         .row_sel(lb_row_sel),
         .col(lb_col),
 
-        .pe_window(shared_pe_window)
+        .pe_window  (shared_pe_window),
+        .vector_data(shared_vector_data)
     );
 
 
@@ -389,7 +398,13 @@ module lenet (
 
         .fc_buf_we(conv3_fc_we),
         .fc_buf_waddr(conv3_fc_waddr),
-        .fc_buf_wdata(conv3_fc_wdata)
+        .fc_buf_wdata(conv3_fc_wdata),
+
+        .lb_load_valid (c3_lb_load_valid),
+        .lb_wdata0     (c3_lb_wdata0),
+        .lb_wdata1     (c3_lb_wdata1),
+        .lb_vector_data(shared_vector_data)
+
     );
 
     fc_buffer u_fc_buffer (
@@ -613,6 +628,7 @@ module lenet (
 
         lb_row_sel    = 1'b0;
         lb_col        = '0;
+        lb_vector_mode = 1'b0;
 
         case (cs)
             CONV1: begin
@@ -643,6 +659,13 @@ module lenet (
 
                 lb_row_sel    = c2_lb_row_sel;
                 lb_col        = c2_lb_col;
+            end
+            CONV3: begin
+                lb_vector_mode = 1'b1;
+                lb_load_valid = c3_lb_load_valid;
+
+                lb_wdata0 = c3_lb_wdata0;
+                lb_wdata1 = c3_lb_wdata1;
             end
 
             default: ;
@@ -684,8 +707,8 @@ module lenet (
             default: ;
         endcase
     end
-    // Report completion only after all currently tracked convolution layers
-    // have asserted done. FC layers are not included until they are implemented.
+    // Report completion only after every network stage, including reload,
+    // has asserted done.
     always_ff @(posedge clk or negedge rst_n) begin : compute_finish_ff
         if (!rst_n) compute_finish <= 1'b0;
         else if (all_layers_done) compute_finish <= 1'b1;

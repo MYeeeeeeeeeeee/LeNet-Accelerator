@@ -27,7 +27,13 @@ module conv3 (
 
     output logic       fc_buf_we,
     output logic [6:0] fc_buf_waddr,
-    output logic [7:0] fc_buf_wdata
+    output logic [7:0] fc_buf_wdata,
+
+    output logic        lb_load_valid,
+    output logic [31:0] lb_wdata0,
+    output logic [31:0] lb_wdata1,
+
+    input logic [63:0] lb_vector_data
 );
     // input enable buffered to preserve SRAM timing
     logic enable_buf;
@@ -69,7 +75,6 @@ module conv3 (
 
     // FC vector data path.
     logic signed [18:0] pe_out_s4[0:4];
-    logic [31:0][7:0] line_buffer[0:5];
     logic signed [4:0][7:0] weight_reg[0:4];
     logic signed [18:0] pe_out[0:4];
 
@@ -109,25 +114,32 @@ module conv3 (
     logic [7:0] neuron_data;
 
     // Pipeline 1: qualify the vector request and issue SRAM reads.
-    assign s1_valid = enable_buf;
-    assign load_valid_s1 = s1_valid && (act_idx < 6'd50) && (out_ch < 'd120);
+    assign s1_valid         = enable_buf;
+    assign load_valid_s1    = s1_valid && (act_idx < 6'd50) && (out_ch < 'd120);
     assign vector_read_fire = load_valid_s1 && !pack_valid;
 
+    // Shared line-buffer interface.
+    assign lb_load_valid    = load_valid_s4;
+    assign lb_wdata0        = sram_act_rdata0_buf;
+    assign lb_wdata1        = sram_act_rdata1_buf;
+
     // Pipeline 1: activation and weight reads share the same request valid.
-    assign weight_valid_s1 = vector_read_fire;
+    assign weight_valid_s1  = vector_read_fire;
 
     // Advance after each neuron.
-    assign change_out_ch = neuron_valid && (out_ch < 'd119);
+    assign change_out_ch    = neuron_valid && (out_ch < 'd119);
 
     // Pipeline 3/4 boundary: start PE processing after data buffering.
-    assign pe_valid = s3_valid && vector_buf_valid;
+    assign pe_valid         = s3_valid && vector_buf_valid;
 
     // Four neurons form one output word.
-    assign pack_valid = neuron_valid && (package_cnt == 2'd3);
+    assign pack_valid       = neuron_valid && (package_cnt == 2'd3);
 
     // Pipeline 1: decode and issue activation addresses.
-    assign act_0_idex = {act_idx, 1'b0};
-    assign act_1_idex = {act_idx, 1'b1};
+    assign act_0_idex       = {act_idx, 1'b0};
+    assign act_1_idex       = {act_idx, 1'b1};
+
+    
 
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
         if (!rst_n) begin
@@ -298,26 +310,13 @@ module conv3 (
                 .OUTPUT_WIDTH(20)
             ) pe_inst (
                 .weight({8'd0, weight_reg[i][3:0]}),
-                .activation({8'd0, line_buffer[0][i*4+:4]}),
+                .activation({8'd0, lb_vector_data[i*32+:32]}),
                 .valid(pe_valid),
                 .mode(FC),
                 .result(pe_out[i])
             );
         end : gen_pe
     endgenerate
-
-    // Pipeline 4: register the activation vector returned through
-    // Pipeline 2-1~2-2 before it is consumed by the PE.
-    always_ff @(posedge clk or negedge rst_n) begin : line_buffer_ff
-        if (!rst_n) begin
-            foreach (line_buffer[i]) line_buffer[i] <= '0;
-        end else if (load_valid_s4) begin
-            line_buffer[0][3:0] <= sram_act_rdata0_buf;
-            line_buffer[0][7:4] <= sram_act_rdata1_buf;
-        end else begin
-            foreach (line_buffer[i]) line_buffer[i] <= line_buffer[i];
-        end
-    end : line_buffer_ff
 
     // Pipeline 4: mark the returned activation vector as available to PE.
     always_ff @(posedge clk or negedge rst_n) begin
