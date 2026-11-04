@@ -130,7 +130,7 @@ Limit information:
 cputime		unlimited
 filesize		unlimited
 datasize		unlimited
-stacksize		8194 kbytes
+stacksize		8192 kbytes
 coredumpsize		0 kbytes
 memoryuse		unlimited
 vmemoryuse		unlimited
@@ -146,8 +146,8 @@ argv[0]=simv
 argv[1]=-licwait
 argv[2]=5
 147 profile - 100
-          CPU/Mem usage: 0.090 sys,  0.320 user,  170.79M mem
-148 Elapsed time:    0:00:00    Tue Nov  3 00:33:36 2026
+          CPU/Mem usage: 0.070 sys,  0.310 user,  170.79M mem
+148 Elapsed time:    0:00:01    Wed Nov  4 13:06:15 2026
 149 User CPU time used: 0 seconds
 150 System CPU time used: 0 seconds
 151 pliAppInit
@@ -178,29 +178,29 @@ argv[2]=5
 176 *Verdi* : Enable +all dumping.
 177 *Verdi* : End of traversing.
 178 pliAppHDL_DumpVarComplete traverse var: profile - 
-          CPU/Mem usage: 0.090 sys,  0.340 user,  267.04M mem
-                   incr: 0.000 sys,  0.020 user,  7.55M mem
-                   accu: 0.000 sys,  0.020 user,  7.55M mem
-              accu incr: 0.000 sys,  0.020 user,  7.55M mem
+          CPU/Mem usage: 0.080 sys,  0.320 user,  267.03M mem
+                   incr: 0.000 sys,  0.010 user,  7.55M mem
+                   accu: 0.000 sys,  0.010 user,  7.55M mem
+              accu incr: 0.000 sys,  0.010 user,  7.55M mem
 
-          Count usage: 20137 var,  20132 idcode,  477 callback
-                 incr: 20137 var,  20132 idcode,  477 callback
-                 accu: 20137 var,  20132 idcode,  477 callback
-            accu incr: 20137 var,  20132 idcode,  477 callback
-179 Elapsed time:    0:00:00    Tue Nov  3 00:33:36 2026
+          Count usage: 20149 var,  20145 idcode,  478 callback
+                 incr: 20149 var,  20145 idcode,  478 callback
+                 accu: 20149 var,  20145 idcode,  478 callback
+            accu incr: 20149 var,  20145 idcode,  478 callback
+179 Elapsed time:    0:00:01    Wed Nov  4 13:06:15 2026
 180 User CPU time used: 0 seconds
 181 System CPU time used: 0 seconds
 182 pliAppHDL_DumpVarComplete: profile - 
-          CPU/Mem usage: 0.100 sys,  0.350 user,  268.79M mem
-                   incr: 0.010 sys,  0.010 user,  1.75M mem
-                   accu: 0.010 sys,  0.030 user,  9.30M mem
-              accu incr: 0.010 sys,  0.010 user,  1.75M mem
+          CPU/Mem usage: 0.080 sys,  0.330 user,  268.78M mem
+                   incr: 0.000 sys,  0.010 user,  1.75M mem
+                   accu: 0.000 sys,  0.020 user,  9.30M mem
+              accu incr: 0.000 sys,  0.010 user,  1.75M mem
 
-          Count usage: 20137 var,  20132 idcode,  477 callback
+          Count usage: 20149 var,  20145 idcode,  478 callback
                  incr: 0 var,  0 idcode,  0 callback
-                 accu: 20137 var,  20132 idcode,  477 callback
+                 accu: 20149 var,  20145 idcode,  478 callback
             accu incr: 0 var,  0 idcode,  0 callback
-183 Elapsed time:    0:00:00    Tue Nov  3 00:33:36 2026
+183 Elapsed time:    0:00:01    Wed Nov  4 13:06:15 2026
 184 User CPU time used: 0 seconds
 185 System CPU time used: 0 seconds
 186 sps_call_fsdbDumpMDA_vd_main at 0 : lenet_tb.v(111)
@@ -210,55 +210,55 @@ argv[2]=5
 190 *Verdi* : Enable +mda and +packedmda dumping.
 191 *Verdi* : End of traversing the MDAs.
 192 pliAppHDL_DumpVarComplete traverse var: profile - 
-          CPU/Mem usage: 0.100 sys,  0.360 user,  268.79M mem
-                   incr: 0.000 sys,  0.010 user,  0.00M mem
-                   accu: 0.000 sys,  0.010 user,  0.00M mem
-              accu incr: 0.000 sys,  0.010 user,  0.00M mem
+          CPU/Mem usage: 0.080 sys,  0.330 user,  268.78M mem
+                   incr: 0.000 sys,  0.000 user,  0.00M mem
+                   accu: 0.000 sys,  0.000 user,  0.00M mem
+              accu incr: 0.000 sys,  0.000 user,  0.00M mem
 
-          Count usage: 39502 var,  20132 idcode,  477 callback
+          Count usage: 39514 var,  20145 idcode,  478 callback
                  incr: 19365 var,  0 idcode,  0 callback
                  accu: 19365 var,  0 idcode,  0 callback
             accu incr: 19365 var,  0 idcode,  0 callback
-193 Elapsed time:    0:00:00    Tue Nov  3 00:33:36 2026
+193 Elapsed time:    0:00:01    Wed Nov  4 13:06:15 2026
 194 User CPU time used: 0 seconds
 195 System CPU time used: 0 seconds
 196 pliAppHDL_DumpVarComplete: profile - 
-          CPU/Mem usage: 0.100 sys,  0.360 user,  268.79M mem
+          CPU/Mem usage: 0.080 sys,  0.330 user,  268.78M mem
                    incr: 0.000 sys,  0.000 user,  0.00M mem
-                   accu: 0.000 sys,  0.010 user,  0.00M mem
+                   accu: 0.000 sys,  0.000 user,  0.00M mem
               accu incr: 0.000 sys,  0.000 user,  0.00M mem
 
-          Count usage: 39502 var,  20132 idcode,  477 callback
+          Count usage: 39514 var,  20145 idcode,  478 callback
                  incr: 0 var,  0 idcode,  0 callback
                  accu: 19365 var,  0 idcode,  0 callback
             accu incr: 0 var,  0 idcode,  0 callback
-197 Elapsed time:    0:00:00    Tue Nov  3 00:33:36 2026
+197 Elapsed time:    0:00:01    Wed Nov  4 13:06:15 2026
 198 User CPU time used: 0 seconds
 199 System CPU time used: 0 seconds
 200 End of simulation at 379158000
-201 Memory usage: 314.024 M
-202 Maximum resident set size: 166 MB
+201 Memory usage: 319.283 M
+202 Maximum resident set size: 171 MB
 203 Hard page faults: 0
-204 Soft page faults: 66965
-205 Elapsed time:    0:00:01    Tue Nov  3 00:33:37 2026
-206 User CPU time used: 1 seconds
+204 Soft page faults: 68572
+205 Elapsed time:    0:00:02    Wed Nov  4 13:06:16 2026
+206 User CPU time used: 2 seconds
 207 System CPU time used: 0 seconds
 208 Begin FSDB profile info:
-209 FSDB Writer : bc1(119564) bcn(9441085) mtf/stf(0/0)
-FSDB Writer elapsed time : flush(0.355236) io wait(0.000000) theadpool wait(0.000000)
+209 FSDB Writer : bc1(119758) bcn(10425056) mtf/stf(0/0)
+FSDB Writer elapsed time : flush(0.401161) io wait(0.000000) theadpool wait(0.000000)
 FSDB Writer cpu time : MT Compression : 0
 210 End FSDB profile info
-211 FSDB closed. Name: lenet.fsdb Size: 459564707942
+211 FSDB closed. Name: lenet.fsdb Size: 459565306073
 212 Parallel profile     - ProducerThread:1 ConsumerThread:1 Buffer:64MB
-213                      - BlockUsed:27 Acquire:3250449 BufferUsed:50283461
+213                      - BlockUsed:29 Acquire:3607321 BufferUsed:54759884
 214                      - Flush:4 Expand:0 ProducerWait:0 ConsumerWait:0
-215                      - MainProducerTime:1.361189268 TotalConsumerTime:0.663510150
-216                      - ElapsedTime:1.176038000
-217 Producer   0 profile - BlockUsed:27 Acquire:3250449 BufferUsed:50283461
-218 Consumer   0 profile - Affinity:-1 CPUTime:0.663510150 LifeTime:0.663465435 (1.00%)
-219                      - BlockUsed:27 Acquire:3250449 BufferUsed:50283461
+215                      - MainProducerTime:1.610257980 TotalConsumerTime:0.935341966
+216                      - ElapsedTime:1.471374000
+217 Producer   0 profile - BlockUsed:29 Acquire:3607321 BufferUsed:54759884
+218 Consumer   0 profile - Affinity:-1 CPUTime:0.935341966 LifeTime:0.936311650 (1.00%)
+219                      - BlockUsed:29 Acquire:3607321 BufferUsed:54759884
 220 SimExit
-221 Elapsed time:    0:00:01    Tue Nov  3 00:33:37 2026
-222 User CPU time used: 1 seconds
+221 Elapsed time:    0:00:02    Wed Nov  4 13:06:16 2026
+222 User CPU time used: 2 seconds
 223 System CPU time used: 0 seconds
 224 Sim process exit
