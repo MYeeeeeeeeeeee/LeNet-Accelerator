@@ -1,0 +1,134 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : lenet
+Version: T-2022.03
+Date   : Thu Nov  5 01:34:17 2026
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: u_conv1/pe_out_s4_reg[1][6]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_conv1/result_reg_reg[0][6]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                 0.0000     0.0000
+  clock network delay (ideal)                           0.0000     0.0000
+  u_conv1/pe_out_s4_reg[1][6]/CK (DFFRX1)               0.0000 #   0.0000 r
+  u_conv1/pe_out_s4_reg[1][6]/Q (DFFRX1)                0.5498     0.5498 f
+  u_conv1/add_2_root_add_0_root_add_487_4/B[6] (conv1_DW01_add_19)
+                                                        0.0000     0.5498 f
+  u_conv1/add_2_root_add_0_root_add_487_4/U163/Y (NAND2X1)
+                                                        0.1431     0.6929 r
+  u_conv1/add_2_root_add_0_root_add_487_4/U166/Y (OAI21X1)
+                                                        0.0968     0.7897 f
+  u_conv1/add_2_root_add_0_root_add_487_4/U250/Y (AOI21X1)
+                                                        0.1056     0.8953 r
+  u_conv1/add_2_root_add_0_root_add_487_4/U159/Y (OAI21X1)
+                                                        0.1132     1.0085 f
+  u_conv1/add_2_root_add_0_root_add_487_4/U211/Y (INVXL)
+                                                        0.1545     1.1631 r
+  u_conv1/add_2_root_add_0_root_add_487_4/U191/Y (OAI21X1)
+                                                        0.1040     1.2671 f
+  u_conv1/add_2_root_add_0_root_add_487_4/U189/Y (XNOR2X2)
+                                                        0.1412     1.4083 f
+  u_conv1/add_2_root_add_0_root_add_487_4/SUM[9] (conv1_DW01_add_19)
+                                                        0.0000     1.4083 f
+  u_conv1/add_1_root_add_0_root_add_487_4/B[9] (conv1_DW01_add_20)
+                                                        0.0000     1.4083 f
+  u_conv1/add_1_root_add_0_root_add_487_4/U178/Y (OR2X4)
+                                                        0.1721     1.5803 f
+  u_conv1/add_1_root_add_0_root_add_487_4/U205/Y (AOI21X2)
+                                                        0.1071     1.6874 r
+  u_conv1/add_1_root_add_0_root_add_487_4/U200/Y (OAI21X1)
+                                                        0.0885     1.7759 f
+  u_conv1/add_1_root_add_0_root_add_487_4/U199/Y (AOI21X1)
+                                                        0.1400     1.9159 r
+  u_conv1/add_1_root_add_0_root_add_487_4/U195/Y (INVX1)
+                                                        0.1115     2.0274 f
+  u_conv1/add_1_root_add_0_root_add_487_4/U272/Y (AOI21X1)
+                                                        0.1470     2.1744 r
+  u_conv1/add_1_root_add_0_root_add_487_4/U176/Y (XOR2X2)
+                                                        0.1442     2.3186 r
+  u_conv1/add_1_root_add_0_root_add_487_4/SUM[13] (conv1_DW01_add_20)
+                                                        0.0000     2.3186 r
+  u_conv1/add_0_root_add_0_root_add_487_4/B[13] (conv1_DW01_add_21)
+                                                        0.0000     2.3186 r
+  u_conv1/add_0_root_add_0_root_add_487_4/U207/Y (NAND2X2)
+                                                        0.0950     2.4135 f
+  u_conv1/add_0_root_add_0_root_add_487_4/U206/Y (OAI21X2)
+                                                        0.1391     2.5526 r
+  u_conv1/add_0_root_add_0_root_add_487_4/U200/Y (AOI21X1)
+                                                        0.1070     2.6596 f
+  u_conv1/add_0_root_add_0_root_add_487_4/U248/Y (OAI21X1)
+                                                        0.1466     2.8062 r
+  u_conv1/add_0_root_add_0_root_add_487_4/U247/Y (AOI21X1)
+                                                        0.0806     2.8868 f
+  u_conv1/add_0_root_add_0_root_add_487_4/U178/Y (OAI21X1)
+                                                        0.1904     3.0772 r
+  u_conv1/add_0_root_add_0_root_add_487_4/U1/Y (XNOR2X4)
+                                                        0.1749     3.2521 f
+  u_conv1/add_0_root_add_0_root_add_487_4/SUM[19] (conv1_DW01_add_21)
+                                                        0.0000     3.2521 f
+  u_conv1/U65/Y (INVX8)                                 0.0867     3.3388 r
+  u_conv1/U103/Y (AND2XL)                               0.1948     3.5335 r
+  u_conv1/mult_492/a[12] (conv1_DW_mult_uns_4)          0.0000     3.5335 r
+  u_conv1/mult_492/U2377/Y (BUFX4)                      0.1760     3.7096 r
+  u_conv1/mult_492/U2590/Y (XNOR2XL)                    0.2154     3.9250 r
+  u_conv1/mult_492/U1845/Y (OAI22X1)                    0.1321     4.0571 f
+  u_conv1/mult_492/U2004/S (ADDFXL)                     0.7767     4.8339 f
+  u_conv1/mult_492/U2381/CO (ADDFHX1)                   0.3468     5.1807 f
+  u_conv1/mult_492/U2176/CO (ADDFX2)                    0.4134     5.5941 f
+  u_conv1/mult_492/U2100/CO (ADDFX2)                    0.3093     5.9034 f
+  u_conv1/mult_492/U2101/S (ADDFX2)                     0.4727     6.3761 f
+  u_conv1/mult_492/U2079/Y (NOR2X1)                     0.1475     6.5236 r
+  u_conv1/mult_492/U2885/Y (NOR2X1)                     0.1128     6.6364 f
+  u_conv1/mult_492/U1851/Y (AOI21X2)                    0.1529     6.7893 r
+  u_conv1/mult_492/U2072/Y (OAI21X1)                    0.0979     6.8872 f
+  u_conv1/mult_492/U2278/Y (AOI21X2)                    0.1393     7.0265 r
+  u_conv1/mult_492/U1847/Y (BUFX12)                     0.1503     7.1768 r
+  u_conv1/mult_492/U2265/Y (OAI21X2)                    0.0752     7.2520 f
+  u_conv1/mult_492/U2104/Y (XNOR2X4)                    0.1181     7.3701 f
+  u_conv1/mult_492/product[34] (conv1_DW_mult_uns_4)    0.0000     7.3701 f
+  u_conv1/U43/Y (NOR2X2)                                0.0949     7.4650 r
+  u_conv1/U10/Y (NAND3X2)                               0.0741     7.5391 f
+  u_conv1/U97/Y (NAND4BX2)                              0.1633     7.7024 f
+  u_conv1/U91/Y (NOR3X2)                                0.1387     7.8412 r
+  u_conv1/U90/Y (NOR2X2)                                0.0893     7.9304 f
+  u_conv1/U95/Y (AO21X4)                                0.1791     8.1096 f
+  u_conv1/U86/Y (NAND2BX4)                              0.1193     8.2288 f
+  u_conv1/U303/Y (OA21XL)                               0.1834     8.4122 f
+  u_conv1/U112/Y (OA21X4)                               0.1986     8.6109 f
+  u_conv1/U89/Y (AOI33X2)                               0.2307     8.8416 r
+  u_conv1/U92/Y (OA21X4)                                0.1716     9.0132 r
+  u_conv1/U6/Y (OAI33X2)                                0.1093     9.1225 f
+  u_conv1/U41/Y (AOI2BB1X4)                             0.1704     9.2928 r
+  u_conv1/U256/Y (CLKMX2X2)                             0.2284     9.5212 f
+  u_conv1/U314/Y (AO22X1)                               0.2682     9.7894 f
+  u_conv1/result_reg_reg[0][6]/D (DFFRX1)               0.0000     9.7894 f
+  data arrival time                                                9.7894
+
+  clock clk (rise edge)                                10.0000    10.0000
+  clock network delay (ideal)                           0.0000    10.0000
+  u_conv1/result_reg_reg[0][6]/CK (DFFRX1)              0.0000    10.0000 r
+  library setup time                                   -0.2103     9.7897
+  data required time                                               9.7897
+  --------------------------------------------------------------------------
+  data required time                                               9.7897
+  data arrival time                                               -9.7894
+  --------------------------------------------------------------------------
+  slack (MET)                                                      0.0004
+
+
+1

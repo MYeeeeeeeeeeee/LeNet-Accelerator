@@ -2,16 +2,16 @@ link
 uniquify
 
 # Setting Design and I/O Environment
-set_operating_conditions -min_library fast_vdd1v2 -min PVT_1P32V_0C \
-                        -max_library slow_vdd1v2 -max PVT_1P08V_125C
+set_operating_conditions -min_library fast -min fast \
+                        -max_library slow -max slow
 
 current_design lenet
 # Assume outputs go to DFF and inputs also come from DFF
 set all_inputs_except_clk \
     [remove_from_collection [all_inputs] [get_ports {clk}]]
-set_drive [drive_of "slow_vdd1v2/DFFHQX1/Q"] \
+set_drive [drive_of "slow/DFFHQX1/Q"] \
     [get_ports $all_inputs_except_clk]
-set_load [load_of "slow_vdd1v2/DFFHQX1/D"] [all_outputs]
+set_load [load_of "slow/DFFHQX1/D"] [all_outputs]
 
 create_clock -name clk -period $cycle  [get_ports clk]
 set_fix_hold clk

@@ -1,7 +1,7 @@
 import pkg::*;
 module PE #(
     parameter int INPUT_WIDTH  = 8,
-    parameter int OUTPUT_WIDTH = 19
+    parameter int OUTPUT_WIDTH = 20
 ) (
 
     input logic signed [4:0][INPUT_WIDTH-1:0] weight,

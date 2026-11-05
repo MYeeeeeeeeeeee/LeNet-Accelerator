@@ -35,8 +35,13 @@ module fc1 (
 
     output logic       fc_buf_we,
     output logic [6:0] fc_buf_waddr,
-    output logic [7:0] fc_buf_wdata
+    output logic [7:0] fc_buf_wdata,
 
+    // Shared weight-buffer write request (same cycle as the old weight_reg FF).
+    output logic                    wb_load_valid,
+    output logic        [31:0]      wb_wdata0,
+    output logic        [31:0]      wb_wdata1,
+    input  logic signed [ 4:0][7:0] shared_weight[0:4]
 );
     // input enable buffered to preserve SRAM timing
     logic enable_buf;
@@ -73,9 +78,8 @@ module fc1 (
     logic [16:0] buffer_act_addr;
 
     // PE input vectors and registered PE results.
-    logic signed [18:0] pe_out_s4[0:4];
-    logic signed [4:0][7:0] weight_reg[0:4];
-    logic signed [18:0] pe_out[0:4];
+    logic signed [19:0] pe_out_s4[0:4];
+    logic signed [19:0] pe_out[0:4];
     logic [63:0] fc_act_d1, fc_act_d2, fc_act_vec_buf;
 
     // PSUM accumulation, quantization, and four-neuron packing.
@@ -97,6 +101,9 @@ module fc1 (
     assign load_valid_s1 = s1_valid && (act_idx < 5'd15) && (out_ch < 'd84);
     assign vector_read_fire = load_valid_s1 && !pack_valid;
     assign weight_valid_s1 = vector_read_fire;
+    assign wb_load_valid = weight_valid_s4;
+    assign wb_wdata0 = sram_weight_rdata0_buf;
+    assign wb_wdata1 = sram_weight_rdata1_buf;
     assign change_out_ch = neuron_valid && (out_ch < 'd83);
     assign pe_valid = s3_valid && vector_buf_valid;
     assign pack_valid = neuron_valid && (package_cnt == 2'd3);
@@ -114,8 +121,6 @@ module fc1 (
             write_addr <= write_addr + 1;
         end else if (vector_read_fire) begin
             fc_buf_raddr <= buffer_act_addr;
-        end else begin
-            sram_act_addr0 <= sram_act_addr0;
         end
     end : act_addr_gen
 
@@ -134,8 +139,6 @@ module fc1 (
             act_idx <= 17'd0;
         end else if (vector_read_fire) begin
             act_idx <= act_idx + 1'b1;
-        end else begin
-            act_idx <= act_idx;
         end
     end : act_read_idx_ff
 
@@ -153,8 +156,6 @@ module fc1 (
         end else if (vector_read_fire) begin
             sram_weight_addr0 <= global_w_offset + w_0_idex;
             sram_weight_addr1 <= global_w_offset + w_1_idex;
-        end else begin
-            sram_weight_addr0 <= sram_weight_addr0;
         end
     end : weight_addr_gen
 
@@ -166,8 +167,6 @@ module fc1 (
             weight_idx <= '0;
         end else if (vector_read_fire) begin
             weight_idx <= weight_idx + 1;
-        end else begin
-            weight_idx <= weight_idx;
         end
     end
 
@@ -185,16 +184,6 @@ module fc1 (
             fc_buf_waddr <= 7'd0;
             fc_buf_wdata <= 8'd0;
 
-        end else begin
-            sram_act_addr1 <= sram_act_addr1;
-            sram_weight_wdata0 <= sram_weight_wdata0;
-            sram_weight_wdata1 <= sram_weight_wdata1;
-            sram_weight_wea0 <= sram_weight_wea0;
-            sram_weight_wea1 <= sram_weight_wea1;
-
-            fc_buf_we <= fc_buf_we;
-            fc_buf_waddr <= fc_buf_waddr;
-            fc_buf_wdata <= fc_buf_wdata;
         end
     end : unused_sram_ff
 
@@ -274,7 +263,6 @@ module fc1 (
             group_idx_s4 <= group_idx_s3;
 
             if (load_valid_s4) group_idx_buf <= group_idx_s4;
-            else group_idx_buf <= group_idx_buf;
         end
     end : group_idx_pipeline
 
@@ -286,7 +274,7 @@ module fc1 (
                 .INPUT_WIDTH (8),
                 .OUTPUT_WIDTH(20)
             ) pe_inst (
-                .weight({8'd0, weight_reg[i][3:0]}),
+                .weight({8'd0, shared_weight[i][3:0]}),
                 .activation({8'd0, fc_act_vec_buf[i*32+:32]}),
                 .valid(pe_valid),
                 .mode(FC),
@@ -307,7 +295,6 @@ module fc1 (
             fc_act_d2 <= fc_act_d1;
 
             if (load_valid_s4) fc_act_vec_buf <= fc_act_d2;
-            else fc_act_vec_buf <= fc_act_vec_buf;
         end
     end : fc_act_vec_ff
 
@@ -317,15 +304,8 @@ module fc1 (
         else vector_buf_valid <= load_valid_s4;
     end : vector_buf_valid_ff
 
-    // Pipeline 3-4: register returned weight words before PE consumption.
-    always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
-        if (!rst_n) begin
-            foreach (weight_reg[i]) weight_reg[i] <= '0;
-        end else if (weight_valid_s4) begin
-            weight_reg[0][3:0] <= sram_weight_rdata0_buf;
-            weight_reg[1][3:0] <= sram_weight_rdata1_buf;
-        end
-    end : weight_reg_ff
+    // Weight words are registered by the one shared_weight_buffer in lenet.sv.
+    // No local weight_reg FF here, so this remains a single physical register bank.
 
     // Pipeline 4: register PE results before summing and PSUM update.
     // Only valid PE results replace the previous registered values.
@@ -334,8 +314,6 @@ module fc1 (
             foreach (pe_out_s4[i]) pe_out_s4[i] <= '0;
         end else if (pe_valid) begin
             foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out[i];
-        end else begin
-            foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out_s4[i];
         end
     end : pe_out_ff
 
@@ -371,7 +349,6 @@ module fc1 (
                     neuron_valid <= 1'b0;
                 end
             end else begin
-                scalar_psum  <= scalar_psum;
                 neuron_data  <= '0;
                 neuron_valid <= 1'b0;
             end
@@ -384,8 +361,6 @@ module fc1 (
             out_ch <= 8'd0;
         end else if (change_out_ch) begin
             out_ch <= out_ch + 1'b1;
-        end else begin
-            out_ch <= out_ch;
         end
     end : ch_counter
 

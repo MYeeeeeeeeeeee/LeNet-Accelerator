@@ -124,9 +124,9 @@ module conv1 (
     // Sliding-window data path.
     // PE inputs are selected from six buffered rows; PE results are registered
     // at Pipeline 4 before the arithmetic post-processing block.
-    logic signed [18:0] pe_out_s4[0:4];
+    logic signed [19:0] pe_out_s4[0:4];
     //logic signed [4:0][7:0] weight_reg[0:4];
-    logic signed [18:0] pe_out[0:4];
+    logic signed [19:0] pe_out[0:4];
 
     // Quantization, pooling, and output-packing data.
     logic [7:0] max_pool;
@@ -252,14 +252,7 @@ module conv1 (
             end else if (new_valid) begin
                 sram_act_addr0 <= conv1_in_offset + ((strip_idx * 2 + 4) * 8) + fill_cnt;
                 sram_act_addr1 <= conv1_in_offset + ((strip_idx * 2 + 5) * 8) + fill_cnt;
-            end else begin
-                sram_act_addr0 <= sram_act_addr0;
-                sram_act_addr1 <= sram_act_addr1;
-                write_addr <= write_addr;
             end
-        end else begin
-            sram_act_addr0 <= sram_act_addr0;
-            sram_act_addr1 <= sram_act_addr1;
         end
     end : act_addr_gen
 
@@ -272,14 +265,12 @@ module conv1 (
             fill_cnt <= 5'd0;
         end else if (act_read_fire) begin
             if (strip_idx == 5'd0) begin
-                if (fill_cnt == 5'd24) fill_cnt <= fill_cnt;
-                else fill_cnt <= fill_cnt + 1;
+                if (fill_cnt != 5'd24)
+                    fill_cnt <= fill_cnt + 1;
             end else begin
-                if (fill_cnt == 5'd8) fill_cnt <= fill_cnt;
-                else fill_cnt <= fill_cnt + 1;
+                if (fill_cnt != 5'd8)
+                    fill_cnt <= fill_cnt + 1;
             end
-        end else begin
-            fill_cnt <= fill_cnt;
         end
     end : line_counter
 
@@ -289,8 +280,6 @@ module conv1 (
             sram_weight_addr0 <= '0;
         end else if (s1_valid && kernel_idx < 10) begin
             sram_weight_addr0 <= w_offset + kernel_idx;
-        end else begin
-            sram_weight_addr0 <= sram_weight_addr0;
         end
     end : weight_addr_gen
 
@@ -302,11 +291,7 @@ module conv1 (
                 kernel_idx <= 4'd0;
             end else if (kernel_idx < 4'd10) begin
                 kernel_idx <= kernel_idx + 1;
-            end else begin
-                kernel_idx <= kernel_idx;
             end
-        end else begin
-            kernel_idx <= kernel_idx;
         end
     end : kernel_counter
 
@@ -317,11 +302,7 @@ module conv1 (
             if (change_out_ch) begin
                 if (kernel_group == 4'd5) kernel_group <= 4'd0;
                 else kernel_group <= kernel_group + 1'b1;
-            end else begin
-                kernel_group <= kernel_group;
             end
-        end else begin
-            kernel_group <= kernel_group;
         end
     end : kernel_group_counter
 
@@ -408,11 +389,9 @@ module conv1 (
             line_buffer_ready <= 1'b0;
         end else if (flush) begin
             line_buffer_ready <= 1'b0;
-        end else if (load_valid_s4 && ((strip_idx == 5'd0 && load_idx_s4 == 5'd23) ||
+        end         else if (load_valid_s4 && ((strip_idx == 5'd0 && load_idx_s4 == 5'd23) ||
          (strip_idx != 5'd0 && load_idx_s4 == 5'd7))) begin
             line_buffer_ready <= 1'b1;
-        end else begin
-            line_buffer_ready <= line_buffer_ready;
         end
     end : line_buffer_status
 
@@ -430,7 +409,6 @@ module conv1 (
         if (!rst_n) channel_mac_done <= 1'b0;
         else if (change_out_ch) channel_mac_done <= 1'b0;
         else if (last_mac_fire) channel_mac_done <= 1'b1;
-        else channel_mac_done <= channel_mac_done;
     end
 
     // Pipeline 3 window traversal. Each valid PE operation processes two row
@@ -499,8 +477,6 @@ module conv1 (
             foreach (pe_out_s4[i]) pe_out_s4[i] <= '0;
         end else if (pe_valid) begin
             foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out[i];
-        end else begin
-            foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out_s4[i];
         end
     end
 

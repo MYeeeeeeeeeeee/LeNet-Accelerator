@@ -1,0 +1,12 @@
+../hdl/package.pkg
+../hdl/lenet.sv
+../hdl/conv1.sv
+../hdl/conv2.sv
+../hdl/conv3.sv
+../hdl/fc_buffer.sv
+../hdl/shared_line_buffer.sv
+../hdl/shared_weight_buffer.sv
+../hdl/fc1.sv
+../hdl/reload_controller.sv
+../hdl/fc2.sv
+../hdl/PE.sv

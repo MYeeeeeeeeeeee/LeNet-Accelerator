@@ -29,6 +29,10 @@
 /syn/WORK/
 /syn/*.ddc
 /syn/*.svf
+/syn/*.pvl
+/syn/*.syn
+/syn/*.mr
+/syn/*.pvk
 
 # ==========================================
 # Temporary Files

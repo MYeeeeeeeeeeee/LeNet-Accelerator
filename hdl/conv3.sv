@@ -53,7 +53,6 @@ module conv3 (
     logic [31:0] sram_act_rdata0_buf, sram_act_rdata1_buf;
 
     // Read counters, weight offset, and output address.
-    logic [ 4:0] fill_cnt;
     logic [15:0] global_w_offset;
     logic [16:0] write_addr;
 
@@ -82,9 +81,8 @@ module conv3 (
     logic change_out_ch;
 
     // FC vector data path.
-    logic signed [18:0] pe_out_s4[0:4];
-    //logic signed [4:0][7:0] weight_reg[0:4];
-    logic signed [18:0] pe_out[0:4];
+    logic signed [19:0] pe_out_s4[0:4];
+    logic signed [19:0] pe_out[0:4];
 
     // PSUM and output data.
     logic [31:0] pack_data;
@@ -165,9 +163,6 @@ module conv3 (
         end else if (vector_read_fire) begin
             sram_act_addr0 <= conv3_in_offset + act_0_idex;
             sram_act_addr1 <= conv3_in_offset + act_1_idex;
-        end else begin
-            sram_act_addr0 <= sram_act_addr0;
-            sram_act_addr1 <= sram_act_addr1;
         end
     end : act_addr_gen
 
@@ -179,8 +174,6 @@ module conv3 (
             act_idx <= 17'd0;
         end else if (vector_read_fire) begin
             act_idx <= act_idx + 1'b1;
-        end else begin
-            act_idx <= act_idx;
         end
     end : act_read_idx_ff
 
@@ -196,9 +189,6 @@ module conv3 (
         end else if (vector_read_fire) begin
             sram_weight_addr0 <= global_w_offset + w_0_idex;
             sram_weight_addr1 <= global_w_offset + w_1_idex;
-        end else begin
-            sram_weight_addr0 <= sram_weight_addr0;
-            sram_weight_addr1 <= sram_weight_addr1;
         end
     end : weight_addr_gen
 
@@ -210,8 +200,6 @@ module conv3 (
             weight_idx <= '0;
         end else if (vector_read_fire) begin
             weight_idx <= weight_idx + 1;
-        end else begin
-            weight_idx <= weight_idx;
         end
     end
 
@@ -225,11 +213,6 @@ module conv3 (
             sram_weight_wdata1 <= 32'd0;
             sram_weight_wea0   <= 4'd0;
             sram_weight_wea1   <= 4'd0;
-        end else begin
-            sram_weight_wdata0 <= sram_weight_wdata0;
-            sram_weight_wdata1 <= sram_weight_wdata1;
-            sram_weight_wea0   <= sram_weight_wea0;
-            sram_weight_wea1   <= sram_weight_wea1;
         end
     end : unused_sram_ff
 
@@ -311,7 +294,6 @@ module conv3 (
             group_idx_s4 <= group_idx_s3;
 
             if (load_valid_s4) group_idx_buf <= group_idx_s4;
-            else group_idx_buf <= group_idx_buf;
         end
     end : group_idx_pipeline
 
@@ -337,27 +319,12 @@ module conv3 (
         else vector_buf_valid <= load_valid_s4;
     end
 
-    // Pipeline 4: register weight words returned through Pipeline 2-3
-    // before they are consumed by the PE.
-    /*
-    always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
-        if (!rst_n) begin
-            foreach (weight_reg[i]) weight_reg[i] <= '0;
-        end else if (weight_valid_s4) begin
-            weight_reg[0][3:0] <= sram_weight_rdata0_buf;
-            weight_reg[1][3:0] <= sram_weight_rdata1_buf;
-        end
-    end : weight_reg_ff
-     */
-
     // Pipeline 4: register PE results before summing and PSUM update.
     always_ff @(posedge clk or negedge rst_n) begin : pe_out_ff
         if (!rst_n) begin
             foreach (pe_out_s4[i]) pe_out_s4[i] <= '0;
         end else if (pe_valid) begin
             foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out[i];
-        end else begin
-            foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out_s4[i];
         end
     end : pe_out_ff
 
@@ -394,7 +361,6 @@ module conv3 (
                     neuron_valid <= 1'b0;
                 end
             end else begin
-                scalar_psum  <= scalar_psum;
                 neuron_data  <= '0;
                 neuron_valid <= 1'b0;
             end
@@ -407,8 +373,6 @@ module conv3 (
             out_ch <= 7'd0;
         end else if (change_out_ch) begin
             out_ch <= out_ch + 1'b1;
-        end else begin
-            out_ch <= out_ch;
         end
     end : ch_counter
 
@@ -453,8 +417,6 @@ module conv3 (
             fc_buf_wdata <= neuron_data;
         end else begin
             fc_buf_we    <= 1'b0;
-            fc_buf_waddr <= fc_buf_waddr;
-            fc_buf_wdata <= fc_buf_wdata;
         end
     end
 

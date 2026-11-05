@@ -118,10 +118,9 @@ module conv2 (
     // Sliding-window data path.
     // PE inputs are selected from six buffered rows; PE results are registered
     // at Pipeline 4 before the arithmetic post-processing block.
-    logic signed [18:0] pe_out_s4[0:4];
-    //logic signed [4:0][7:0] weight_reg[0:4];
+    logic signed [19:0] pe_out_s4[0:4];
     logic signed [9:0][31:0] ch_temp_psum[0:1];
-    logic signed [18:0] pe_out[0:4];
+    logic signed [19:0] pe_out[0:4];
 
     // Quantization, pooling, and output-packing data.
     logic [7:0] current_max;
@@ -228,12 +227,6 @@ module conv2 (
             sram_weight_wdata1 <= 32'd0;
             sram_weight_wea0   <= 4'd0;
             sram_weight_wea1   <= 4'd0;
-        end else begin
-            sram_weight_addr1  <= sram_weight_addr1;
-            sram_weight_wdata0 <= sram_weight_wdata0;
-            sram_weight_wdata1 <= sram_weight_wdata1;
-            sram_weight_wea0   <= sram_weight_wea0;
-            sram_weight_wea1   <= sram_weight_wea1;
         end
     end : unused_sram_ff
 
@@ -274,9 +267,6 @@ module conv2 (
             sram_act_addr1 <= conv2_in_offset + in_ch_offset +
                               ((strip_idx * 2 + act_row_pair_s1 * 2 + 1) * 4) +
                               act_col_blk_s1;
-        end else begin
-            sram_act_addr0 <= sram_act_addr0;
-            sram_act_addr1 <= sram_act_addr1;
         end
     end : act_addr_gen
 
@@ -288,10 +278,7 @@ module conv2 (
         end else if (flush) begin
             fill_cnt <= 5'd0;
         end else if (act_read_fire) begin
-            if (fill_cnt == 5'd12) fill_cnt <= fill_cnt;
-            else fill_cnt <= fill_cnt + 1;
-        end else begin
-            fill_cnt <= fill_cnt;
+            if (fill_cnt != 5'd12) fill_cnt <= fill_cnt + 1;
         end
     end : line_counter
 
@@ -305,8 +292,6 @@ module conv2 (
             sram_weight_addr0 <= '0;
         end else if (s1_valid && kernel_idx < 10) begin
             sram_weight_addr0 <= global_w_offset + local_w_offset + kernel_idx;
-        end else begin
-            sram_weight_addr0 <= sram_weight_addr0;
         end
     end : weight_addr_gen
 
@@ -321,9 +306,6 @@ module conv2 (
             in_ch <= 3'd0;
         end else if (change_in_ch) begin
             in_ch <= in_ch + 1'b1;
-        end else begin
-            in_ch  <= in_ch;
-            out_ch <= out_ch;
         end
     end : ch_counter
 
@@ -335,11 +317,7 @@ module conv2 (
                 kernel_idx <= 4'd0;
             end else if (kernel_idx < 4'd10) begin
                 kernel_idx <= kernel_idx + 1;
-            end else begin
-                kernel_idx <= kernel_idx;
             end
-        end else begin
-            kernel_idx <= kernel_idx;
         end
     end : kernel_counter
 
@@ -421,14 +399,12 @@ module conv2 (
         if (!rst_n) line_buffer_ready <= 1'b0;
         else if (change_in_ch || strip_next || change_out_ch) line_buffer_ready <= 1'b0;
         else if (load_valid_s4 && load_idx_s4 == 5'd11) line_buffer_ready <= 1'b1;
-        else line_buffer_ready <= line_buffer_ready;
     end : line_buffer_status
 
     always_ff @(posedge clk or negedge rst_n) begin : weight_status
         if (!rst_n) weight_ready <= 1'b0;
         else if (change_in_ch || change_out_ch || strip_next) weight_ready <= 1'b0;
         else if (weight_valid_s4 && kernel_idx_s4 == 4'd9) weight_ready <= 1'b1;
-        else weight_ready <= weight_ready;
     end : weight_status
 
     // Pipeline 3 PE issue control and end-of-channel detection.
@@ -441,7 +417,6 @@ module conv2 (
         if (!rst_n) channel_mac_done <= 1'b0;
         else if (change_out_ch) channel_mac_done <= 1'b0;
         else if (last_mac_fire) channel_mac_done <= 1'b1;
-        else channel_mac_done <= channel_mac_done;
     end : channel_mac_done_ff
 
     // Pipeline 3 window traversal. Each valid PE operation processes two row
@@ -459,7 +434,6 @@ module conv2 (
         end else if (flush) begin
             col <= 5'd0;
             row_sel <= 1'b0;
-            strip_idx <= strip_idx;
         end else if (strip_next) begin
             col <= 5'd0;
             row_sel <= 1'b0;
@@ -495,20 +469,6 @@ module conv2 (
         end : gen_pe
     endgenerate
 
-    // Pipeline 4: assemble the packed weight word returned by the weight
-    // side pipeline before it is consumed by the PE.
-    /*
-    always_ff @(posedge clk or negedge rst_n) begin : weight_reg_ff
-        if (!rst_n) begin
-            foreach (weight_reg[i]) weight_reg[i] <= '0;
-        end else if (weight_valid_s4) begin
-            if (kernel_idx_s4[0] == 1'b0)
-                weight_reg[kernel_idx_s4[3:1]][3:0] <= sram_weight_rdata0_buf;
-            else weight_reg[kernel_idx_s4[3:1]][4] <= sram_weight_rdata0_buf[7:0];
-        end
-    end : weight_reg_ff
-     */
-
     // Pipeline 4 result register. This register isolates the PE combinational
     // result from the quantization and pooling logic.
     always_ff @(posedge clk or negedge rst_n) begin : pe_psum_loc
@@ -520,10 +480,6 @@ module conv2 (
             in_ch_s4   <= in_ch;
             col_s4     <= col;
             row_sel_s4 <= row_sel;
-        end else begin
-            in_ch_s4   <= in_ch_s4;
-            col_s4     <= col_s4;
-            row_sel_s4 <= row_sel_s4;
         end
     end : pe_psum_loc
 
@@ -532,8 +488,6 @@ module conv2 (
             foreach (pe_out_s4[i]) pe_out_s4[i] <= '0;
         end else if (pe_valid) begin
             foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out[i];
-        end else begin
-            foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out_s4[i];
         end
     end : pe_out_ff
 
@@ -565,8 +519,6 @@ module conv2 (
             end else begin
                 ch_temp_psum[row_sel_s4][col_s4] <= ch_temp_psum[row_sel_s4][col_s4] + conv_sum_ext;
             end
-        end else begin
-            foreach (ch_temp_psum[i]) ch_temp_psum[i] <= ch_temp_psum[i];
         end
     end : channel_psum_ff
 
@@ -608,6 +560,24 @@ module conv2 (
     // Select the two adjacent columns used by the current 2x2 pooling window.
     assign pool_col_base = {pool_emit_idx, 1'b0};
 
+    logic signed [31:0] pool_psum_max;
+
+    always_comb begin : pool_max
+        pool_psum_max = $signed(ch_temp_psum[0][pool_col_base]);
+
+        if ($signed(ch_temp_psum[0][pool_col_base+1]) > pool_psum_max)
+            pool_psum_max = $signed(ch_temp_psum[0][pool_col_base+1]);
+
+        if ($signed(ch_temp_psum[1][pool_col_base]) > pool_psum_max)
+            pool_psum_max = $signed(ch_temp_psum[1][pool_col_base]);
+
+        if ($signed(ch_temp_psum[1][pool_col_base+1]) > pool_psum_max)
+            pool_psum_max = $signed(ch_temp_psum[1][pool_col_base+1]);
+
+        current_max = quantize_psum(pool_psum_max, scale_CONV2_buf);
+    end
+
+    /*
     always_comb begin : pool_max
         q0 = quantize_psum($signed(ch_temp_psum[0][pool_col_base]), scale_CONV2_buf);
         q1 = quantize_psum($signed(ch_temp_psum[0][pool_col_base+1]), scale_CONV2_buf);
@@ -617,7 +587,7 @@ module conv2 (
         if (q1 > current_max) current_max = q1;
         if (q2 > current_max) current_max = q2;
         if (q3 > current_max) current_max = q3;
-    end : pool_max
+    end : pool_max*/
 
     // Output packer. Four pooled bytes form one 32-bit word; the final item
     // in each row emits a padded tail word.

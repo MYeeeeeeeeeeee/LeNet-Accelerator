@@ -197,6 +197,11 @@ module lenet (
     logic [31:0] c1_wb_wdata0, c2_wb_wdata0, c3_wb_wdata0;
     logic [31:0] c3_wb_wdata1;
 
+    // FC1/FC2 share the same 8-weight vector register bank as CONV3.
+    logic fc1_wb_load_valid, fc2_wb_load_valid;
+    logic [31:0] fc1_wb_wdata0, fc1_wb_wdata1;
+    logic [31:0] fc2_wb_wdata0, fc2_wb_wdata1;
+
 
 
     // Delay the external start request by one clock before entering CONV1.
@@ -494,7 +499,12 @@ module lenet (
 
         .fc_buf_re   (fc1_buf_re),
         .fc_buf_raddr(fc1_buf_raddr),
-        .fc_buf_rdata(fc_buf_rdata)
+        .fc_buf_rdata(fc_buf_rdata),
+
+        .wb_load_valid(fc1_wb_load_valid),
+        .wb_wdata0    (fc1_wb_wdata0),
+        .wb_wdata1    (fc1_wb_wdata1),
+        .shared_weight(shared_weight)
     );
 
 
@@ -548,7 +558,12 @@ module lenet (
 
         .fc_buf_re   (fc2_buf_re),
         .fc_buf_raddr(fc2_buf_raddr),
-        .fc_buf_rdata(fc_buf_rdata)
+        .fc_buf_rdata(fc_buf_rdata),
+
+        .wb_load_valid(fc2_wb_load_valid),
+        .wb_wdata0    (fc2_wb_wdata0),
+        .wb_wdata1    (fc2_wb_wdata1),
+        .shared_weight(shared_weight)
     );
 
 
@@ -742,6 +757,20 @@ module lenet (
                 wb_load_valid  = c3_wb_load_valid;
                 wb_wdata0      = c3_wb_wdata0;
                 wb_wdata1      = c3_wb_wdata1;
+            end
+
+            FC1: begin
+                wb_vector_mode = 1'b1;
+                wb_load_valid  = fc1_wb_load_valid;
+                wb_wdata0      = fc1_wb_wdata0;
+                wb_wdata1      = fc1_wb_wdata1;
+            end
+
+            FC2: begin
+                wb_vector_mode = 1'b1;
+                wb_load_valid  = fc2_wb_load_valid;
+                wb_wdata0      = fc2_wb_wdata0;
+                wb_wdata1      = fc2_wb_wdata1;
             end
 
             default: ;
