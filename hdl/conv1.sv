@@ -569,7 +569,10 @@ module conv1 (
     // The completion flag is asserted only for the last output channel.
 
     always_ff @(posedge clk or negedge rst_n) begin : done_delay_ff
-        if (!rst_n) done_delay <= 1'b0;
+        if (!rst_n) begin
+            done <= 1'b0;
+            done_delay <= 1'b0;
+        end 
         else begin
             done_delay <= {done_delay[0], conv1_done};
             done <= done_delay[1];

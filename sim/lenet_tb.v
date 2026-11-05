@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
-`define CYCLE 12
-`define END_CYCLES 50000
+`define CYCLE 10
+`define END_CYCLES 10000000
 module tb_lenet();
 
     
@@ -104,12 +104,6 @@ module tb_lenet();
         .rdata1(sram_act_rdata1)
     );
 
-    // ===== Dumpfsdb ===== //
-    initial begin
-        $fsdbDumpfile("lenet.fsdb");
-        $fsdbDumpvars(0, tb_lenet,"+all");
-        $fsdbDumpMDA(0, tb_lenet);
-    end
 
     // ===== Load data ===== //
     initial begin
@@ -157,35 +151,38 @@ module tb_lenet();
         clk = ~clk;
     end 
 
+
+integer debug_cycle;
+reg first_x_found;
+
+initial begin
+    debug_cycle = 0;
+    first_x_found = 0;
+end
+
+
     // ===== Set simulation info ===== //
     initial begin
     `ifdef GATESIM
-        $dumpfile("lenet_syn.vcd");
-        $dumpvars("+all");
+        $dumpfile("lenet_syn.fsdb");
+        $dumpvars(0, tb_lenet);
+        $fsdbDumpMDA(0, tb_lenet);
         $sdf_annotate("../syn/netlist/lenet_syn.sdf", lenet_inst);
 	`else
         `ifdef POSTSIM
-            $dumpfile("lenet_post.vcd");
-            $dumpvars("+all");
+            $dumpfile("lenet_post.fsdb");
+            $dumpvars(0, tb_lenet);
+            $fsdbDumpMDA(0, tb_lenet);
             $sdf_annotate("../apr/netlist/CHIP.sdf", lenet_inst);
         `else
-            $dumpfile("lenet.vcd");
-            $dumpvars("+all");
+            $dumpfile("lenet.fsdb");
+            $dumpvars(0, tb_lenet);
+            $fsdbDumpMDA(0, tb_lenet);
         `endif
     `endif
     end
-        
-    /*
-    always @(posedge clk) begin
-        if (sram_act_wea0 == 4'hF) begin
-            $display(
-                "[SRAM WRITE] addr=%0d data=%08h",
-                sram_act_addr0,
-                sram_act_wdata0
-            );
-        end
-    end
-*/
+ 
+    
     // ===== Simulating  ===== //
     initial begin
 

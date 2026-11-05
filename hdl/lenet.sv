@@ -254,39 +254,40 @@ module lenet (
     // incomplete. The done registers prevent a completed layer from restarting.
     assign all_layers_done = conv1_done_reg & conv2_done_reg & conv3_done_reg & fc1_done_reg & reload_done_reg & fc2_done_reg;
 
+    
+    assign conv1_enable = ((cs == CONV1) && !conv1_done_reg) ? 1'b1 : 1'b0;
+    assign conv2_enable = ((cs == CONV2) && conv1_done_reg && !conv2_done_reg) ? 1'b1 : 1'b0;
+    assign conv3_enable = ((cs == CONV3) && conv2_done_reg && !conv3_done_reg) ? 1'b1 : 1'b0;
+    assign fc1_enable = ((cs == FC1) && conv3_done_reg && !fc1_done_reg) ? 1'b1 : 1'b0;
+    assign reload_enable = ((cs == RELOAD84) && fc1_done_reg && !reload_done_reg) ? 1'b1 : 1'b0;
+    assign fc2_enable = ((cs == FC2) && reload_done_reg && !fc2_done_reg) ? 1'b1 : 1'b0;
 
-
-    assign conv1_enable = (cs == CONV1) && !conv1_done_reg;
-    assign conv2_enable = (cs == CONV2) && conv1_done_reg && !conv2_done_reg;
-    assign conv3_enable = (cs == CONV3) && conv2_done_reg && !conv3_done_reg;
-    assign fc1_enable = (cs == FC1) && conv3_done_reg && !fc1_done_reg;
-    assign reload_enable = (cs == RELOAD84) && fc1_done_reg && !reload_done_reg;
-    assign fc2_enable = (cs == FC2) && reload_done_reg && !fc2_done_reg;
 
 
     always_ff @(posedge clk or negedge rst_n) begin : layer_done_ff
         if (!rst_n) begin
-            conv1_done_reg <= 1'b0;
-            conv2_done_reg <= 1'b0;
-            conv3_done_reg <= 1'b0;
-            fc1_done_reg <= 1'b0;
+            conv1_done_reg  <= 1'b0;
+            conv2_done_reg  <= 1'b0;
+            conv3_done_reg  <= 1'b0;
+            fc1_done_reg    <= 1'b0;
             reload_done_reg <= 1'b0;
-            fc2_done_reg <= 1'b0;
-        end else if (conv1_done) conv1_done_reg <= 1;
-        else if (conv2_done) conv2_done_reg <= 1;
-        else if (conv3_done) conv3_done_reg <= 1;
-        else if (fc1_done) fc1_done_reg <= 1;
-        else if (reload_done) reload_done_reg <= 1;
-        else if (fc2_done) fc2_done_reg <= 1;
-        else begin
-            conv1_done_reg <= conv1_done_reg;
-            conv2_done_reg <= conv2_done_reg;
-            conv3_done_reg <= conv3_done_reg;
-            fc1_done_reg <= fc1_done_reg;
-            reload_done_reg <= reload_done_reg;
-            fc2_done_reg <= fc2_done_reg;
+            fc2_done_reg    <= 1'b0;
+        end else begin
+
+            if (conv1_done) conv1_done_reg <= 1'b1;
+
+            if (conv2_done) conv2_done_reg <= 1'b1;
+
+            if (conv3_done) conv3_done_reg <= 1'b1;
+
+            if (fc1_done) fc1_done_reg <= 1'b1;
+
+            if (reload_done) reload_done_reg <= 1'b1;
+
+            if (fc2_done) fc2_done_reg <= 1'b1;
         end
     end
+
 
     conv1 u_conv1 (
         .clk(clk),

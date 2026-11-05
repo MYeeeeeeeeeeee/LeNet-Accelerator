@@ -461,11 +461,13 @@ module fc2 (
     // write_addr and out_ch identify the last FC2 output word.
     // These assignments are local to completion signaling.
     assign fc2_done = enable_buf && (write_addr == 17'd10) && (sram_act_wea0 == 4'hF);
-    assign done = done_delay[1];
-
     always_ff @(posedge clk or negedge rst_n) begin : done_delay_ff
-        if (!rst_n) done_delay <= 1'b0;
-        else done_delay <= {done_delay[0], fc2_done};
+        if (!rst_n) begin
+            done <= 1'b0;
+            done_delay <= 1'b0;
+        end else begin
+            done_delay <= {done_delay[0], fc2_done};
+            done <= done_delay[1];
+        end
     end : done_delay_ff
-
 endmodule

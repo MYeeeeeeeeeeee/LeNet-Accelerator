@@ -7,6 +7,8 @@
 /sim/simv.daidir/
 /sim/ucli.key
 /sim/novas_dump.log
+/sim/*.rc
+/sim/vfastLog
 
 # Waveforms
 /sim/*.fsdb
@@ -27,12 +29,17 @@
 # ==========================================
 
 /syn/WORK/
-/syn/*.ddc
+/syn/netlist/*.ddc
+/syn/netlist/*.sdf
 /syn/*.svf
 /syn/*.pvl
 /syn/*.syn
 /syn/*.mr
 /syn/*.pvk
+/syn/netlist
+/syn/*.log
+
+
 
 # ==========================================
 # Temporary Files

@@ -417,11 +417,14 @@ module fc1 (
     // Completion: detect the final packed word and delay the top-level pulse.
     // write_addr and out_ch identify the last FC1 output word.
     assign fc1_done = pack_valid && (write_addr == 17'd20) && (out_ch == 8'd83);
-    assign done = done_delay[1];
-
     always_ff @(posedge clk or negedge rst_n) begin : done_delay_ff
-        if (!rst_n) done_delay <= 1'b0;
-        else done_delay <= {done_delay[0], fc1_done};
+        if (!rst_n) begin
+            done <= 1'b0;
+            done_delay <= 1'b0;
+        end else begin
+            done_delay <= {done_delay[0], fc1_done};
+            done <= done_delay[1];
+        end
     end : done_delay_ff
 
 endmodule

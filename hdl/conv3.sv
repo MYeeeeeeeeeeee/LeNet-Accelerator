@@ -416,7 +416,7 @@ module conv3 (
             fc_buf_waddr <= out_ch;
             fc_buf_wdata <= neuron_data;
         end else begin
-            fc_buf_we    <= 1'b0;
+            fc_buf_we <= 1'b0;
         end
     end
 
@@ -442,11 +442,14 @@ module conv3 (
     // Pipeline 4 output: detect the final word and delay completion for the
     // top-level interface.
     assign conv3_done = pack_valid && (write_addr == 17'd29) && (out_ch == 8'd119);
-    assign done = done_delay[1];
 
     always_ff @(posedge clk or negedge rst_n) begin : done_delay_ff
-        if (!rst_n) done_delay <= 1'b0;
-        else done_delay <= {done_delay[0], conv3_done};
+        if (!rst_n) begin
+            done <= 1'b0;
+            done_delay <= 1'b0;
+        end else begin
+            done_delay <= {done_delay[0], conv3_done};
+            done <= done_delay[1];
+        end
     end : done_delay_ff
-
 endmodule
