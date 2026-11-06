@@ -46,7 +46,11 @@ module conv2 (
     output logic [ 3:0] wb_kernel_idx,
     output logic [31:0] wb_wdata0,
 
-    input logic signed [4:0][7:0] shared_weight[0:4]
+    input logic signed [4:0][7:0] shared_weight[0:4],
+
+    // OPT-04B: request shared CONV1/CONV2 combinational PE array.
+    output logic pe_req,
+    input logic signed [19:0] shared_pe_result[0:4]
 
 );
     // input enable buffered to preserve SRAM timing
@@ -452,21 +456,13 @@ module conv2 (
         end
     end : compute_counter
 
-    // Pipeline 3 parallel convolution. Five PE instances calculate one
-    // 5x5 channel result in parallel from the selected sliding window.
+    // OPT-04B: PE arithmetic now lives in lenet.sv (one shared PE array).
+    // Preserve original invalid-cycle zero at the local pe_out boundary.
+    assign pe_req = pe_valid;
     generate
-        for (i = 0; i < 5; i++) begin : gen_pe
-            PE #(
-                .INPUT_WIDTH (8),
-                .OUTPUT_WIDTH(20)
-            ) pe_inst (
-                .weight(shared_weight[i]),
-                .activation(pe_window[i]),
-                .valid(pe_valid),
-                .mode(CONV),
-                .result(pe_out[i])
-            );
-        end : gen_pe
+        for (i = 0; i < 5; i++) begin : gen_pe_result
+            assign pe_out[i] = pe_valid ? shared_pe_result[i] : '0;
+        end
     endgenerate
 
     // Pipeline 4 result register. This register isolates the PE combinational

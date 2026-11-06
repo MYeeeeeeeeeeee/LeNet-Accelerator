@@ -2,6 +2,7 @@
 ../hdl/lenet.sv
 ../hdl/conv1.sv
 ../hdl/conv2.sv
+../hdl/shared_pe_array.sv
 ../hdl/conv3.sv
 ../hdl/fc_buffer.sv
 ../hdl/shared_line_buffer.sv

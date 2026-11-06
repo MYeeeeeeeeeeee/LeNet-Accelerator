@@ -191,6 +191,12 @@ module lenet (
     logic [31:0] wb_wdata0, wb_wdata1;
     logic signed [4:0][7:0] shared_weight[0:4];
 
+    // OPT-04B: one physical PE array shared by CONV1 and CONV2.
+    logic c1_pe_req, c2_pe_req;
+    logic shared_pe_valid;
+    logic signed [19:0] shared_pe_result[0:4];
+
+
     // CONV1 CONV2 CONV 3 weight interface
     logic c1_wb_load_valid, c2_wb_load_valid, c3_wb_load_valid;
     logic [3:0] c1_wb_kernel_idx, c2_wb_kernel_idx, c3_wb_kernel_idx;
@@ -254,13 +260,15 @@ module lenet (
     // incomplete. The done registers prevent a completed layer from restarting.
     assign all_layers_done = conv1_done_reg & conv2_done_reg & conv3_done_reg & fc1_done_reg & reload_done_reg & fc2_done_reg;
 
-    
+
     assign conv1_enable = ((cs == CONV1) && !conv1_done_reg) ? 1'b1 : 1'b0;
     assign conv2_enable = ((cs == CONV2) && conv1_done_reg && !conv2_done_reg) ? 1'b1 : 1'b0;
     assign conv3_enable = ((cs == CONV3) && conv2_done_reg && !conv3_done_reg) ? 1'b1 : 1'b0;
     assign fc1_enable = ((cs == FC1) && conv3_done_reg && !fc1_done_reg) ? 1'b1 : 1'b0;
     assign reload_enable = ((cs == RELOAD84) && fc1_done_reg && !reload_done_reg) ? 1'b1 : 1'b0;
     assign fc2_enable = ((cs == FC2) && reload_done_reg && !fc2_done_reg) ? 1'b1 : 1'b0;
+
+    assign shared_pe_valid = c1_pe_req | c2_pe_req;
 
 
 
@@ -326,10 +334,12 @@ module lenet (
         .lb_col       (c1_lb_col),
         .pe_window    (shared_pe_window),
 
-        .wb_load_valid(c1_wb_load_valid),
-        .wb_kernel_idx(c1_wb_kernel_idx),
-        .wb_wdata0    (c1_wb_wdata0),
-        .shared_weight(shared_weight)
+        .wb_load_valid   (c1_wb_load_valid),
+        .wb_kernel_idx   (c1_wb_kernel_idx),
+        .wb_wdata0       (c1_wb_wdata0),
+        .shared_weight   (shared_weight),
+        .pe_req          (c1_pe_req),
+        .shared_pe_result(shared_pe_result)
     );
 
     conv2 u_conv2 (
@@ -369,11 +379,25 @@ module lenet (
         .lb_col       (c2_lb_col),
         .pe_window    (shared_pe_window),
 
-        .wb_load_valid(c2_wb_load_valid),
-        .wb_kernel_idx(c2_wb_kernel_idx),
-        .wb_wdata0    (c2_wb_wdata0),
-        .shared_weight(shared_weight)
+        .wb_load_valid   (c2_wb_load_valid),
+        .wb_kernel_idx   (c2_wb_kernel_idx),
+        .wb_wdata0       (c2_wb_wdata0),
+        .shared_weight   (shared_weight),
+        .pe_req          (c2_pe_req),
+        .shared_pe_result(shared_pe_result)
 
+    );
+
+    
+    // Exactly one shared array. No local PE instances inside CONV1/CONV2.
+    shared_pe_array #(
+        .INPUT_WIDTH (8),
+        .OUTPUT_WIDTH(20)
+    ) u_shared_pe_array (
+        .weight    (shared_weight),
+        .activation(shared_pe_window),
+        .valid     (shared_pe_valid),
+        .result    (shared_pe_result)
     );
 
     shared_line_buffer u_shared_line_buffer (
