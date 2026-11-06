@@ -191,10 +191,16 @@ module lenet (
     logic [31:0] wb_wdata0, wb_wdata1;
     logic signed [4:0][7:0] shared_weight[0:4];
 
-    // OPT-04B: one physical PE array shared by CONV1 and CONV2.
-    logic c1_pe_req, c2_pe_req;
+    //  shared physical PE array  
+    logic c1_pe_req, c2_pe_req, c3_pe_req, fc1_pe_req, fc2_pe_req;
     logic shared_pe_valid;
     logic signed [19:0] shared_pe_result[0:4];
+    logic [4:0][7:0] pe_act_mux[0:4];
+    logic signed [4:0][7:0] pe_weight_mux[0:4];
+
+    logic [63:0] selected_fc_act;
+    logic [63:0] fc1_pe_act_vec;
+    logic [63:0] fc2_pe_act_vec;
 
 
     // CONV1 CONV2 CONV 3 weight interface
@@ -268,7 +274,7 @@ module lenet (
     assign reload_enable = ((cs == RELOAD84) && fc1_done_reg && !reload_done_reg) ? 1'b1 : 1'b0;
     assign fc2_enable = ((cs == FC2) && reload_done_reg && !fc2_done_reg) ? 1'b1 : 1'b0;
 
-    assign shared_pe_valid = c1_pe_req | c2_pe_req;
+    assign shared_pe_valid = c1_pe_req | c2_pe_req | c3_pe_req | fc1_pe_req | fc2_pe_req;
 
 
 
@@ -388,16 +394,16 @@ module lenet (
 
     );
 
-    
+
     // Exactly one shared array. No local PE instances inside CONV1/CONV2.
     shared_pe_array #(
         .INPUT_WIDTH (8),
         .OUTPUT_WIDTH(20)
     ) u_shared_pe_array (
-        .weight    (shared_weight),
-        .activation(shared_pe_window),
-        .valid     (shared_pe_valid),
-        .result    (shared_pe_result)
+        .weight(pe_weight_mux),
+        .activation(pe_act_mux),
+        .valid(shared_pe_valid),
+        .result(shared_pe_result)
     );
 
     shared_line_buffer u_shared_line_buffer (
@@ -475,7 +481,10 @@ module lenet (
         .wb_load_valid(c3_wb_load_valid),
         .wb_wdata0    (c3_wb_wdata0),
         .wb_wdata1    (c3_wb_wdata1),
-        .shared_weight(shared_weight)
+        .shared_weight(shared_weight),
+
+        .pe_req          (c3_pe_req),
+        .shared_pe_result(shared_pe_result)
     );
 
     fc_buffer u_fc_buffer (
@@ -529,7 +538,11 @@ module lenet (
         .wb_load_valid(fc1_wb_load_valid),
         .wb_wdata0    (fc1_wb_wdata0),
         .wb_wdata1    (fc1_wb_wdata1),
-        .shared_weight(shared_weight)
+        .shared_weight(shared_weight),
+
+        .pe_act_vec      (fc1_pe_act_vec),
+        .pe_req          (fc1_pe_req),
+        .shared_pe_result(shared_pe_result)
     );
 
 
@@ -588,7 +601,11 @@ module lenet (
         .wb_load_valid(fc2_wb_load_valid),
         .wb_wdata0    (fc2_wb_wdata0),
         .wb_wdata1    (fc2_wb_wdata1),
-        .shared_weight(shared_weight)
+        .shared_weight(shared_weight),
+
+        .pe_act_vec      (fc2_pe_act_vec),
+        .pe_req          (fc2_pe_req),
+        .shared_pe_result(shared_pe_result)
     );
 
 
@@ -754,9 +771,6 @@ module lenet (
     end
 
 
-
-
-
     always_comb begin : weight_buffer_mux
         wb_load_valid  = 1'b0;
         wb_vector_mode = 1'b0;
@@ -803,8 +817,6 @@ module lenet (
     end
 
 
-
-
     always_comb begin : fc_buf_write_mux
         fc_buf_we    = 1'b0;
         fc_buf_waddr = '0;
@@ -839,6 +851,36 @@ module lenet (
             default: ;
         endcase
     end
+
+    always_comb begin : fc_pe_mux
+        case (cs)
+            CONV3: selected_fc_act = shared_vector_data;
+            FC1: selected_fc_act = fc1_pe_act_vec;
+            FC2: selected_fc_act = fc2_pe_act_vec;
+            default: selected_fc_act = '0;
+        endcase
+    end : fc_pe_mux
+
+    always_comb begin : pe_data_mux
+        for (int i = 0; i < 5; i++) begin
+            pe_act_mux[i]    = '0;
+            pe_weight_mux[i] = '0;
+        end
+
+        if ((cs == CONV1) || (cs == CONV2)) begin
+            for (int i = 0; i < 5; i++) begin
+                pe_act_mux[i]    = shared_pe_window[i];
+                pe_weight_mux[i] = shared_weight[i];
+            end
+        end else if ((cs == CONV3) || (cs == FC1) || (cs == FC2)) begin
+
+            for (int i = 0; i < 2; i++) begin
+                pe_act_mux[i] = {8'd0, selected_fc_act[i*32+:32]};
+                pe_weight_mux[i] = {8'd0, shared_weight[i][3:0]};
+            end
+        end
+    end : pe_data_mux
+
     // Report completion only after every network stage, including reload,
     // has asserted done.
     always_ff @(posedge clk or negedge rst_n) begin : compute_finish_ff

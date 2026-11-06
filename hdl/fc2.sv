@@ -37,7 +37,12 @@ module fc2 (
     output logic                    wb_load_valid,
     output logic        [31:0]      wb_wdata0,
     output logic        [31:0]      wb_wdata1,
-    input  logic signed [ 4:0][7:0] shared_weight[0:4]
+    input  logic signed [ 4:0][7:0] shared_weight[0:4],
+
+    // PE interface for FC2 activation-vector and result return.
+    output logic [63:0] pe_act_vec,
+    output logic pe_req,
+    input logic signed [19:0] shared_pe_result[0:4]
 );
 
     localparam shortint fc2_weight_offset = 16'd15540;
@@ -104,28 +109,31 @@ module fc2 (
 
 
     // Global valid and transaction-control assignments.
-    assign s1_valid = enable_buf;
-    assign load_valid_s1 = s1_valid && (act_idx < 5'd11) && (out_ch < 'd10);
-    assign bias_load_valid = enable_buf && mac_done && (bias_idx < 5'd5);
+    assign s1_valid          = enable_buf;
+    assign load_valid_s1     = s1_valid && (act_idx < 5'd11) && (out_ch < 'd10);
+    assign bias_load_valid   = enable_buf && mac_done && (bias_idx < 5'd5);
 
     // Global pipeline-valid assignments.
-    assign vector_read_fire = load_valid_s1;
-    assign weight_valid_s1 = vector_read_fire;
+    assign vector_read_fire  = load_valid_s1;
+    assign weight_valid_s1   = vector_read_fire;
     // The shared buffer must not latch FC2 Bias as if it were MAC weights.
-    assign wb_load_valid = weight_valid_s4;
-    assign wb_wdata0 = sram_weight_rdata0_buf;
+    assign wb_load_valid     = weight_valid_s4;
+    assign wb_wdata0         = sram_weight_rdata0_buf;
     // Group 10 contains only 4 valid weights (Port 0). Mask Port 1.
-    assign wb_wdata1 = (group_idx_s4 == 6'd10) ? 32'd0 : sram_weight_rdata1_buf;
-    assign change_out_ch = neuron_valid && (out_ch < 'd10);
-    assign pe_valid = s3_valid && vector_buf_valid;
+    assign wb_wdata1         = (group_idx_s4 == 6'd10) ? 32'd0 : sram_weight_rdata1_buf;
+    assign change_out_ch     = neuron_valid && (out_ch < 'd10);
+    assign pe_valid          = s3_valid && vector_buf_valid;
 
     // Global output-write arbitration assignment.
     assign result_write_fire = enable_buf && result_ready && (write_addr < 17'd10);
 
+    assign pe_act_vec        = fc_act_vec_buf;
+    assign pe_req            = pe_valid;
+
     // Pipeline 1: arbitrate activation-vector reads and packed-output writes.
     // A packed output write takes priority over issuing a new vector read.
     // This address calculation is local to the activation address generator.
-    assign buffer_act_addr = act_idx * 8;
+    assign buffer_act_addr   = act_idx * 8;
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
         if (!rst_n) begin
             sram_act_addr0 <= '0;
@@ -349,22 +357,6 @@ module fc2 (
     // MAC weight registers are now physically owned by shared_weight_buffer.
     // Bias still uses sram_weight_rdata*_buf + bias_valid_s4 independently.
 
-    // Pipeline 3: multiply one buffered activation vector with two weights.
-    genvar i;
-    generate
-        for (i = 0; i < 2; i++) begin : gen_pe
-            PE #(
-                .INPUT_WIDTH (8),
-                .OUTPUT_WIDTH(20)
-            ) pe_inst (
-                .weight({8'd0, shared_weight[i][3:0]}),
-                .activation({8'd0, fc_act_vec_buf[i*32+:32]}),
-                .valid(pe_valid),
-                .mode(FC),
-                .result(pe_out[i])
-            );
-        end : gen_pe
-    endgenerate
 
     // Pipeline 4: register PE results before summing and PSUM update.
     // Only valid PE results replace the previous registered values.
@@ -372,7 +364,9 @@ module fc2 (
         if (!rst_n) begin
             foreach (pe_out_s4[i]) pe_out_s4[i] <= '0;
         end else if (pe_valid) begin
-            foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out[i];
+            for (int i = 0; i < 2; i++) begin
+                pe_out_s4[i] <= shared_pe_result[i];
+            end
         end
     end : pe_out_ff
 

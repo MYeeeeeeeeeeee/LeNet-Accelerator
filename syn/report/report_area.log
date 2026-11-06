@@ -3,29 +3,29 @@
 Report : area
 Design : lenet
 Version: T-2022.03
-Date   : Fri Nov  6 21:26:12 2026
+Date   : Fri Nov  6 22:44:44 2026
 ****************************************
 
 Library(s) Used:
 
     slow (File: /usr/cad/Design_Kit/CBDK_IC_Contest_v2.5/SynopsysDC/db/slow.db)
 
-Number of ports:                        12219
-Number of nets:                         61205
-Number of cells:                        43780
-Number of combinational cells:          36287
+Number of ports:                         9214
+Number of nets:                         53371
+Number of cells:                        40240
+Number of combinational cells:          32838
 Number of sequential cells:              6601
 Number of macros/black boxes:               0
-Number of buf/inv:                       4590
-Number of references:                      47
+Number of buf/inv:                       4363
+Number of references:                      54
 
-Combinational area:             423068.462567
-Buf/Inv area:                    20869.532708
-Noncombinational area:          213505.754421
+Combinational area:             352509.240658
+Buf/Inv area:                    19951.239326
+Noncombinational area:          213215.499023
 Macro/Black Box area:                0.000000
 Net Interconnect area:      undefined  (No wire load specified)
 
-Total cell area:                636574.216988
+Total cell area:                565724.739681
 Total area:                 undefined
 
 Hierarchical area distribution
@@ -35,233 +35,161 @@ Hierarchical area distribution
                                   --------------------  -------------------------------- 
 Hierarchical cell                 Absolute     Percent  Combi-       Noncombi-    Black-
                                   Total        Total    national     national     boxes   Design
---------------------------------  -----------  -------  -----------  -----------  ------  ------------------------------------------------------------
-lenet                             636574.2170    100.0    6451.8173     359.8488  0.0000  lenet
-u_conv1                            47257.3129      7.4    5893.3727   13652.1878  0.0000  conv1
+--------------------------------  -----------  -------  -----------  -----------  ------  ----------------------------------------------------------
+lenet                             565724.7397    100.0   10786.9768     359.8488  0.0000  lenet
+u_conv1                            44750.2534      7.9    5852.6351   13580.8969  0.0000  conv1
 u_conv1/add_0_root_add_0_root_add_470_4
-                                     875.8584      0.1     875.8584       0.0000  0.0000  conv1_DW01_add_18
+                                    1059.1776      0.2    1059.1776       0.0000  0.0000  conv1_DW01_add_21
 u_conv1/add_1_root_add_0_root_add_470_4
-                                     804.5676      0.1     804.5676       0.0000  0.0000  conv1_DW01_add_17
-u_conv1/add_249                      295.3476      0.0     295.3476       0.0000  0.0000  conv1_DW01_inc_2_DW01_inc_35
+                                    1105.0074      0.2    1105.0074       0.0000  0.0000  conv1_DW01_add_20
+u_conv1/add_249                      295.3476      0.1     295.3476       0.0000  0.0000  conv1_DW01_inc_2_DW01_inc_35
 u_conv1/add_2_root_add_0_root_add_470_4
-                                     802.8702      0.1     802.8702       0.0000  0.0000  conv1_DW01_add_16
+                                    1003.1634      0.2    1003.1634       0.0000  0.0000  conv1_DW01_add_19
 u_conv1/add_3_root_add_0_root_add_470_4
-                                    1612.5300      0.3    1612.5300       0.0000  0.0000  conv1_DW01_add_11_DW01_add_58
-u_conv1/mult_475                   23320.5786      3.7   23320.5786       0.0000  0.0000  conv1_DW_mult_uns_3
-u_conv2                           104659.9852     16.4   25143.5858   34365.5592  0.0000  conv2
+                                     840.2130      0.1     840.2130       0.0000  0.0000  conv1_DW01_add_18
+u_conv1/mult_475                   21013.8124      3.7   21013.8124       0.0000  0.0000  conv1_DW_mult_uns_4
+u_conv2                           104361.2428     18.4   24994.2146   34370.6514  0.0000  conv2
 u_conv2/add_0_root_add_0_root_add_492_4
-                                     872.4636      0.1     872.4636       0.0000  0.0000  conv2_DW01_add_6_DW01_add_46
+                                     964.1232      0.2     964.1232       0.0000  0.0000  conv2_DW01_add_6_DW01_add_40
 u_conv2/add_1_root_add_0_root_add_492_4
-                                     807.9624      0.1     807.9624       0.0000  0.0000  conv2_DW01_add_7_DW01_add_47
-u_conv2/add_266                      295.3476      0.0     295.3476       0.0000  0.0000  conv2_DW01_inc_3_DW01_inc_32
+                                     847.0026      0.1     847.0026       0.0000  0.0000  conv2_DW01_add_7_DW01_add_41
+u_conv2/add_266                      295.3476      0.1     295.3476       0.0000  0.0000  conv2_DW01_inc_3_DW01_inc_32
 u_conv2/add_2_root_add_0_root_add_492_4
-                                     865.6740      0.1     865.6740       0.0000  0.0000  conv2_DW01_add_8_DW01_add_48
+                                     914.8986      0.2     914.8986       0.0000  0.0000  conv2_DW01_add_8_DW01_add_42
 u_conv2/add_3_root_add_0_root_add_492_4
-                                     748.5534      0.1     748.5534       0.0000  0.0000  conv2_DW01_add_9_DW01_add_49
-u_conv2/add_516                     1809.4284      0.3    1809.4284       0.0000  0.0000  conv2_DW01_add_0_DW01_add_34
-u_conv2/gt_564                       816.4494      0.1     816.4494       0.0000  0.0000  conv2_DW_cmp_8
-u_conv2/gt_567                       857.1870      0.1     857.1870       0.0000  0.0000  conv2_DW_cmp_7
-u_conv2/gt_570                       819.8442      0.1     819.8442       0.0000  0.0000  conv2_DW_cmp_6
-u_conv2/mult_531_C573              37257.9301      5.9   37257.9301       0.0000  0.0000  conv2_DW_mult_uns_4
-u_conv3                            76457.6856     12.0    6312.6305   14870.9209  0.0000  conv3
-u_conv3/add_162                      295.3476      0.0     295.3476       0.0000  0.0000  conv3_DW01_inc_3_DW01_inc_28
-u_conv3/add_176                      108.6336      0.0     108.6336       0.0000  0.0000  conv3_DW01_inc_2_DW01_inc_27
-u_conv3/add_332                     1028.6244      0.2    1028.6244       0.0000  0.0000  conv3_DW01_add_10
-u_conv3/add_342                     1539.5418      0.2    1539.5418       0.0000  0.0000  conv3_DW01_add_11
-u_conv3/add_375                      108.6336      0.0     108.6336       0.0000  0.0000  conv3_DW01_inc_0_DW01_inc_25
-u_conv3/gen_pe[0].pe_inst          12054.9351      1.9     353.0592       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5
-u_conv3/gen_pe[0].pe_inst/add_0_root_add_35_4
-                                     663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW01_add_0_DW01_add_28
-u_conv3/gen_pe[0].pe_inst/mult_19_I5
-                                    1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_0_DW_mult_tc_4
-u_conv3/gen_pe[0].pe_inst/r419      1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_1_DW_mult_tc_26
-u_conv3/gen_pe[0].pe_inst/r420      1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_2_DW_mult_tc_27
-u_conv3/gen_pe[0].pe_inst/r421      1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_3_DW_mult_tc_28
-u_conv3/gen_pe[0].pe_inst/r422      1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_4_DW_mult_tc_29
-u_conv3/gen_pe[0].pe_inst/r424       663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW01_add_3_DW01_add_83
-u_conv3/gen_pe[0].pe_inst/r425       668.7756      0.1     668.7756       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW01_add_2_DW01_add_82
-u_conv3/gen_pe[0].pe_inst/r426       667.0782      0.1     667.0782       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW01_add_1_DW01_add_81
-u_conv3/gen_pe[1].pe_inst          12049.8429      1.9     353.0592       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4
-u_conv3/gen_pe[1].pe_inst/add_0_root_add_35_4
-                                     663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_0_DW01_add_27
-u_conv3/gen_pe[1].pe_inst/mult_19_I5
-                                    1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_0_DW_mult_tc_5
-u_conv3/gen_pe[1].pe_inst/r419      1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_1_DW_mult_tc_22
-u_conv3/gen_pe[1].pe_inst/r420      1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_2_DW_mult_tc_23
-u_conv3/gen_pe[1].pe_inst/r421      1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_3_DW_mult_tc_24
-u_conv3/gen_pe[1].pe_inst/r422      1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_4_DW_mult_tc_25
-u_conv3/gen_pe[1].pe_inst/r424       663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_3_DW01_add_80
-u_conv3/gen_pe[1].pe_inst/r425       663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_2_DW01_add_79
-u_conv3/gen_pe[1].pe_inst/r426       667.0782      0.1     667.0782       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_1_DW01_add_78
-u_conv3/mult_389_C357              28088.5753      4.4   28088.5753       0.0000  0.0000  conv3_DW_mult_uns_2
-u_fc1                              80135.9513     12.6    6742.0727   18141.8106  0.0000  fc1
-u_fc1/add_121                        295.3476      0.0     295.3476       0.0000  0.0000  fc1_DW01_inc_3_DW01_inc_24
-u_fc1/add_327                       1091.4282      0.2    1091.4282       0.0000  0.0000  fc1_DW01_add_8
-u_fc1/add_329                       1447.8822      0.2    1447.8822       0.0000  0.0000  fc1_DW01_add_9
-u_fc1/add_363                        127.3050      0.0     127.3050       0.0000  0.0000  fc1_DW01_inc_0_DW01_inc_21
-u_fc1/gen_pe[0].pe_inst            12053.2377      1.9     353.0592       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3
-u_fc1/gen_pe[0].pe_inst/add_0_root_add_35_4
-                                     663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_0_DW01_add_19
-u_fc1/gen_pe[0].pe_inst/mult_19_I5
-                                    1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_0_DW_mult_tc_2
-u_fc1/gen_pe[0].pe_inst/r419        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_1_DW_mult_tc_15
-u_fc1/gen_pe[0].pe_inst/r420        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_2_DW_mult_tc_17
-u_fc1/gen_pe[0].pe_inst/r421        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_3_DW_mult_tc_19
-u_fc1/gen_pe[0].pe_inst/r422        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_4_DW_mult_tc_21
-u_fc1/gen_pe[0].pe_inst/r424         663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_3_DW01_add_77
-u_fc1/gen_pe[0].pe_inst/r425         667.0782      0.1     667.0782       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_2_DW01_add_76
-u_fc1/gen_pe[0].pe_inst/r426         667.0782      0.1     667.0782       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_1_DW01_add_75
-u_fc1/gen_pe[1].pe_inst            12049.8429      1.9     353.0592       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2
-u_fc1/gen_pe[1].pe_inst/add_0_root_add_35_4
-                                     663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_0_DW01_add_18
-u_fc1/gen_pe[1].pe_inst/mult_19_I5
-                                    1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_0_DW_mult_tc_3
-u_fc1/gen_pe[1].pe_inst/r419        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_1_DW_mult_tc_7
-u_fc1/gen_pe[1].pe_inst/r420        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_2_DW_mult_tc_9
-u_fc1/gen_pe[1].pe_inst/r421        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_3_DW_mult_tc_11
-u_fc1/gen_pe[1].pe_inst/r422        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_4_DW_mult_tc_13
-u_fc1/gen_pe[1].pe_inst/r424         663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_3_DW01_add_71
-u_fc1/gen_pe[1].pe_inst/r425         663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_2_DW01_add_70
-u_fc1/gen_pe[1].pe_inst/r426         667.0782      0.1     667.0782       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_1_DW01_add_69
-u_fc1/mult_377_C345                28187.0244      4.4   28187.0244       0.0000  0.0000  fc1_DW_mult_uns_2
-u_fc2                              82828.0271     13.0   16094.7468   37134.0185  0.0000  fc2
-u_fc2/add_136                        295.3476      0.0     295.3476       0.0000  0.0000  fc2_DW01_inc_3_DW01_inc_19
-u_fc2/add_387                        955.6362      0.2     955.6362       0.0000  0.0000  fc2_DW01_add_3
-u_fc2/add_389                       1369.8018      0.2    1369.8018       0.0000  0.0000  fc2_DW01_add_2
-u_fc2/add_413                       1347.7356      0.2    1347.7356       0.0000  0.0000  fc2_DW01_add_1
-u_fc2/add_419                       1395.2628      0.2    1395.2628       0.0000  0.0000  fc2_DW01_add_0
-u_fc2/add_431                        127.3050      0.0     127.3050       0.0000  0.0000  fc2_DW01_inc_0_DW01_inc_16
-u_fc2/gen_pe[0].pe_inst            12051.5403      1.9     358.1514       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1
-u_fc2/gen_pe[0].pe_inst/add_0_root_add_35_4
-                                     663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_0_DW01_add_10
-u_fc2/gen_pe[0].pe_inst/mult_19_I5
-                                    1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_0
-u_fc2/gen_pe[0].pe_inst/r419        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_1_DW_mult_tc_14
-u_fc2/gen_pe[0].pe_inst/r420        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_2_DW_mult_tc_16
-u_fc2/gen_pe[0].pe_inst/r421        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_3_DW_mult_tc_18
-u_fc2/gen_pe[0].pe_inst/r422        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_4_DW_mult_tc_20
-u_fc2/gen_pe[0].pe_inst/r424         663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_3_DW01_add_74
-u_fc2/gen_pe[0].pe_inst/r425         663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_2_DW01_add_73
-u_fc2/gen_pe[0].pe_inst/r426         663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_1_DW01_add_72
-u_fc2/gen_pe[1].pe_inst            12056.6325      1.9     353.0592       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0
-u_fc2/gen_pe[1].pe_inst/add_0_root_add_35_4
-                                     663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_0_DW01_add_9
-u_fc2/gen_pe[1].pe_inst/mult_19_I5
-                                    1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_0_DW_mult_tc_1
-u_fc2/gen_pe[1].pe_inst/r419        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_1_DW_mult_tc_6
-u_fc2/gen_pe[1].pe_inst/r420        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_2_DW_mult_tc_8
-u_fc2/gen_pe[1].pe_inst/r421        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_3_DW_mult_tc_10
-u_fc2/gen_pe[1].pe_inst/r422        1807.7310      0.3    1807.7310       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_4_DW_mult_tc_12
-u_fc2/gen_pe[1].pe_inst/r424         663.6834      0.1     663.6834       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_3_DW01_add_68
-u_fc2/gen_pe[1].pe_inst/r425         668.7756      0.1     668.7756       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_2_DW01_add_67
-u_fc2/gen_pe[1].pe_inst/r426         668.7756      0.1     668.7756       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_1_DW01_add_66
-u_fc_buffer                        56964.7423      8.9   26004.1674   30960.5750  0.0000  fc_buffer
-u_reload_controller                10089.3453      1.6    1892.6010    7901.3967  0.0000  reload_controller
-u_reload_controller/add_94           295.3476      0.0     295.3476       0.0000  0.0000  reload_controller_DW01_inc_0_DW01_inc_20
-u_shared_line_buffer               99403.1364     15.6   49861.1243   49542.0121  0.0000  shared_line_buffer
-u_shared_pe_array                  62705.3506      9.9       0.0000       0.0000  0.0000  shared_pe_array_INPUT_WIDTH8_OUTPUT_WIDTH20
+                                     826.6338      0.1     826.6338       0.0000  0.0000  conv2_DW01_add_9_DW01_add_43
+u_conv2/add_516                     1507.2912      0.3    1507.2912       0.0000  0.0000  conv2_DW01_add_0_DW01_add_28
+u_conv2/gt_564                       818.1468      0.1     818.1468       0.0000  0.0000  conv2_DW_cmp_8
+u_conv2/gt_567                       874.1610      0.2     874.1610       0.0000  0.0000  conv2_DW_cmp_7
+u_conv2/gt_570                       860.5818      0.2     860.5818       0.0000  0.0000  conv2_DW_cmp_6
+u_conv2/mult_531_C573              37088.1902      6.6   37088.1902       0.0000  0.0000  conv2_DW_mult_uns_4
+u_conv3                            52171.2859      9.2    6322.8149   14767.3795  0.0000  conv3
+u_conv3/add_170                      295.3476      0.1     295.3476       0.0000  0.0000  conv3_DW01_inc_3_DW01_inc_28
+u_conv3/add_184                      108.6336      0.0     108.6336       0.0000  0.0000  conv3_DW01_inc_2_DW01_inc_27
+u_conv3/add_327                      948.8466      0.2     948.8466       0.0000  0.0000  conv3_DW01_add_10
+u_conv3/add_337                     1415.6316      0.3    1415.6316       0.0000  0.0000  conv3_DW01_add_11
+u_conv3/add_370                      108.6336      0.0     108.6336       0.0000  0.0000  conv3_DW01_inc_0_DW01_inc_25
+u_conv3/mult_384_C352              28203.9984      5.0   28203.9984       0.0000  0.0000  conv3_DW_mult_uns_2
+u_fc1                              56017.5941      9.9    6769.2311   18189.3378  0.0000  fc1
+u_fc1/add_130                        295.3476      0.1     295.3476       0.0000  0.0000  fc1_DW01_inc_3_DW01_inc_24
+u_fc1/add_322                       1032.0192      0.2    1032.0192       0.0000  0.0000  fc1_DW01_add_8
+u_fc1/add_324                       1452.9744      0.3    1452.9744       0.0000  0.0000  fc1_DW01_add_9
+u_fc1/add_358                        127.3050      0.0     127.3050       0.0000  0.0000  fc1_DW01_inc_0_DW01_inc_21
+u_fc1/mult_372_C340                28151.3790      5.0   28151.3790       0.0000  0.0000  fc1_DW_mult_uns_2
+u_fc2                              59278.2990     10.5   16366.3308   37098.3731  0.0000  fc2
+u_fc2/add_144                        295.3476      0.1     295.3476       0.0000  0.0000  fc2_DW01_inc_3_DW01_inc_19
+u_fc2/add_381                        977.7024      0.2     977.7024       0.0000  0.0000  fc2_DW01_add_3
+u_fc2/add_383                       1449.5796      0.3    1449.5796       0.0000  0.0000  fc2_DW01_add_2
+u_fc2/add_407                       1429.2108      0.3    1429.2108       0.0000  0.0000  fc2_DW01_add_1
+u_fc2/add_413                       1534.4496      0.3    1534.4496       0.0000  0.0000  fc2_DW01_add_0
+u_fc2/add_425                        127.3050      0.0     127.3050       0.0000  0.0000  fc2_DW01_inc_0_DW01_inc_16
+u_fc_buffer                        56964.7423     10.1   26004.1674   30960.5750  0.0000  fc_buffer
+u_reload_controller                10089.3453      1.8    1892.6010    7901.3967  0.0000  reload_controller
+u_reload_controller/add_94           295.3476      0.1     295.3476       0.0000  0.0000  reload_controller_DW01_inc_0_DW01_inc_20
+u_shared_line_buffer               99058.5642     17.5   49521.6443   49536.9199  0.0000  shared_line_buffer
+u_shared_pe_array                  62752.8778     11.1       0.0000       0.0000  0.0000  shared_pe_array_INPUT_WIDTH8_OUTPUT_WIDTH20
 u_shared_pe_array/gen_shared_pe[0].pe_inst
-                                   12630.3534      2.0     332.6904       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10
+                                   12842.5284      2.3     336.0852       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4
 u_shared_pe_array/gen_shared_pe[0].pe_inst/add_0_root_add_35_4
-                                     690.8418      0.1     690.8418       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW01_add_11
+                                     729.8820      0.1     729.8820       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_11
 u_shared_pe_array/gen_shared_pe[0].pe_inst/mult_19_I5
-                                    1948.6152      0.3    1948.6152       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_0_DW_mult_tc_34
+                                    1884.1140      0.3    1884.1140       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_0_DW_mult_tc_4
 u_shared_pe_array/gen_shared_pe[0].pe_inst/r419
-                                    1929.9438      0.3    1929.9438       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_9
+                                    1943.5230      0.3    1943.5230       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_9
 u_shared_pe_array/gen_shared_pe[0].pe_inst/r420
-                                    1943.5230      0.3    1943.5230       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_10
+                                    2038.5774      0.4    2038.5774       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_11
 u_shared_pe_array/gen_shared_pe[0].pe_inst/r421
-                                    1968.9840      0.3    1968.9840       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_11
+                                    1955.4048      0.3    1955.4048       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_10
 u_shared_pe_array/gen_shared_pe[0].pe_inst/r422
-                                    1967.2866      0.3    1967.2866       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_12
+                                    2033.4852      0.4    2033.4852       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_12
 u_shared_pe_array/gen_shared_pe[0].pe_inst/r424
-                                     605.9718      0.1     605.9718       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW01_add_8
+                                     633.1302      0.1     633.1302       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_8
 u_shared_pe_array/gen_shared_pe[0].pe_inst/r425
-                                     599.1822      0.1     599.1822       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW01_add_9
+                                     614.4588      0.1     614.4588       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_9
 u_shared_pe_array/gen_shared_pe[0].pe_inst/r426
-                                     643.3146      0.1     643.3146       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW01_add_10
+                                     673.8678      0.1     673.8678       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_10
 u_shared_pe_array/gen_shared_pe[1].pe_inst
-                                   12579.4314      2.0     334.3878       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9
+                                   12547.1808      2.2     332.6904       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3
 u_shared_pe_array/gen_shared_pe[1].pe_inst/add_0_root_add_35_4
-                                     695.9340      0.1     695.9340       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW01_add_11
+                                     687.4470      0.1     687.4470       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_11
 u_shared_pe_array/gen_shared_pe[1].pe_inst/mult_19_I5
-                                    1972.3788      0.3    1972.3788       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_0_DW_mult_tc_33
+                                    1926.5490      0.3    1926.5490       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_0_DW_mult_tc_3
 u_shared_pe_array/gen_shared_pe[1].pe_inst/r419
-                                    1923.1542      0.3    1923.1542       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_9
+                                    1918.0620      0.3    1918.0620       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_9
 u_shared_pe_array/gen_shared_pe[1].pe_inst/r420
-                                    1936.7334      0.3    1936.7334       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_11
+                                    1940.1282      0.3    1940.1282       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_11
 u_shared_pe_array/gen_shared_pe[1].pe_inst/r421
-                                    1936.7334      0.3    1936.7334       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_10
+                                    1955.4048      0.3    1955.4048       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_10
 u_shared_pe_array/gen_shared_pe[1].pe_inst/r422
-                                    1924.8516      0.3    1924.8516       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_12
+                                    1943.5230      0.3    1943.5230       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_12
 u_shared_pe_array/gen_shared_pe[1].pe_inst/r424
-                                     599.1822      0.1     599.1822       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW01_add_8
+                                     600.8796      0.1     600.8796       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_8
 u_shared_pe_array/gen_shared_pe[1].pe_inst/r425
-                                     604.2744      0.1     604.2744       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW01_add_9
+                                     602.5770      0.1     602.5770       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_9
 u_shared_pe_array/gen_shared_pe[1].pe_inst/r426
-                                     651.8016      0.1     651.8016       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW01_add_10
+                                     639.9198      0.1     639.9198       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_10
 u_shared_pe_array/gen_shared_pe[2].pe_inst
-                                   12533.6016      2.0     339.4800       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8
+                                   12375.7434      2.2     334.3878       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2
 u_shared_pe_array/gen_shared_pe[2].pe_inst/add_0_root_add_35_4
-                                     714.6054      0.1     714.6054       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW01_add_11
+                                     695.9340      0.1     695.9340       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_11
 u_shared_pe_array/gen_shared_pe[2].pe_inst/mult_19_I5
-                                    1989.3528      0.3    1989.3528       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_0_DW_mult_tc_32
+                                    1848.4686      0.3    1848.4686       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_0_DW_mult_tc_2
 u_shared_pe_array/gen_shared_pe[2].pe_inst/r419
-                                    1902.7854      0.3    1902.7854       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_9
+                                    1904.4828      0.3    1904.4828       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_9
 u_shared_pe_array/gen_shared_pe[2].pe_inst/r420
-                                    1909.5750      0.3    1909.5750       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_11
+                                    1914.6672      0.3    1914.6672       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_11
 u_shared_pe_array/gen_shared_pe[2].pe_inst/r421
-                                    1914.6672      0.3    1914.6672       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_10
+                                    1916.3646      0.3    1916.3646       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_10
 u_shared_pe_array/gen_shared_pe[2].pe_inst/r422
-                                    1902.7854      0.3    1902.7854       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_12
+                                    1916.3646      0.3    1916.3646       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_12
 u_shared_pe_array/gen_shared_pe[2].pe_inst/r424
-                                     599.1822      0.1     599.1822       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW01_add_8
+                                     599.1822      0.1     599.1822       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_8
 u_shared_pe_array/gen_shared_pe[2].pe_inst/r425
-                                     605.9718      0.1     605.9718       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW01_add_9
+                                     599.1822      0.1     599.1822       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_9
 u_shared_pe_array/gen_shared_pe[2].pe_inst/r426
-                                     655.1964      0.1     655.1964       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW01_add_10
+                                     646.7094      0.1     646.7094       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_10
 u_shared_pe_array/gen_shared_pe[3].pe_inst
-                                   12440.2446      2.0     332.6904       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7
+                                   12477.5874      2.2     334.3878       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1
 u_shared_pe_array/gen_shared_pe[3].pe_inst/add_0_root_add_35_4
-                                     690.8418      0.1     690.8418       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW01_add_11
+                                     695.9340      0.1     695.9340       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_11
 u_shared_pe_array/gen_shared_pe[3].pe_inst/mult_19_I5
-                                    1924.8516      0.3    1924.8516       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_0_DW_mult_tc_31
+                                    1926.5490      0.3    1926.5490       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_0_DW_mult_tc_1
 u_shared_pe_array/gen_shared_pe[3].pe_inst/r419
-                                    1902.7854      0.3    1902.7854       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_9
+                                    1921.4568      0.3    1921.4568       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_9
 u_shared_pe_array/gen_shared_pe[3].pe_inst/r420
-                                    1918.0620      0.3    1918.0620       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_11
+                                    1916.3646      0.3    1916.3646       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_11
 u_shared_pe_array/gen_shared_pe[3].pe_inst/r421
-                                    1904.4828      0.3    1904.4828       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_10
+                                    1916.3646      0.3    1916.3646       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_10
 u_shared_pe_array/gen_shared_pe[3].pe_inst/r422
-                                    1904.4828      0.3    1904.4828       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_12
+                                    1916.3646      0.3    1916.3646       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_12
 u_shared_pe_array/gen_shared_pe[3].pe_inst/r424
-                                     599.1822      0.1     599.1822       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW01_add_8
+                                     600.8796      0.1     600.8796       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_8
 u_shared_pe_array/gen_shared_pe[3].pe_inst/r425
-                                     604.2744      0.1     604.2744       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW01_add_9
+                                     599.1822      0.1     599.1822       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_9
 u_shared_pe_array/gen_shared_pe[3].pe_inst/r426
-                                     658.5912      0.1     658.5912       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW01_add_10
+                                     650.1042      0.1     650.1042       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_10
 u_shared_pe_array/gen_shared_pe[4].pe_inst
-                                   12521.7198      2.0     332.6904       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6
+                                   12509.8380      2.2     332.6904       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0
 u_shared_pe_array/gen_shared_pe[4].pe_inst/add_0_root_add_35_4
-                                     706.1184      0.1     706.1184       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW01_add_11
+                                     697.6314      0.1     697.6314       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_11
 u_shared_pe_array/gen_shared_pe[4].pe_inst/mult_19_I5
-                                    1855.2582      0.3    1855.2582       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_0_DW_mult_tc_30
+                                    1895.9958      0.3    1895.9958       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_0
 u_shared_pe_array/gen_shared_pe[4].pe_inst/r419
-                                    1909.5750      0.3    1909.5750       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_9
+                                    1914.6672      0.3    1914.6672       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_9
 u_shared_pe_array/gen_shared_pe[4].pe_inst/r420
-                                    1967.2866      0.3    1967.2866       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_11
+                                    1943.5230      0.3    1943.5230       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_11
 u_shared_pe_array/gen_shared_pe[4].pe_inst/r421
-                                    1938.4308      0.3    1938.4308       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_10
+                                    1943.5230      0.3    1943.5230       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_10
 u_shared_pe_array/gen_shared_pe[4].pe_inst/r422
-                                    1953.7074      0.3    1953.7074       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_12
+                                    1941.8256      0.3    1941.8256       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_12
 u_shared_pe_array/gen_shared_pe[4].pe_inst/r424
-                                     604.2744      0.1     604.2744       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW01_add_8
+                                     604.2744      0.1     604.2744       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_8
 u_shared_pe_array/gen_shared_pe[4].pe_inst/r425
-                                     605.9718      0.1     605.9718       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW01_add_9
+                                     599.1822      0.1     599.1822       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_9
 u_shared_pe_array/gen_shared_pe[4].pe_inst/r426
-                                     648.4068      0.1     648.4068       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW01_add_10
-u_shared_weight_buffer              9261.0141      1.5    2683.5893    6577.4248  0.0000  shared_weight_buffer
---------------------------------  -----------  -------  -----------  -----------  ------  ------------------------------------------------------------
-Total                                                   423068.4626  213505.7544  0.0000
+                                     636.5250      0.1     636.5250       0.0000  0.0000  PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_10
+u_shared_weight_buffer              9133.7091      1.6    2683.5893    6450.1198  0.0000  shared_weight_buffer
+--------------------------------  -----------  -------  -----------  -----------  ------  ----------------------------------------------------------
+Total                                                   352509.2407  213215.4990  0.0000
 
 1

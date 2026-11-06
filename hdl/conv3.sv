@@ -39,7 +39,10 @@ module conv3 (
     output logic [31:0] wb_wdata0,
     output logic [31:0] wb_wdata1,
 
-    input logic signed [4:0][7:0] shared_weight[0:4]
+    input logic signed [4:0][7:0] shared_weight[0:4],
+
+    output logic pe_req,
+    input logic signed [19:0] shared_pe_result[0:4]
 
 
 );
@@ -119,6 +122,8 @@ module conv3 (
     logic signed [31:0] psum_next;
     logic [7:0] neuron_data;
 
+    // 
+
     // Pipeline 1: qualify the vector request and issue SRAM reads.
     assign s1_valid         = enable_buf;
     assign load_valid_s1    = s1_valid && (act_idx < 6'd50) && (out_ch < 'd120);
@@ -133,6 +138,9 @@ module conv3 (
     assign wb_load_valid    = weight_valid_s4;
     assign wb_wdata0        = sram_weight_rdata0_buf;
     assign wb_wdata1        = sram_weight_rdata1_buf;
+
+    // Shared PE interface.
+    assign pe_req           = pe_valid;
 
     // Pipeline 1: activation and weight reads share the same request valid.
     assign weight_valid_s1  = vector_read_fire;
@@ -203,8 +211,6 @@ module conv3 (
         end
     end
 
-    // Generate-loop index for the processing elements.
-    genvar i;
 
     // Weight SRAM writes are unused.
     always_ff @(posedge clk or negedge rst_n) begin : unused_sram_ff
@@ -297,21 +303,6 @@ module conv3 (
         end
     end : group_idx_pipeline
 
-    // Pipeline 3: multiply the buffered activation and weight vectors.
-    generate
-        for (i = 0; i < 2; i++) begin : gen_pe
-            PE #(
-                .INPUT_WIDTH (8),
-                .OUTPUT_WIDTH(20)
-            ) pe_inst (
-                .weight({8'd0, shared_weight[i][3:0]}),
-                .activation({8'd0, lb_vector_data[i*32+:32]}),
-                .valid(pe_valid),
-                .mode(FC),
-                .result(pe_out[i])
-            );
-        end : gen_pe
-    endgenerate
 
     // Pipeline 4: mark the returned activation vector as available to PE.
     always_ff @(posedge clk or negedge rst_n) begin
@@ -324,7 +315,9 @@ module conv3 (
         if (!rst_n) begin
             foreach (pe_out_s4[i]) pe_out_s4[i] <= '0;
         end else if (pe_valid) begin
-            foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out[i];
+            for (int i = 0; i < 2; i++) begin
+                pe_out_s4[i] <= shared_pe_result[i];
+            end
         end
     end : pe_out_ff
 

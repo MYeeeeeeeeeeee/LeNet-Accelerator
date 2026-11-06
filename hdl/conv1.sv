@@ -442,7 +442,7 @@ module conv1 (
         end
     end : compute_counter
 
-    // OPT-04B: PE arithmetic now lives in lenet.sv (one shared PE array).
+    // PE arithmetic now lives in lenet.sv (one shared PE array).
     // Preserve original invalid-cycle zero at the local pe_out boundary.
     assign pe_req = pe_valid;
     generate

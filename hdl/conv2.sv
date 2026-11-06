@@ -456,7 +456,7 @@ module conv2 (
         end
     end : compute_counter
 
-    // OPT-04B: PE arithmetic now lives in lenet.sv (one shared PE array).
+    // PE arithmetic now lives in lenet.sv (one shared PE array).
     // Preserve original invalid-cycle zero at the local pe_out boundary.
     assign pe_req = pe_valid;
     generate
@@ -625,8 +625,7 @@ module conv2 (
         if (!rst_n) begin
             done <= 1'b0;
             done_delay <= 1'b0;
-        end 
-        else begin
+        end else begin
             done_delay <= {done_delay[0], conv2_done};
             done <= done_delay[1];
         end

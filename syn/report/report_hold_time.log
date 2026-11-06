@@ -6,42 +6,13 @@ Report : timing
         -max_paths 4
 Design : lenet
 Version: T-2022.03
-Date   : Fri Nov  6 21:26:12 2026
+Date   : Fri Nov  6 22:44:44 2026
 ****************************************
 
  # A fanout number of 1000 was used for high fanout net computations.
 
 Operating Conditions: fast   Library: fast
 Wire Load Model Mode: top
-
-  Startpoint: u_conv2/pool_emit_idx_reg[0]
-              (rising edge-triggered flip-flop clocked by clk)
-  Endpoint: u_conv2/pool_emit_idx_reg[0]
-            (rising edge-triggered flip-flop clocked by clk)
-  Path Group: clk
-  Path Type: min
-
-  Point                                                   Incr       Path
-  --------------------------------------------------------------------------
-  clock clk (rise edge)                                   0.00       0.00
-  clock network delay (ideal)                             0.00       0.00
-  u_conv2/pool_emit_idx_reg[0]/CK (DFFRX4)                0.00 #     0.00 r
-  u_conv2/pool_emit_idx_reg[0]/QN (DFFRX4)                0.21       0.21 f
-  u_conv2/U682/Y (MX2XL)                                  0.22       0.42 f
-  u_conv2/pool_emit_idx_reg[0]/D (DFFRX4)                 0.00       0.42 f
-  data arrival time                                                  0.42
-
-  clock clk (rise edge)                                   0.00       0.00
-  clock network delay (ideal)                             0.00       0.00
-  u_conv2/pool_emit_idx_reg[0]/CK (DFFRX4)                0.00       0.00 r
-  library hold time                                       0.03       0.03
-  data required time                                                 0.03
-  --------------------------------------------------------------------------
-  data required time                                                 0.03
-  data arrival time                                                 -0.42
-  --------------------------------------------------------------------------
-  slack (MET)                                                        0.39
-
 
   Startpoint: u_conv2/sram_act_addr1_reg[2]
               (rising edge-triggered flip-flop clocked by clk)
@@ -56,7 +27,7 @@ Wire Load Model Mode: top
   clock network delay (ideal)                             0.00       0.00
   u_conv2/sram_act_addr1_reg[2]/CK (DFFRX1)               0.00 #     0.00 r
   u_conv2/sram_act_addr1_reg[2]/QN (DFFRX1)               0.33       0.33 r
-  u_conv2/U2035/Y (NAND2X1)                               0.05       0.38 f
+  u_conv2/U2018/Y (NAND2X1)                               0.05       0.38 f
   u_conv2/sram_act_addr1_reg[2]/D (DFFRX1)                0.00       0.38 f
   data arrival time                                                  0.38
 
@@ -85,7 +56,7 @@ Wire Load Model Mode: top
   clock network delay (ideal)                             0.00       0.00
   u_conv3/sram_act_addr1_reg[0]/CK (DFFRX1)               0.00 #     0.00 r
   u_conv3/sram_act_addr1_reg[0]/QN (DFFRX1)               0.33       0.33 r
-  u_conv3/U590/Y (NAND2X1)                                0.05       0.38 f
+  u_conv3/U596/Y (NAND2X1)                                0.05       0.38 f
   u_conv3/sram_act_addr1_reg[0]/D (DFFRX1)                0.00       0.38 f
   data arrival time                                                  0.38
 
@@ -114,13 +85,42 @@ Wire Load Model Mode: top
   clock network delay (ideal)                             0.00       0.00
   u_conv3/sram_act_addr1_reg[9]/CK (DFFRX1)               0.00 #     0.00 r
   u_conv3/sram_act_addr1_reg[9]/QN (DFFRX1)               0.33       0.33 r
-  u_conv3/U591/Y (NAND2X1)                                0.05       0.38 f
+  u_conv3/U597/Y (NAND2X1)                                0.05       0.38 f
   u_conv3/sram_act_addr1_reg[9]/D (DFFRX1)                0.00       0.38 f
   data arrival time                                                  0.38
 
   clock clk (rise edge)                                   0.00       0.00
   clock network delay (ideal)                             0.00       0.00
   u_conv3/sram_act_addr1_reg[9]/CK (DFFRX1)               0.00       0.00 r
+  library hold time                                      -0.02      -0.02
+  data required time                                                -0.02
+  --------------------------------------------------------------------------
+  data required time                                                -0.02
+  data arrival time                                                 -0.38
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.40
+
+
+  Startpoint: u_conv3/sram_weight_addr1_reg[0]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_conv3/sram_weight_addr1_reg[0]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: min
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  u_conv3/sram_weight_addr1_reg[0]/CK (DFFRX1)            0.00 #     0.00 r
+  u_conv3/sram_weight_addr1_reg[0]/QN (DFFRX1)            0.33       0.33 r
+  u_conv3/U630/Y (NAND2X1)                                0.05       0.38 f
+  u_conv3/sram_weight_addr1_reg[0]/D (DFFRX1)             0.00       0.38 f
+  data arrival time                                                  0.38
+
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  u_conv3/sram_weight_addr1_reg[0]/CK (DFFRX1)            0.00       0.00 r
   library hold time                                      -0.02      -0.02
   data required time                                                -0.02
   --------------------------------------------------------------------------

@@ -6,7 +6,7 @@ Report : timing
         -max_paths 4
 Design : lenet
 Version: T-2022.03
-Date   : Fri Nov  6 21:26:12 2026
+Date   : Fri Nov  6 22:44:44 2026
 ****************************************
 
  # A fanout number of 1000 was used for high fanout net computations.
@@ -14,9 +14,9 @@ Date   : Fri Nov  6 21:26:12 2026
 Operating Conditions: slow   Library: slow
 Wire Load Model Mode: top
 
-  Startpoint: u_conv3/pe_out_s4_reg[1][0]
+  Startpoint: u_conv2/pe_out_s4_reg[4][1]
               (rising edge-triggered flip-flop clocked by clk)
-  Endpoint: u_conv3/neuron_data_reg[6]
+  Endpoint: u_conv2/ch_temp_psum_reg[0][3][31]
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: max
@@ -25,77 +25,85 @@ Wire Load Model Mode: top
   --------------------------------------------------------------------------
   clock clk (rise edge)                                   0.00       0.00
   clock network delay (ideal)                             0.00       0.00
-  u_conv3/pe_out_s4_reg[1][0]/CK (DFFRX1)                 0.00 #     0.00 r
-  u_conv3/pe_out_s4_reg[1][0]/QN (DFFRX1)                 0.26       0.26 f
-  u_conv3/U26/Y (INVX1)                                   0.10       0.36 r
-  u_conv3/add_332/B[0] (conv3_DW01_add_10)                0.00       0.36 r
-  u_conv3/add_332/U174/Y (NAND2X2)                        0.10       0.45 f
-  u_conv3/add_332/U188/Y (OAI21X2)                        0.18       0.63 r
-  u_conv3/add_332/U196/Y (INVX3)                          0.08       0.72 f
-  u_conv3/add_332/U160/Y (OAI21X2)                        0.12       0.83 r
-  u_conv3/add_332/U159/Y (XNOR2X2)                        0.19       1.02 f
-  u_conv3/add_332/SUM[3] (conv3_DW01_add_10)              0.00       1.02 f
-  u_conv3/add_342/B[3] (conv3_DW01_add_11)                0.00       1.02 f
-  u_conv3/add_342/U323/Y (OR2X8)                          0.17       1.19 f
-  u_conv3/add_342/U420/Y (NAND2X2)                        0.07       1.26 r
-  u_conv3/add_342/U270/Y (XNOR2X4)                        0.15       1.41 f
-  u_conv3/add_342/SUM[3] (conv3_DW01_add_11)              0.00       1.41 f
-  u_conv3/U20/Y (MXI2X4)                                  0.10       1.51 r
-  u_conv3/U49/Y (INVX3)                                   0.12       1.63 f
-  u_conv3/mult_389_C357/a[3] (conv3_DW_mult_uns_2)        0.00       1.63 f
-  u_conv3/mult_389_C357/U3553/Y (CLKBUFX3)                0.27       1.91 f
-  u_conv3/mult_389_C357/U2991/Y (AOI222XL)                0.32       2.23 r
-  u_conv3/mult_389_C357/U2731/Y (OAI21X2)                 0.14       2.37 f
-  u_conv3/mult_389_C357/U2730/Y (XOR2X4)                  0.14       2.51 f
-  u_conv3/mult_389_C357/U2936/CO (ADDFHX2)                0.27       2.78 f
-  u_conv3/mult_389_C357/U2661/CO (ADDFHX1)                0.26       3.04 f
-  u_conv3/mult_389_C357/U2637/CO (ADDFHX1)                0.31       3.35 f
-  u_conv3/mult_389_C357/U3054/CO (CMPR42X2)               0.18       3.54 f
-  u_conv3/mult_389_C357/U3027/CO (CMPR42X2)               0.17       3.71 f
-  u_conv3/mult_389_C357/U2972/CO (CMPR42X2)               0.17       3.89 f
-  u_conv3/mult_389_C357/U2971/CO (CMPR42X2)               0.17       4.06 f
-  u_conv3/mult_389_C357/U2926/CO (CMPR42X2)               0.17       4.23 f
-  u_conv3/mult_389_C357/U3009/CO (CMPR42X2)               0.17       4.41 f
-  u_conv3/mult_389_C357/U3030/CO (CMPR42X2)               0.17       4.58 f
-  u_conv3/mult_389_C357/U3029/CO (CMPR42X2)               0.17       4.76 f
-  u_conv3/mult_389_C357/U3053/CO (CMPR42X2)               0.17       4.93 f
-  u_conv3/mult_389_C357/U3052/CO (CMPR42X2)               0.17       5.11 f
-  u_conv3/mult_389_C357/U3028/CO (CMPR42X2)               0.17       5.28 f
-  u_conv3/mult_389_C357/U3006/CO (CMPR42X2)               0.17       5.45 f
-  u_conv3/mult_389_C357/U2970/CO (CMPR42X2)               0.17       5.63 f
-  u_conv3/mult_389_C357/U2969/CO (CMPR42X2)               0.17       5.80 f
-  u_conv3/mult_389_C357/U2968/CO (CMPR42X2)               0.17       5.98 f
-  u_conv3/mult_389_C357/U3008/CO (CMPR42X2)               0.17       6.15 f
-  u_conv3/mult_389_C357/U3007/CO (CMPR42X2)               0.17       6.33 f
-  u_conv3/mult_389_C357/U3056/CO (CMPR42X2)               0.17       6.50 f
-  u_conv3/mult_389_C357/U3055/CO (CMPR42X2)               0.17       6.68 f
-  u_conv3/mult_389_C357/U3374/CO (CMPR42X2)               0.17       6.85 f
-  u_conv3/mult_389_C357/U932/CO (CMPR42X2)                0.17       7.02 f
-  u_conv3/mult_389_C357/U927/CO (CMPR42X2)                0.17       7.20 f
-  u_conv3/mult_389_C357/U922/CO (CMPR42X2)                0.17       7.37 f
-  u_conv3/mult_389_C357/U2684/S (CMPR42X1)                0.34       7.70 f
-  u_conv3/mult_389_C357/U2873/Y (NAND2X1)                 0.15       7.86 r
-  u_conv3/mult_389_C357/U3057/Y (OAI21X4)                 0.10       7.96 f
-  u_conv3/mult_389_C357/U2937/Y (AOI21X4)                 0.14       8.09 r
-  u_conv3/mult_389_C357/U2951/Y (OAI21X4)                 0.08       8.18 f
-  u_conv3/mult_389_C357/U2950/Y (AOI21X4)                 0.20       8.37 r
-  u_conv3/mult_389_C357/U3032/Y (OAI21X2)                 0.10       8.47 f
-  u_conv3/mult_389_C357/U2944/Y (XNOR2X4)                 0.11       8.59 f
-  u_conv3/mult_389_C357/product[61] (conv3_DW_mult_uns_2)
-                                                          0.00       8.59 f
-  u_conv3/U37/Y (OR3X6)                                   0.22       8.81 f
-  u_conv3/U44/Y (OR3X6)                                   0.23       9.04 f
-  u_conv3/U43/Y (NOR4X4)                                  0.19       9.23 r
-  u_conv3/U42/Y (NAND3X2)                                 0.13       9.36 f
-  u_conv3/U12/Y (NOR3BX4)                                 0.14       9.50 r
-  u_conv3/U45/Y (NOR2X1)                                  0.07       9.57 f
-  u_conv3/U53/Y (AO21XL)                                  0.22       9.79 f
-  u_conv3/neuron_data_reg[6]/D (DFFRX1)                   0.00       9.79 f
+  u_conv2/pe_out_s4_reg[4][1]/CK (DFFRX1)                 0.00 #     0.00 r
+  u_conv2/pe_out_s4_reg[4][1]/Q (DFFRX1)                  0.54       0.54 f
+  u_conv2/add_2_root_add_0_root_add_492_4/A[1] (conv2_DW01_add_8_DW01_add_42)
+                                                          0.00       0.54 f
+  u_conv2/add_2_root_add_0_root_add_492_4/U1_1/CO (ADDFHX2)
+                                                          0.35       0.89 f
+  u_conv2/add_2_root_add_0_root_add_492_4/U1_2/S (ADDFX2)
+                                                          0.23       1.12 f
+  u_conv2/add_2_root_add_0_root_add_492_4/SUM[2] (conv2_DW01_add_8_DW01_add_42)
+                                                          0.00       1.12 f
+  u_conv2/add_1_root_add_0_root_add_492_4/B[2] (conv2_DW01_add_7_DW01_add_41)
+                                                          0.00       1.12 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_2/CO (ADDFXL)
+                                                          0.62       1.75 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_3/CO (ADDFXL)
+                                                          0.39       2.14 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_4/CO (ADDFHX2)
+                                                          0.21       2.35 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_5/CO (ADDFXL)
+                                                          0.37       2.72 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_6/CO (ADDFHX2)
+                                                          0.21       2.93 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_7/CO (ADDFHX2)
+                                                          0.19       3.11 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_8/CO (ADDFHX2)
+                                                          0.19       3.30 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U4/Y (NAND2XL)
+                                                          0.10       3.41 r
+  u_conv2/add_1_root_add_0_root_add_492_4/U6/Y (NAND3X1)
+                                                          0.10       3.51 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_10/CO (ADDFHX2)
+                                                          0.19       3.70 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_11/CO (ADDFXL)
+                                                          0.34       4.05 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_12/S (ADDFHX1)
+                                                          0.30       4.35 r
+  u_conv2/add_1_root_add_0_root_add_492_4/SUM[12] (conv2_DW01_add_7_DW01_add_41)
+                                                          0.00       4.35 r
+  u_conv2/add_0_root_add_0_root_add_492_4/B[12] (conv2_DW01_add_6_DW01_add_40)
+                                                          0.00       4.35 r
+  u_conv2/add_0_root_add_0_root_add_492_4/U1_12/S (ADDFXL)
+                                                          0.77       5.12 f
+  u_conv2/add_0_root_add_0_root_add_492_4/SUM[12] (conv2_DW01_add_6_DW01_add_40)
+                                                          0.00       5.12 f
+  u_conv2/add_516/B[12] (conv2_DW01_add_0_DW01_add_28)
+                                                          0.00       5.12 f
+  u_conv2/add_516/U1_12/CO (ADDFHX1)                      0.35       5.47 f
+  u_conv2/add_516/U1_13/CO (ADDFHX2)                      0.20       5.67 f
+  u_conv2/add_516/U1_14/CO (ADDFHX2)                      0.18       5.84 f
+  u_conv2/add_516/U1_15/CO (ADDFHX1)                      0.22       6.06 f
+  u_conv2/add_516/U1_16/CO (ADDFHX1)                      0.24       6.30 f
+  u_conv2/add_516/U1_17/CO (ADDFHX2)                      0.19       6.49 f
+  u_conv2/add_516/U1_18/CO (ADDFHX1)                      0.27       6.76 f
+  u_conv2/add_516/U3/Y (NAND2X1)                          0.13       6.89 r
+  u_conv2/add_516/U1/Y (NAND3X2)                          0.08       6.97 f
+  u_conv2/add_516/U1_20/CO (ADDFHX2)                      0.19       7.16 f
+  u_conv2/add_516/U1_21/CO (ADDFHX2)                      0.19       7.35 f
+  u_conv2/add_516/U1_22/CO (ADDFHX2)                      0.19       7.53 f
+  u_conv2/add_516/U1_23/CO (ADDFHX2)                      0.19       7.72 f
+  u_conv2/add_516/U1_24/CO (ADDFHX2)                      0.19       7.90 f
+  u_conv2/add_516/U1_25/CO (ADDFHX2)                      0.19       8.10 f
+  u_conv2/add_516/U9/Y (NAND2X1)                          0.08       8.18 r
+  u_conv2/add_516/U11/Y (NAND3X1)                         0.10       8.28 f
+  u_conv2/add_516/U15/Y (NAND2XL)                         0.12       8.40 r
+  u_conv2/add_516/U16/Y (NAND3X1)                         0.10       8.50 f
+  u_conv2/add_516/U1_28/CO (ADDFHX2)                      0.20       8.70 f
+  u_conv2/add_516/U1_29/CO (ADDFHX2)                      0.18       8.88 f
+  u_conv2/add_516/U1_30/CO (ADDFHX1)                      0.24       9.12 f
+  u_conv2/add_516/U1_31/Y (XOR3X2)                        0.20       9.32 f
+  u_conv2/add_516/SUM[31] (conv2_DW01_add_0_DW01_add_28)
+                                                          0.00       9.32 f
+  u_conv2/U339/Y (OA21X4)                                 0.23       9.55 f
+  u_conv2/U376/Y (MX2XL)                                  0.24       9.79 f
+  u_conv2/ch_temp_psum_reg[0][3][31]/D (DFFRX1)           0.00       9.79 f
   data arrival time                                                  9.79
 
   clock clk (rise edge)                                  10.00      10.00
   clock network delay (ideal)                             0.00      10.00
-  u_conv3/neuron_data_reg[6]/CK (DFFRX1)                  0.00      10.00 r
+  u_conv2/ch_temp_psum_reg[0][3][31]/CK (DFFRX1)          0.00      10.00 r
   library setup time                                     -0.21       9.79
   data required time                                                 9.79
   --------------------------------------------------------------------------
@@ -105,9 +113,9 @@ Wire Load Model Mode: top
   slack (MET)                                                        0.00
 
 
-  Startpoint: u_conv3/pe_out_s4_reg[1][0]
+  Startpoint: u_conv2/pe_out_s4_reg[4][1]
               (rising edge-triggered flip-flop clocked by clk)
-  Endpoint: u_conv3/neuron_data_reg[4]
+  Endpoint: u_conv2/ch_temp_psum_reg[0][5][31]
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: max
@@ -116,77 +124,85 @@ Wire Load Model Mode: top
   --------------------------------------------------------------------------
   clock clk (rise edge)                                   0.00       0.00
   clock network delay (ideal)                             0.00       0.00
-  u_conv3/pe_out_s4_reg[1][0]/CK (DFFRX1)                 0.00 #     0.00 r
-  u_conv3/pe_out_s4_reg[1][0]/QN (DFFRX1)                 0.26       0.26 f
-  u_conv3/U26/Y (INVX1)                                   0.10       0.36 r
-  u_conv3/add_332/B[0] (conv3_DW01_add_10)                0.00       0.36 r
-  u_conv3/add_332/U174/Y (NAND2X2)                        0.10       0.45 f
-  u_conv3/add_332/U188/Y (OAI21X2)                        0.18       0.63 r
-  u_conv3/add_332/U196/Y (INVX3)                          0.08       0.72 f
-  u_conv3/add_332/U160/Y (OAI21X2)                        0.12       0.83 r
-  u_conv3/add_332/U159/Y (XNOR2X2)                        0.19       1.02 f
-  u_conv3/add_332/SUM[3] (conv3_DW01_add_10)              0.00       1.02 f
-  u_conv3/add_342/B[3] (conv3_DW01_add_11)                0.00       1.02 f
-  u_conv3/add_342/U323/Y (OR2X8)                          0.17       1.19 f
-  u_conv3/add_342/U420/Y (NAND2X2)                        0.07       1.26 r
-  u_conv3/add_342/U270/Y (XNOR2X4)                        0.15       1.41 f
-  u_conv3/add_342/SUM[3] (conv3_DW01_add_11)              0.00       1.41 f
-  u_conv3/U20/Y (MXI2X4)                                  0.10       1.51 r
-  u_conv3/U49/Y (INVX3)                                   0.12       1.63 f
-  u_conv3/mult_389_C357/a[3] (conv3_DW_mult_uns_2)        0.00       1.63 f
-  u_conv3/mult_389_C357/U3553/Y (CLKBUFX3)                0.27       1.91 f
-  u_conv3/mult_389_C357/U2991/Y (AOI222XL)                0.32       2.23 r
-  u_conv3/mult_389_C357/U2731/Y (OAI21X2)                 0.14       2.37 f
-  u_conv3/mult_389_C357/U2730/Y (XOR2X4)                  0.14       2.51 f
-  u_conv3/mult_389_C357/U2936/CO (ADDFHX2)                0.27       2.78 f
-  u_conv3/mult_389_C357/U2661/CO (ADDFHX1)                0.26       3.04 f
-  u_conv3/mult_389_C357/U2637/CO (ADDFHX1)                0.31       3.35 f
-  u_conv3/mult_389_C357/U3054/CO (CMPR42X2)               0.18       3.54 f
-  u_conv3/mult_389_C357/U3027/CO (CMPR42X2)               0.17       3.71 f
-  u_conv3/mult_389_C357/U2972/CO (CMPR42X2)               0.17       3.89 f
-  u_conv3/mult_389_C357/U2971/CO (CMPR42X2)               0.17       4.06 f
-  u_conv3/mult_389_C357/U2926/CO (CMPR42X2)               0.17       4.23 f
-  u_conv3/mult_389_C357/U3009/CO (CMPR42X2)               0.17       4.41 f
-  u_conv3/mult_389_C357/U3030/CO (CMPR42X2)               0.17       4.58 f
-  u_conv3/mult_389_C357/U3029/CO (CMPR42X2)               0.17       4.76 f
-  u_conv3/mult_389_C357/U3053/CO (CMPR42X2)               0.17       4.93 f
-  u_conv3/mult_389_C357/U3052/CO (CMPR42X2)               0.17       5.11 f
-  u_conv3/mult_389_C357/U3028/CO (CMPR42X2)               0.17       5.28 f
-  u_conv3/mult_389_C357/U3006/CO (CMPR42X2)               0.17       5.45 f
-  u_conv3/mult_389_C357/U2970/CO (CMPR42X2)               0.17       5.63 f
-  u_conv3/mult_389_C357/U2969/CO (CMPR42X2)               0.17       5.80 f
-  u_conv3/mult_389_C357/U2968/CO (CMPR42X2)               0.17       5.98 f
-  u_conv3/mult_389_C357/U3008/CO (CMPR42X2)               0.17       6.15 f
-  u_conv3/mult_389_C357/U3007/CO (CMPR42X2)               0.17       6.33 f
-  u_conv3/mult_389_C357/U3056/CO (CMPR42X2)               0.17       6.50 f
-  u_conv3/mult_389_C357/U3055/CO (CMPR42X2)               0.17       6.68 f
-  u_conv3/mult_389_C357/U3374/CO (CMPR42X2)               0.17       6.85 f
-  u_conv3/mult_389_C357/U932/CO (CMPR42X2)                0.17       7.02 f
-  u_conv3/mult_389_C357/U927/CO (CMPR42X2)                0.17       7.20 f
-  u_conv3/mult_389_C357/U922/CO (CMPR42X2)                0.17       7.37 f
-  u_conv3/mult_389_C357/U2684/S (CMPR42X1)                0.34       7.70 f
-  u_conv3/mult_389_C357/U2873/Y (NAND2X1)                 0.15       7.86 r
-  u_conv3/mult_389_C357/U3057/Y (OAI21X4)                 0.10       7.96 f
-  u_conv3/mult_389_C357/U2937/Y (AOI21X4)                 0.14       8.09 r
-  u_conv3/mult_389_C357/U2951/Y (OAI21X4)                 0.08       8.18 f
-  u_conv3/mult_389_C357/U2950/Y (AOI21X4)                 0.20       8.37 r
-  u_conv3/mult_389_C357/U3032/Y (OAI21X2)                 0.10       8.47 f
-  u_conv3/mult_389_C357/U2944/Y (XNOR2X4)                 0.11       8.59 f
-  u_conv3/mult_389_C357/product[61] (conv3_DW_mult_uns_2)
-                                                          0.00       8.59 f
-  u_conv3/U37/Y (OR3X6)                                   0.22       8.81 f
-  u_conv3/U44/Y (OR3X6)                                   0.23       9.04 f
-  u_conv3/U43/Y (NOR4X4)                                  0.19       9.23 r
-  u_conv3/U42/Y (NAND3X2)                                 0.13       9.36 f
-  u_conv3/U12/Y (NOR3BX4)                                 0.14       9.50 r
-  u_conv3/U45/Y (NOR2X1)                                  0.07       9.57 f
-  u_conv3/U52/Y (AO21XL)                                  0.22       9.79 f
-  u_conv3/neuron_data_reg[4]/D (DFFRX1)                   0.00       9.79 f
+  u_conv2/pe_out_s4_reg[4][1]/CK (DFFRX1)                 0.00 #     0.00 r
+  u_conv2/pe_out_s4_reg[4][1]/Q (DFFRX1)                  0.54       0.54 f
+  u_conv2/add_2_root_add_0_root_add_492_4/A[1] (conv2_DW01_add_8_DW01_add_42)
+                                                          0.00       0.54 f
+  u_conv2/add_2_root_add_0_root_add_492_4/U1_1/CO (ADDFHX2)
+                                                          0.35       0.89 f
+  u_conv2/add_2_root_add_0_root_add_492_4/U1_2/S (ADDFX2)
+                                                          0.23       1.12 f
+  u_conv2/add_2_root_add_0_root_add_492_4/SUM[2] (conv2_DW01_add_8_DW01_add_42)
+                                                          0.00       1.12 f
+  u_conv2/add_1_root_add_0_root_add_492_4/B[2] (conv2_DW01_add_7_DW01_add_41)
+                                                          0.00       1.12 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_2/CO (ADDFXL)
+                                                          0.62       1.75 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_3/CO (ADDFXL)
+                                                          0.39       2.14 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_4/CO (ADDFHX2)
+                                                          0.21       2.35 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_5/CO (ADDFXL)
+                                                          0.37       2.72 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_6/CO (ADDFHX2)
+                                                          0.21       2.93 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_7/CO (ADDFHX2)
+                                                          0.19       3.11 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_8/CO (ADDFHX2)
+                                                          0.19       3.30 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U4/Y (NAND2XL)
+                                                          0.10       3.41 r
+  u_conv2/add_1_root_add_0_root_add_492_4/U6/Y (NAND3X1)
+                                                          0.10       3.51 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_10/CO (ADDFHX2)
+                                                          0.19       3.70 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_11/CO (ADDFXL)
+                                                          0.34       4.05 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_12/S (ADDFHX1)
+                                                          0.30       4.35 r
+  u_conv2/add_1_root_add_0_root_add_492_4/SUM[12] (conv2_DW01_add_7_DW01_add_41)
+                                                          0.00       4.35 r
+  u_conv2/add_0_root_add_0_root_add_492_4/B[12] (conv2_DW01_add_6_DW01_add_40)
+                                                          0.00       4.35 r
+  u_conv2/add_0_root_add_0_root_add_492_4/U1_12/S (ADDFXL)
+                                                          0.77       5.12 f
+  u_conv2/add_0_root_add_0_root_add_492_4/SUM[12] (conv2_DW01_add_6_DW01_add_40)
+                                                          0.00       5.12 f
+  u_conv2/add_516/B[12] (conv2_DW01_add_0_DW01_add_28)
+                                                          0.00       5.12 f
+  u_conv2/add_516/U1_12/CO (ADDFHX1)                      0.35       5.47 f
+  u_conv2/add_516/U1_13/CO (ADDFHX2)                      0.20       5.67 f
+  u_conv2/add_516/U1_14/CO (ADDFHX2)                      0.18       5.84 f
+  u_conv2/add_516/U1_15/CO (ADDFHX1)                      0.22       6.06 f
+  u_conv2/add_516/U1_16/CO (ADDFHX1)                      0.24       6.30 f
+  u_conv2/add_516/U1_17/CO (ADDFHX2)                      0.19       6.49 f
+  u_conv2/add_516/U1_18/CO (ADDFHX1)                      0.27       6.76 f
+  u_conv2/add_516/U3/Y (NAND2X1)                          0.13       6.89 r
+  u_conv2/add_516/U1/Y (NAND3X2)                          0.08       6.97 f
+  u_conv2/add_516/U1_20/CO (ADDFHX2)                      0.19       7.16 f
+  u_conv2/add_516/U1_21/CO (ADDFHX2)                      0.19       7.35 f
+  u_conv2/add_516/U1_22/CO (ADDFHX2)                      0.19       7.53 f
+  u_conv2/add_516/U1_23/CO (ADDFHX2)                      0.19       7.72 f
+  u_conv2/add_516/U1_24/CO (ADDFHX2)                      0.19       7.90 f
+  u_conv2/add_516/U1_25/CO (ADDFHX2)                      0.19       8.10 f
+  u_conv2/add_516/U9/Y (NAND2X1)                          0.08       8.18 r
+  u_conv2/add_516/U11/Y (NAND3X1)                         0.10       8.28 f
+  u_conv2/add_516/U15/Y (NAND2XL)                         0.12       8.40 r
+  u_conv2/add_516/U16/Y (NAND3X1)                         0.10       8.50 f
+  u_conv2/add_516/U1_28/CO (ADDFHX2)                      0.20       8.70 f
+  u_conv2/add_516/U1_29/CO (ADDFHX2)                      0.18       8.88 f
+  u_conv2/add_516/U1_30/CO (ADDFHX1)                      0.24       9.12 f
+  u_conv2/add_516/U1_31/Y (XOR3X2)                        0.20       9.32 f
+  u_conv2/add_516/SUM[31] (conv2_DW01_add_0_DW01_add_28)
+                                                          0.00       9.32 f
+  u_conv2/U339/Y (OA21X4)                                 0.23       9.55 f
+  u_conv2/U378/Y (MX2XL)                                  0.24       9.79 f
+  u_conv2/ch_temp_psum_reg[0][5][31]/D (DFFRX1)           0.00       9.79 f
   data arrival time                                                  9.79
 
   clock clk (rise edge)                                  10.00      10.00
   clock network delay (ideal)                             0.00      10.00
-  u_conv3/neuron_data_reg[4]/CK (DFFRX1)                  0.00      10.00 r
+  u_conv2/ch_temp_psum_reg[0][5][31]/CK (DFFRX1)          0.00      10.00 r
   library setup time                                     -0.21       9.79
   data required time                                                 9.79
   --------------------------------------------------------------------------
@@ -196,9 +212,9 @@ Wire Load Model Mode: top
   slack (MET)                                                        0.00
 
 
-  Startpoint: u_conv3/pe_out_s4_reg[1][0]
+  Startpoint: u_conv2/pe_out_s4_reg[4][1]
               (rising edge-triggered flip-flop clocked by clk)
-  Endpoint: u_conv3/neuron_data_reg[2]
+  Endpoint: u_conv2/ch_temp_psum_reg[0][8][31]
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: max
@@ -207,77 +223,85 @@ Wire Load Model Mode: top
   --------------------------------------------------------------------------
   clock clk (rise edge)                                   0.00       0.00
   clock network delay (ideal)                             0.00       0.00
-  u_conv3/pe_out_s4_reg[1][0]/CK (DFFRX1)                 0.00 #     0.00 r
-  u_conv3/pe_out_s4_reg[1][0]/QN (DFFRX1)                 0.26       0.26 f
-  u_conv3/U26/Y (INVX1)                                   0.10       0.36 r
-  u_conv3/add_332/B[0] (conv3_DW01_add_10)                0.00       0.36 r
-  u_conv3/add_332/U174/Y (NAND2X2)                        0.10       0.45 f
-  u_conv3/add_332/U188/Y (OAI21X2)                        0.18       0.63 r
-  u_conv3/add_332/U196/Y (INVX3)                          0.08       0.72 f
-  u_conv3/add_332/U160/Y (OAI21X2)                        0.12       0.83 r
-  u_conv3/add_332/U159/Y (XNOR2X2)                        0.19       1.02 f
-  u_conv3/add_332/SUM[3] (conv3_DW01_add_10)              0.00       1.02 f
-  u_conv3/add_342/B[3] (conv3_DW01_add_11)                0.00       1.02 f
-  u_conv3/add_342/U323/Y (OR2X8)                          0.17       1.19 f
-  u_conv3/add_342/U420/Y (NAND2X2)                        0.07       1.26 r
-  u_conv3/add_342/U270/Y (XNOR2X4)                        0.15       1.41 f
-  u_conv3/add_342/SUM[3] (conv3_DW01_add_11)              0.00       1.41 f
-  u_conv3/U20/Y (MXI2X4)                                  0.10       1.51 r
-  u_conv3/U49/Y (INVX3)                                   0.12       1.63 f
-  u_conv3/mult_389_C357/a[3] (conv3_DW_mult_uns_2)        0.00       1.63 f
-  u_conv3/mult_389_C357/U3553/Y (CLKBUFX3)                0.27       1.91 f
-  u_conv3/mult_389_C357/U2991/Y (AOI222XL)                0.32       2.23 r
-  u_conv3/mult_389_C357/U2731/Y (OAI21X2)                 0.14       2.37 f
-  u_conv3/mult_389_C357/U2730/Y (XOR2X4)                  0.14       2.51 f
-  u_conv3/mult_389_C357/U2936/CO (ADDFHX2)                0.27       2.78 f
-  u_conv3/mult_389_C357/U2661/CO (ADDFHX1)                0.26       3.04 f
-  u_conv3/mult_389_C357/U2637/CO (ADDFHX1)                0.31       3.35 f
-  u_conv3/mult_389_C357/U3054/CO (CMPR42X2)               0.18       3.54 f
-  u_conv3/mult_389_C357/U3027/CO (CMPR42X2)               0.17       3.71 f
-  u_conv3/mult_389_C357/U2972/CO (CMPR42X2)               0.17       3.89 f
-  u_conv3/mult_389_C357/U2971/CO (CMPR42X2)               0.17       4.06 f
-  u_conv3/mult_389_C357/U2926/CO (CMPR42X2)               0.17       4.23 f
-  u_conv3/mult_389_C357/U3009/CO (CMPR42X2)               0.17       4.41 f
-  u_conv3/mult_389_C357/U3030/CO (CMPR42X2)               0.17       4.58 f
-  u_conv3/mult_389_C357/U3029/CO (CMPR42X2)               0.17       4.76 f
-  u_conv3/mult_389_C357/U3053/CO (CMPR42X2)               0.17       4.93 f
-  u_conv3/mult_389_C357/U3052/CO (CMPR42X2)               0.17       5.11 f
-  u_conv3/mult_389_C357/U3028/CO (CMPR42X2)               0.17       5.28 f
-  u_conv3/mult_389_C357/U3006/CO (CMPR42X2)               0.17       5.45 f
-  u_conv3/mult_389_C357/U2970/CO (CMPR42X2)               0.17       5.63 f
-  u_conv3/mult_389_C357/U2969/CO (CMPR42X2)               0.17       5.80 f
-  u_conv3/mult_389_C357/U2968/CO (CMPR42X2)               0.17       5.98 f
-  u_conv3/mult_389_C357/U3008/CO (CMPR42X2)               0.17       6.15 f
-  u_conv3/mult_389_C357/U3007/CO (CMPR42X2)               0.17       6.33 f
-  u_conv3/mult_389_C357/U3056/CO (CMPR42X2)               0.17       6.50 f
-  u_conv3/mult_389_C357/U3055/CO (CMPR42X2)               0.17       6.68 f
-  u_conv3/mult_389_C357/U3374/CO (CMPR42X2)               0.17       6.85 f
-  u_conv3/mult_389_C357/U932/CO (CMPR42X2)                0.17       7.02 f
-  u_conv3/mult_389_C357/U927/CO (CMPR42X2)                0.17       7.20 f
-  u_conv3/mult_389_C357/U922/CO (CMPR42X2)                0.17       7.37 f
-  u_conv3/mult_389_C357/U2684/S (CMPR42X1)                0.34       7.70 f
-  u_conv3/mult_389_C357/U2873/Y (NAND2X1)                 0.15       7.86 r
-  u_conv3/mult_389_C357/U3057/Y (OAI21X4)                 0.10       7.96 f
-  u_conv3/mult_389_C357/U2937/Y (AOI21X4)                 0.14       8.09 r
-  u_conv3/mult_389_C357/U2951/Y (OAI21X4)                 0.08       8.18 f
-  u_conv3/mult_389_C357/U2950/Y (AOI21X4)                 0.20       8.37 r
-  u_conv3/mult_389_C357/U3032/Y (OAI21X2)                 0.10       8.47 f
-  u_conv3/mult_389_C357/U2944/Y (XNOR2X4)                 0.11       8.59 f
-  u_conv3/mult_389_C357/product[61] (conv3_DW_mult_uns_2)
-                                                          0.00       8.59 f
-  u_conv3/U37/Y (OR3X6)                                   0.22       8.81 f
-  u_conv3/U44/Y (OR3X6)                                   0.23       9.04 f
-  u_conv3/U43/Y (NOR4X4)                                  0.19       9.23 r
-  u_conv3/U42/Y (NAND3X2)                                 0.13       9.36 f
-  u_conv3/U12/Y (NOR3BX4)                                 0.14       9.50 r
-  u_conv3/U45/Y (NOR2X1)                                  0.07       9.57 f
-  u_conv3/U51/Y (AO21XL)                                  0.22       9.79 f
-  u_conv3/neuron_data_reg[2]/D (DFFRX1)                   0.00       9.79 f
+  u_conv2/pe_out_s4_reg[4][1]/CK (DFFRX1)                 0.00 #     0.00 r
+  u_conv2/pe_out_s4_reg[4][1]/Q (DFFRX1)                  0.54       0.54 f
+  u_conv2/add_2_root_add_0_root_add_492_4/A[1] (conv2_DW01_add_8_DW01_add_42)
+                                                          0.00       0.54 f
+  u_conv2/add_2_root_add_0_root_add_492_4/U1_1/CO (ADDFHX2)
+                                                          0.35       0.89 f
+  u_conv2/add_2_root_add_0_root_add_492_4/U1_2/S (ADDFX2)
+                                                          0.23       1.12 f
+  u_conv2/add_2_root_add_0_root_add_492_4/SUM[2] (conv2_DW01_add_8_DW01_add_42)
+                                                          0.00       1.12 f
+  u_conv2/add_1_root_add_0_root_add_492_4/B[2] (conv2_DW01_add_7_DW01_add_41)
+                                                          0.00       1.12 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_2/CO (ADDFXL)
+                                                          0.62       1.75 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_3/CO (ADDFXL)
+                                                          0.39       2.14 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_4/CO (ADDFHX2)
+                                                          0.21       2.35 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_5/CO (ADDFXL)
+                                                          0.37       2.72 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_6/CO (ADDFHX2)
+                                                          0.21       2.93 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_7/CO (ADDFHX2)
+                                                          0.19       3.11 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_8/CO (ADDFHX2)
+                                                          0.19       3.30 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U4/Y (NAND2XL)
+                                                          0.10       3.41 r
+  u_conv2/add_1_root_add_0_root_add_492_4/U6/Y (NAND3X1)
+                                                          0.10       3.51 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_10/CO (ADDFHX2)
+                                                          0.19       3.70 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_11/CO (ADDFXL)
+                                                          0.34       4.05 f
+  u_conv2/add_1_root_add_0_root_add_492_4/U1_12/S (ADDFHX1)
+                                                          0.30       4.35 r
+  u_conv2/add_1_root_add_0_root_add_492_4/SUM[12] (conv2_DW01_add_7_DW01_add_41)
+                                                          0.00       4.35 r
+  u_conv2/add_0_root_add_0_root_add_492_4/B[12] (conv2_DW01_add_6_DW01_add_40)
+                                                          0.00       4.35 r
+  u_conv2/add_0_root_add_0_root_add_492_4/U1_12/S (ADDFXL)
+                                                          0.77       5.12 f
+  u_conv2/add_0_root_add_0_root_add_492_4/SUM[12] (conv2_DW01_add_6_DW01_add_40)
+                                                          0.00       5.12 f
+  u_conv2/add_516/B[12] (conv2_DW01_add_0_DW01_add_28)
+                                                          0.00       5.12 f
+  u_conv2/add_516/U1_12/CO (ADDFHX1)                      0.35       5.47 f
+  u_conv2/add_516/U1_13/CO (ADDFHX2)                      0.20       5.67 f
+  u_conv2/add_516/U1_14/CO (ADDFHX2)                      0.18       5.84 f
+  u_conv2/add_516/U1_15/CO (ADDFHX1)                      0.22       6.06 f
+  u_conv2/add_516/U1_16/CO (ADDFHX1)                      0.24       6.30 f
+  u_conv2/add_516/U1_17/CO (ADDFHX2)                      0.19       6.49 f
+  u_conv2/add_516/U1_18/CO (ADDFHX1)                      0.27       6.76 f
+  u_conv2/add_516/U3/Y (NAND2X1)                          0.13       6.89 r
+  u_conv2/add_516/U1/Y (NAND3X2)                          0.08       6.97 f
+  u_conv2/add_516/U1_20/CO (ADDFHX2)                      0.19       7.16 f
+  u_conv2/add_516/U1_21/CO (ADDFHX2)                      0.19       7.35 f
+  u_conv2/add_516/U1_22/CO (ADDFHX2)                      0.19       7.53 f
+  u_conv2/add_516/U1_23/CO (ADDFHX2)                      0.19       7.72 f
+  u_conv2/add_516/U1_24/CO (ADDFHX2)                      0.19       7.90 f
+  u_conv2/add_516/U1_25/CO (ADDFHX2)                      0.19       8.10 f
+  u_conv2/add_516/U9/Y (NAND2X1)                          0.08       8.18 r
+  u_conv2/add_516/U11/Y (NAND3X1)                         0.10       8.28 f
+  u_conv2/add_516/U15/Y (NAND2XL)                         0.12       8.40 r
+  u_conv2/add_516/U16/Y (NAND3X1)                         0.10       8.50 f
+  u_conv2/add_516/U1_28/CO (ADDFHX2)                      0.20       8.70 f
+  u_conv2/add_516/U1_29/CO (ADDFHX2)                      0.18       8.88 f
+  u_conv2/add_516/U1_30/CO (ADDFHX1)                      0.24       9.12 f
+  u_conv2/add_516/U1_31/Y (XOR3X2)                        0.20       9.32 f
+  u_conv2/add_516/SUM[31] (conv2_DW01_add_0_DW01_add_28)
+                                                          0.00       9.32 f
+  u_conv2/U339/Y (OA21X4)                                 0.23       9.55 f
+  u_conv2/U465/Y (MX2XL)                                  0.24       9.79 f
+  u_conv2/ch_temp_psum_reg[0][8][31]/D (DFFRX1)           0.00       9.79 f
   data arrival time                                                  9.79
 
   clock clk (rise edge)                                  10.00      10.00
   clock network delay (ideal)                             0.00      10.00
-  u_conv3/neuron_data_reg[2]/CK (DFFRX1)                  0.00      10.00 r
+  u_conv2/ch_temp_psum_reg[0][8][31]/CK (DFFRX1)          0.00      10.00 r
   library setup time                                     -0.21       9.79
   data required time                                                 9.79
   --------------------------------------------------------------------------
@@ -287,9 +311,9 @@ Wire Load Model Mode: top
   slack (MET)                                                        0.00
 
 
-  Startpoint: u_conv3/pe_out_s4_reg[1][0]
+  Startpoint: u_fc1/pe_out_s4_reg[1][1]
               (rising edge-triggered flip-flop clocked by clk)
-  Endpoint: u_conv3/neuron_data_reg[0]
+  Endpoint: u_fc1/neuron_data_reg[0]
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: max
@@ -298,77 +322,77 @@ Wire Load Model Mode: top
   --------------------------------------------------------------------------
   clock clk (rise edge)                                   0.00       0.00
   clock network delay (ideal)                             0.00       0.00
-  u_conv3/pe_out_s4_reg[1][0]/CK (DFFRX1)                 0.00 #     0.00 r
-  u_conv3/pe_out_s4_reg[1][0]/QN (DFFRX1)                 0.26       0.26 f
-  u_conv3/U26/Y (INVX1)                                   0.10       0.36 r
-  u_conv3/add_332/B[0] (conv3_DW01_add_10)                0.00       0.36 r
-  u_conv3/add_332/U174/Y (NAND2X2)                        0.10       0.45 f
-  u_conv3/add_332/U188/Y (OAI21X2)                        0.18       0.63 r
-  u_conv3/add_332/U196/Y (INVX3)                          0.08       0.72 f
-  u_conv3/add_332/U160/Y (OAI21X2)                        0.12       0.83 r
-  u_conv3/add_332/U159/Y (XNOR2X2)                        0.19       1.02 f
-  u_conv3/add_332/SUM[3] (conv3_DW01_add_10)              0.00       1.02 f
-  u_conv3/add_342/B[3] (conv3_DW01_add_11)                0.00       1.02 f
-  u_conv3/add_342/U323/Y (OR2X8)                          0.17       1.19 f
-  u_conv3/add_342/U420/Y (NAND2X2)                        0.07       1.26 r
-  u_conv3/add_342/U270/Y (XNOR2X4)                        0.15       1.41 f
-  u_conv3/add_342/SUM[3] (conv3_DW01_add_11)              0.00       1.41 f
-  u_conv3/U20/Y (MXI2X4)                                  0.10       1.51 r
-  u_conv3/U49/Y (INVX3)                                   0.12       1.63 f
-  u_conv3/mult_389_C357/a[3] (conv3_DW_mult_uns_2)        0.00       1.63 f
-  u_conv3/mult_389_C357/U3553/Y (CLKBUFX3)                0.27       1.91 f
-  u_conv3/mult_389_C357/U2991/Y (AOI222XL)                0.32       2.23 r
-  u_conv3/mult_389_C357/U2731/Y (OAI21X2)                 0.14       2.37 f
-  u_conv3/mult_389_C357/U2730/Y (XOR2X4)                  0.14       2.51 f
-  u_conv3/mult_389_C357/U2936/CO (ADDFHX2)                0.27       2.78 f
-  u_conv3/mult_389_C357/U2661/CO (ADDFHX1)                0.26       3.04 f
-  u_conv3/mult_389_C357/U2637/CO (ADDFHX1)                0.31       3.35 f
-  u_conv3/mult_389_C357/U3054/CO (CMPR42X2)               0.18       3.54 f
-  u_conv3/mult_389_C357/U3027/CO (CMPR42X2)               0.17       3.71 f
-  u_conv3/mult_389_C357/U2972/CO (CMPR42X2)               0.17       3.89 f
-  u_conv3/mult_389_C357/U2971/CO (CMPR42X2)               0.17       4.06 f
-  u_conv3/mult_389_C357/U2926/CO (CMPR42X2)               0.17       4.23 f
-  u_conv3/mult_389_C357/U3009/CO (CMPR42X2)               0.17       4.41 f
-  u_conv3/mult_389_C357/U3030/CO (CMPR42X2)               0.17       4.58 f
-  u_conv3/mult_389_C357/U3029/CO (CMPR42X2)               0.17       4.76 f
-  u_conv3/mult_389_C357/U3053/CO (CMPR42X2)               0.17       4.93 f
-  u_conv3/mult_389_C357/U3052/CO (CMPR42X2)               0.17       5.11 f
-  u_conv3/mult_389_C357/U3028/CO (CMPR42X2)               0.17       5.28 f
-  u_conv3/mult_389_C357/U3006/CO (CMPR42X2)               0.17       5.45 f
-  u_conv3/mult_389_C357/U2970/CO (CMPR42X2)               0.17       5.63 f
-  u_conv3/mult_389_C357/U2969/CO (CMPR42X2)               0.17       5.80 f
-  u_conv3/mult_389_C357/U2968/CO (CMPR42X2)               0.17       5.98 f
-  u_conv3/mult_389_C357/U3008/CO (CMPR42X2)               0.17       6.15 f
-  u_conv3/mult_389_C357/U3007/CO (CMPR42X2)               0.17       6.33 f
-  u_conv3/mult_389_C357/U3056/CO (CMPR42X2)               0.17       6.50 f
-  u_conv3/mult_389_C357/U3055/CO (CMPR42X2)               0.17       6.68 f
-  u_conv3/mult_389_C357/U3374/CO (CMPR42X2)               0.17       6.85 f
-  u_conv3/mult_389_C357/U932/CO (CMPR42X2)                0.17       7.02 f
-  u_conv3/mult_389_C357/U927/CO (CMPR42X2)                0.17       7.20 f
-  u_conv3/mult_389_C357/U922/CO (CMPR42X2)                0.17       7.37 f
-  u_conv3/mult_389_C357/U2684/S (CMPR42X1)                0.34       7.70 f
-  u_conv3/mult_389_C357/U2873/Y (NAND2X1)                 0.15       7.86 r
-  u_conv3/mult_389_C357/U3057/Y (OAI21X4)                 0.10       7.96 f
-  u_conv3/mult_389_C357/U2937/Y (AOI21X4)                 0.14       8.09 r
-  u_conv3/mult_389_C357/U2951/Y (OAI21X4)                 0.08       8.18 f
-  u_conv3/mult_389_C357/U2950/Y (AOI21X4)                 0.20       8.37 r
-  u_conv3/mult_389_C357/U3032/Y (OAI21X2)                 0.10       8.47 f
-  u_conv3/mult_389_C357/U2944/Y (XNOR2X4)                 0.11       8.59 f
-  u_conv3/mult_389_C357/product[61] (conv3_DW_mult_uns_2)
-                                                          0.00       8.59 f
-  u_conv3/U37/Y (OR3X6)                                   0.22       8.81 f
-  u_conv3/U44/Y (OR3X6)                                   0.23       9.04 f
-  u_conv3/U43/Y (NOR4X4)                                  0.19       9.23 r
-  u_conv3/U42/Y (NAND3X2)                                 0.13       9.36 f
-  u_conv3/U12/Y (NOR3BX4)                                 0.14       9.50 r
-  u_conv3/U45/Y (NOR2X1)                                  0.07       9.57 f
-  u_conv3/U50/Y (AO21XL)                                  0.22       9.79 f
-  u_conv3/neuron_data_reg[0]/D (DFFRX1)                   0.00       9.79 f
+  u_fc1/pe_out_s4_reg[1][1]/CK (DFFRX4)                   0.00 #     0.00 r
+  u_fc1/pe_out_s4_reg[1][1]/Q (DFFRX4)                    0.45       0.45 f
+  u_fc1/add_322/B[1] (fc1_DW01_add_8)                     0.00       0.45 f
+  u_fc1/add_322/U162/Y (NAND2X1)                          0.14       0.59 r
+  u_fc1/add_322/U163/Y (OAI21X2)                          0.11       0.70 f
+  u_fc1/add_322/U175/Y (NAND2XL)                          0.15       0.85 r
+  u_fc1/add_322/U174/Y (NAND2X2)                          0.11       0.96 f
+  u_fc1/add_322/SUM[2] (fc1_DW01_add_8)                   0.00       0.96 f
+  u_fc1/add_324/B[2] (fc1_DW01_add_9)                     0.00       0.96 f
+  u_fc1/add_324/U288/Y (NOR2X2)                           0.09       1.05 r
+  u_fc1/add_324/U293/Y (INVX3)                            0.07       1.11 f
+  u_fc1/add_324/U264/Y (NAND2X2)                          0.05       1.16 r
+  u_fc1/add_324/U388/Y (XNOR2X1)                          0.15       1.31 f
+  u_fc1/add_324/SUM[2] (fc1_DW01_add_9)                   0.00       1.31 f
+  u_fc1/U60/Y (MXI2X2)                                    0.14       1.44 r
+  u_fc1/U42/Y (INVX3)                                     0.08       1.52 f
+  u_fc1/mult_372_C340/a[2] (fc1_DW_mult_uns_2)            0.00       1.52 f
+  u_fc1/mult_372_C340/U2869/Y (BUFX12)                    0.13       1.65 f
+  u_fc1/mult_372_C340/U2889/Y (OR2X4)                     0.15       1.81 f
+  u_fc1/mult_372_C340/U2621/Y (AND2X4)                    0.12       1.93 f
+  u_fc1/mult_372_C340/U2966/Y (XNOR2X4)                   0.12       2.05 f
+  u_fc1/mult_372_C340/U4025/Y (OAI21XL)                   0.22       2.27 r
+  u_fc1/mult_372_C340/U1821/Y (XOR2X1)                    0.21       2.48 f
+  u_fc1/mult_372_C340/U4024/CO (ADDHXL)                   0.18       2.66 f
+  u_fc1/mult_372_C340/U3986/CO (ADDFHX1)                  0.24       2.90 f
+  u_fc1/mult_372_C340/U2742/CO (ADDFHX2)                  0.24       3.14 f
+  u_fc1/mult_372_C340/U2921/CO (ADDFHX2)                  0.26       3.39 f
+  u_fc1/mult_372_C340/U2920/CO (CMPR42X2)                 0.18       3.57 f
+  u_fc1/mult_372_C340/U990/CO (CMPR42X2)                  0.17       3.74 f
+  u_fc1/mult_372_C340/U987/CO (CMPR42X2)                  0.17       3.92 f
+  u_fc1/mult_372_C340/U983/CO (CMPR42X2)                  0.17       4.09 f
+  u_fc1/mult_372_C340/U979/CO (CMPR42X2)                  0.17       4.27 f
+  u_fc1/mult_372_C340/U975/CO (CMPR42X2)                  0.17       4.44 f
+  u_fc1/mult_372_C340/U971/CO (CMPR42X2)                  0.17       4.62 f
+  u_fc1/mult_372_C340/U2872/CO (CMPR42X2)                 0.17       4.79 f
+  u_fc1/mult_372_C340/U963/CO (CMPR42X2)                  0.17       4.96 f
+  u_fc1/mult_372_C340/U958/CO (CMPR42X2)                  0.17       5.14 f
+  u_fc1/mult_372_C340/U2862/CO (CMPR42X2)                 0.17       5.31 f
+  u_fc1/mult_372_C340/U948/CO (CMPR42X2)                  0.17       5.49 f
+  u_fc1/mult_372_C340/U943/CO (CMPR42X2)                  0.17       5.66 f
+  u_fc1/mult_372_C340/U938/CO (CMPR42X2)                  0.17       5.84 f
+  u_fc1/mult_372_C340/U933/CO (CMPR42X2)                  0.17       6.01 f
+  u_fc1/mult_372_C340/U928/CO (CMPR42X2)                  0.17       6.19 f
+  u_fc1/mult_372_C340/U923/CO (CMPR42X2)                  0.17       6.36 f
+  u_fc1/mult_372_C340/U918/CO (CMPR42X2)                  0.17       6.53 f
+  u_fc1/mult_372_C340/U2922/CO (CMPR42X2)                 0.21       6.75 f
+  u_fc1/mult_372_C340/U2566/ICO (CMPR42X4)                0.21       6.96 f
+  u_fc1/mult_372_C340/U2550/ICO (CMPR42X4)                0.17       7.14 f
+  u_fc1/mult_372_C340/U897/S (CMPR42X2)                   0.56       7.69 f
+  u_fc1/mult_372_C340/U2703/Y (NOR2X2)                    0.09       7.78 r
+  u_fc1/mult_372_C340/U2811/Y (OAI21X1)                   0.11       7.89 f
+  u_fc1/mult_372_C340/U2657/Y (AOI21X2)                   0.14       8.04 r
+  u_fc1/mult_372_C340/U2706/Y (OAI21X2)                   0.09       8.13 f
+  u_fc1/mult_372_C340/U3065/Y (AOI21X2)                   0.13       8.25 r
+  u_fc1/mult_372_C340/U2554/Y (BUFX8)                     0.14       8.39 r
+  u_fc1/mult_372_C340/U2913/Y (OAI21X2)                   0.07       8.46 f
+  u_fc1/mult_372_C340/U2627/Y (XNOR2X2)                   0.14       8.60 f
+  u_fc1/mult_372_C340/product[59] (fc1_DW_mult_uns_2)     0.00       8.60 f
+  u_fc1/U38/Y (OR3X6)                                     0.21       8.81 f
+  u_fc1/U52/Y (OR3X6)                                     0.23       9.04 f
+  u_fc1/U51/Y (NOR4X4)                                    0.19       9.23 r
+  u_fc1/U50/Y (NAND3X2)                                   0.13       9.36 f
+  u_fc1/U49/Y (NOR3X4)                                    0.13       9.49 r
+  u_fc1/U45/Y (NOR2X1)                                    0.07       9.56 f
+  u_fc1/U58/Y (AO21XL)                                    0.22       9.79 f
+  u_fc1/neuron_data_reg[0]/D (DFFRX1)                     0.00       9.79 f
   data arrival time                                                  9.79
 
   clock clk (rise edge)                                  10.00      10.00
   clock network delay (ideal)                             0.00      10.00
-  u_conv3/neuron_data_reg[0]/CK (DFFRX1)                  0.00      10.00 r
+  u_fc1/neuron_data_reg[0]/CK (DFFRX1)                    0.00      10.00 r
   library setup time                                     -0.21       9.79
   data required time                                                 9.79
   --------------------------------------------------------------------------

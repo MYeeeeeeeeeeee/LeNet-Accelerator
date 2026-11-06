@@ -39,7 +39,7 @@ module PE #(
             end
             FC: begin
                 if (valid) begin
-                    result = product[0] + product[1] + product[2] + product[3];
+                    result = (product[0] + product[1]) + (product[2] + product[3]);
                 end else begin
                     result = '0;
                 end

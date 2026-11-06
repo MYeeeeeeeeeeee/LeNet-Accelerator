@@ -41,7 +41,12 @@ module fc1 (
     output logic                    wb_load_valid,
     output logic        [31:0]      wb_wdata0,
     output logic        [31:0]      wb_wdata1,
-    input  logic signed [ 4:0][7:0] shared_weight[0:4]
+    input  logic signed [ 4:0][7:0] shared_weight[0:4],
+
+    // PE interface for FC1 activation-vector and result return.
+    output logic [63:0] pe_act_vec,
+    output logic pe_req,
+    input logic signed [19:0] shared_pe_result[0:4]
 );
     // input enable buffered to preserve SRAM timing
     logic enable_buf;
@@ -97,20 +102,24 @@ module fc1 (
     logic [1:0] done_delay;
 
     // Common pipeline control assignments.
-    assign s1_valid = enable_buf;
-    assign load_valid_s1 = s1_valid && (act_idx < 5'd15) && (out_ch < 'd84);
+    assign s1_valid         = enable_buf;
+    assign load_valid_s1    = s1_valid && (act_idx < 5'd15) && (out_ch < 'd84);
     assign vector_read_fire = load_valid_s1 && !pack_valid;
-    assign weight_valid_s1 = vector_read_fire;
-    assign wb_load_valid = weight_valid_s4;
-    assign wb_wdata0 = sram_weight_rdata0_buf;
-    assign wb_wdata1 = sram_weight_rdata1_buf;
-    assign change_out_ch = neuron_valid && (out_ch < 'd83);
-    assign pe_valid = s3_valid && vector_buf_valid;
-    assign pack_valid = neuron_valid && (package_cnt == 2'd3);
+    assign weight_valid_s1  = vector_read_fire;
+    assign wb_load_valid    = weight_valid_s4;
+    assign wb_wdata0        = sram_weight_rdata0_buf;
+    assign wb_wdata1        = sram_weight_rdata1_buf;
+    assign change_out_ch    = neuron_valid && (out_ch < 'd83);
+    assign pe_valid         = s3_valid && vector_buf_valid;
+    assign pack_valid       = neuron_valid && (package_cnt == 2'd3);
+
+    // shared PE interface 
+    assign pe_act_vec       = fc_act_vec_buf;
+    assign pe_req           = pe_valid;
 
     // Pipeline 1: arbitrate activation-vector reads and packed-output writes.
     // A packed output write takes priority over issuing a new vector read.
-    assign buffer_act_addr = act_idx * 8;
+    assign buffer_act_addr  = act_idx * 8;
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
         if (!rst_n) begin
             sram_act_addr0 <= '0;
@@ -266,22 +275,6 @@ module fc1 (
         end
     end : group_idx_pipeline
 
-    // Pipeline 3: multiply one buffered activation vector with two weights.
-    genvar i;
-    generate
-        for (i = 0; i < 2; i++) begin : gen_pe
-            PE #(
-                .INPUT_WIDTH (8),
-                .OUTPUT_WIDTH(20)
-            ) pe_inst (
-                .weight({8'd0, shared_weight[i][3:0]}),
-                .activation({8'd0, fc_act_vec_buf[i*32+:32]}),
-                .valid(pe_valid),
-                .mode(FC),
-                .result(pe_out[i])
-            );
-        end : gen_pe
-    endgenerate
 
     // Pipeline 2-3: delay the activation vector to match the PE input stage.
     // The two delay registers model the FC activation-buffer read latency.
@@ -313,7 +306,9 @@ module fc1 (
         if (!rst_n) begin
             foreach (pe_out_s4[i]) pe_out_s4[i] <= '0;
         end else if (pe_valid) begin
-            foreach (pe_out_s4[i]) pe_out_s4[i] <= pe_out[i];
+            for (int i = 0; i < 2; i++) begin
+                pe_out_s4[i] <= shared_pe_result[i];
+            end
         end
     end : pe_out_ff
 
