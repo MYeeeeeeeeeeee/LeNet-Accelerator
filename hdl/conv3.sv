@@ -122,7 +122,6 @@ module conv3 (
     logic signed [31:0] psum_next;
     logic [7:0] neuron_data;
 
-    // 
 
     // Pipeline 1: qualify the vector request and issue SRAM reads.
     assign s1_valid         = enable_buf;
@@ -157,7 +156,6 @@ module conv3 (
     // Pipeline 1: decode and issue activation addresses.
     assign act_0_idex       = {act_idx, 1'b0};
     assign act_1_idex       = {act_idx, 1'b1};
-
 
 
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen

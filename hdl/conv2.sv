@@ -48,9 +48,23 @@ module conv2 (
 
     input logic signed [4:0][7:0] shared_weight[0:4],
 
-    // OPT-04B: request shared CONV1/CONV2 combinational PE array.
+    // request shared CONV1/CONV2 combinational PE array.
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4]
+    input logic signed [19:0] shared_pe_result[0:4],
+
+    // Shared Channel PSUM Buffer
+    output logic               conv2_update_valid,
+    output logic               conv2_first_in_ch,
+    output logic               conv2_write_row,
+    output logic        [ 3:0] conv2_write_col,
+    output logic signed [31:0] conv2_sum_ext,
+    output logic        [ 3:0] conv2_pool_col_base,
+
+    input logic signed [31:0] conv2_pool00,
+    input logic signed [31:0] conv2_pool01,
+    input logic signed [31:0] conv2_pool10,
+    input logic signed [31:0] conv2_pool11
+
 
 );
     // input enable buffered to preserve SRAM timing
@@ -123,7 +137,6 @@ module conv2 (
     // PE inputs are selected from six buffered rows; PE results are registered
     // at Pipeline 4 before the arithmetic post-processing block.
     logic signed [19:0] pe_out_s4[0:4];
-    logic signed [9:0][31:0] ch_temp_psum[0:1];
     logic signed [19:0] pe_out[0:4];
 
     // Quantization, pooling, and output-packing data.
@@ -153,6 +166,9 @@ module conv2 (
     logic [2:0] in_ch_s4;
     logic [4:0] col_s4;
     logic row_sel_s4;
+
+    // pool PSUM max value is computed from the four PSUMs in the current 2x2 pooling window.
+    logic signed [31:0] pool_psum_max;
 
     // Shared combinational control. Keep cross-block assignments together;
     // assignments used by one sequential block remain next to that block.
@@ -506,17 +522,13 @@ module conv2 (
                            (col_s4 == 5'd9) && (row_sel_s4 == 1'b1);
 
     assign conv_sum_ext = {{12{conv_sum[19]}}, conv_sum};
+    assign conv2_update_valid = s4_valid;
+    assign conv2_first_in_ch = (in_ch_s4 == 3'd0);
+    assign conv2_write_row = row_sel_s4;
+    assign conv2_write_col = col_s4[3:0];
+    assign conv2_sum_ext = conv_sum_ext;
+    assign conv2_pool_col_base = pool_col_base;
 
-    always_ff @(posedge clk or negedge rst_n) begin : channel_psum_ff
-        if (!rst_n) foreach (ch_temp_psum[i]) ch_temp_psum[i] <= '0;
-        else if (s4_valid) begin
-            if (in_ch_s4 == 3'd0) begin
-                ch_temp_psum[row_sel_s4][col_s4] <= conv_sum_ext;
-            end else begin
-                ch_temp_psum[row_sel_s4][col_s4] <= ch_temp_psum[row_sel_s4][col_s4] + conv_sum_ext;
-            end
-        end
-    end : channel_psum_ff
 
     // 32-bit PSUM -> ReLU -> Quantization
     function automatic logic [7:0] quantize_psum(input logic signed [31:0] psum_value,
@@ -556,34 +568,22 @@ module conv2 (
     // Select the two adjacent columns used by the current 2x2 pooling window.
     assign pool_col_base = {pool_emit_idx, 1'b0};
 
-    logic signed [31:0] pool_psum_max;
+    
 
     always_comb begin : pool_max
-        pool_psum_max = $signed(ch_temp_psum[0][pool_col_base]);
+        pool_psum_max = conv2_pool00;
 
-        if ($signed(ch_temp_psum[0][pool_col_base+1]) > pool_psum_max)
-            pool_psum_max = $signed(ch_temp_psum[0][pool_col_base+1]);
+        if (conv2_pool01 > pool_psum_max) pool_psum_max = conv2_pool01;
 
-        if ($signed(ch_temp_psum[1][pool_col_base]) > pool_psum_max)
-            pool_psum_max = $signed(ch_temp_psum[1][pool_col_base]);
+        if (conv2_pool10 > pool_psum_max) pool_psum_max = conv2_pool10;
 
-        if ($signed(ch_temp_psum[1][pool_col_base+1]) > pool_psum_max)
-            pool_psum_max = $signed(ch_temp_psum[1][pool_col_base+1]);
+        if (conv2_pool11 > pool_psum_max) pool_psum_max = conv2_pool11;
 
         current_max = quantize_psum(pool_psum_max, scale_CONV2_buf);
     end
 
-    /*
-    always_comb begin : pool_max
-        q0 = quantize_psum($signed(ch_temp_psum[0][pool_col_base]), scale_CONV2_buf);
-        q1 = quantize_psum($signed(ch_temp_psum[0][pool_col_base+1]), scale_CONV2_buf);
-        q2 = quantize_psum($signed(ch_temp_psum[1][pool_col_base]), scale_CONV2_buf);
-        q3 = quantize_psum($signed(ch_temp_psum[1][pool_col_base+1]), scale_CONV2_buf);
-        current_max = q0;
-        if (q1 > current_max) current_max = q1;
-        if (q2 > current_max) current_max = q2;
-        if (q3 > current_max) current_max = q3;
-    end : pool_max*/
+
+
 
     // Output packer. Four pooled bytes form one 32-bit word; the final item
     // in each row emits a padded tail word.

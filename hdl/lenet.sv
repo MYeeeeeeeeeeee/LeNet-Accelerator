@@ -214,6 +214,33 @@ module lenet (
     logic [31:0] fc1_wb_wdata0, fc1_wb_wdata1;
     logic [31:0] fc2_wb_wdata0, fc2_wb_wdata1;
 
+    // CONV2 PSUM interface
+    logic conv2_update_valid;
+    logic conv2_first_in_ch;
+    logic conv2_write_row;
+    logic [3:0] conv2_write_col;
+    logic signed [31:0] conv2_sum_ext;
+    logic [3:0] conv2_pool_col_base;
+
+    logic signed [31:0] conv2_pool00;
+    logic signed [31:0] conv2_pool01;
+    logic signed [31:0] conv2_pool10;
+    logic signed [31:0] conv2_pool11;
+
+    // FC2 PSUM interface
+    logic fc2_mac_write_valid;
+    logic [3:0] fc2_mac_out_ch;
+    logic signed [31:0] fc2_psum_next;
+
+    logic fc2_bias_write_valid;
+    logic [2:0] fc2_bias_idx;
+    logic signed [31:0] fc2_bias0;
+    logic signed [31:0] fc2_bias1;
+
+    logic [3:0] fc2_result_raddr;
+    logic signed [31:0] fc2_result_rdata;
+
+
 
 
     // Delay the external start request by one clock before entering CONV1.
@@ -390,7 +417,20 @@ module lenet (
         .wb_wdata0       (c2_wb_wdata0),
         .shared_weight   (shared_weight),
         .pe_req          (c2_pe_req),
-        .shared_pe_result(shared_pe_result)
+        .shared_pe_result(shared_pe_result),
+
+        .conv2_update_valid (conv2_update_valid),
+        .conv2_first_in_ch  (conv2_first_in_ch),
+        .conv2_write_row    (conv2_write_row),
+        .conv2_write_col    (conv2_write_col),
+        .conv2_sum_ext      (conv2_sum_ext),
+        .conv2_pool_col_base(conv2_pool_col_base),
+
+        .conv2_pool00(conv2_pool00),
+        .conv2_pool01(conv2_pool01),
+        .conv2_pool10(conv2_pool10),
+        .conv2_pool11(conv2_pool11)
+
 
     );
 
@@ -605,7 +645,53 @@ module lenet (
 
         .pe_act_vec      (fc2_pe_act_vec),
         .pe_req          (fc2_pe_req),
-        .shared_pe_result(shared_pe_result)
+        .shared_pe_result(shared_pe_result),
+
+
+        .fc2_mac_write_valid(fc2_mac_write_valid),
+        .fc2_mac_out_ch     (fc2_mac_out_ch),
+        .fc2_psum_next      (fc2_psum_next),
+
+        .fc2_bias_write_valid(fc2_bias_write_valid),
+        .fc2_bias_idx        (fc2_bias_idx),
+        .fc2_bias0           (fc2_bias0),
+        .fc2_bias1           (fc2_bias1),
+
+        .fc2_result_raddr(fc2_result_raddr),
+        .fc2_result_rdata(fc2_result_rdata)
+
+    );
+
+
+    shared_ch_temp_buffer u_shared_ch_temp_buffer (
+        .clk  (clk),
+        .rst_n(rst_n),
+
+        // CONV2
+        .conv2_update_valid (conv2_update_valid),
+        .conv2_first_in_ch  (conv2_first_in_ch),
+        .conv2_write_row    (conv2_write_row),
+        .conv2_write_col    (conv2_write_col),
+        .conv2_sum_ext      (conv2_sum_ext),
+        .conv2_pool_col_base(conv2_pool_col_base),
+
+        .conv2_pool00(conv2_pool00),
+        .conv2_pool01(conv2_pool01),
+        .conv2_pool10(conv2_pool10),
+        .conv2_pool11(conv2_pool11),
+
+        // FC2
+        .fc2_mac_write_valid(fc2_mac_write_valid),
+        .fc2_mac_out_ch     (fc2_mac_out_ch),
+        .fc2_psum_next      (fc2_psum_next),
+
+        .fc2_bias_write_valid(fc2_bias_write_valid),
+        .fc2_bias_idx        (fc2_bias_idx),
+        .fc2_bias0           (fc2_bias0),
+        .fc2_bias1           (fc2_bias1),
+
+        .fc2_result_raddr(fc2_result_raddr),
+        .fc2_result_rdata(fc2_result_rdata)
     );
 
 

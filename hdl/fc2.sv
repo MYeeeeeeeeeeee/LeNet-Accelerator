@@ -42,7 +42,22 @@ module fc2 (
     // PE interface for FC2 activation-vector and result return.
     output logic [63:0] pe_act_vec,
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4]
+    input logic signed [19:0] shared_pe_result[0:4],
+
+
+    // Shared Channel PSUM Buffer
+    output logic               fc2_mac_write_valid,
+    output logic        [ 3:0] fc2_mac_out_ch,
+    output logic signed [31:0] fc2_psum_next,
+
+    output logic               fc2_bias_write_valid,
+    output logic        [ 2:0] fc2_bias_idx,
+    output logic signed [31:0] fc2_bias0,
+    output logic signed [31:0] fc2_bias1,
+
+    output logic        [ 3:0] fc2_result_raddr,
+    input  logic signed [31:0] fc2_result_rdata
+
 );
 
     localparam shortint fc2_weight_offset = 16'd15540;
@@ -95,8 +110,6 @@ module fc2 (
     logic [1:0] done_delay;
 
     logic mac_done;
-
-    logic signed [9:0][31:0] ch_temp_psum[0:1];
 
     logic [2:0] bias_idx;
     logic bias_load_valid;
@@ -382,40 +395,39 @@ module fc2 (
     assign conv_sum_ext = {{12{conv_sum[19]}}, conv_sum};
     assign psum_next = (group_idx_mac_s4 == 6'd0) ? conv_sum_ext : scalar_psum + conv_sum_ext;
 
+
+    assign fc2_mac_write_valid = s4_valid && (group_idx_mac_s4 == 6'd10);
+
+    assign fc2_mac_out_ch = out_ch[3:0];
+    assign fc2_psum_next = psum_next;
+
+    assign fc2_bias_write_valid = !s4_valid && bias_valid_s4;
+
+    assign fc2_bias_idx = bias_idx_s4;
+    assign fc2_bias0 = $signed(sram_weight_rdata0_buf);
+    assign fc2_bias1 = $signed(sram_weight_rdata1_buf);
+
+    assign fc2_result_raddr = write_addr[3:0];
+
+
     // Pipeline 4: update PSUM and emit one quantized neuron per completed vector.
     // Group 10 is the final vector group for one output neuron.
+
     always_ff @(posedge clk or negedge rst_n) begin : psum_update
         if (!rst_n) begin
             scalar_psum  <= '0;
             neuron_valid <= 1'b0;
-
-            foreach (ch_temp_psum[i]) ch_temp_psum[i] <= '0;
         end else begin
             neuron_valid <= 1'b0;
 
-            // 第一階段：Weight MAC
             if (s4_valid) begin
                 scalar_psum <= psum_next;
 
-                if (group_idx_mac_s4 == 6'd10) begin
-                    ch_temp_psum[0][out_ch] <= psum_next;
-                    neuron_valid <= 1'b1;
-                end
-            end else if (bias_valid_s4) begin  // 第二階段：Bias + PSUM
-                ch_temp_psum[1][{
-                    bias_idx_s4, 1'b0
-                }] <= ch_temp_psum[0][{bias_idx_s4, 1'b0}] + $signed(
-                    sram_weight_rdata0_buf
-                );
-
-                ch_temp_psum[1][{
-                    bias_idx_s4, 1'b1
-                }] <= ch_temp_psum[0][{bias_idx_s4, 1'b1}] + $signed(
-                    sram_weight_rdata1_buf
-                );
+                if (group_idx_mac_s4 == 6'd10) neuron_valid <= 1'b1;
             end
         end
-    end : psum_update
+    end: psum_update
+
 
     // Pipeline 4 control: advance to the next output neuron after completion.
     always_ff @(posedge clk or negedge rst_n) begin : ch_counter
@@ -446,7 +458,7 @@ module fc2 (
             sram_act_wea1 <= 4'd0;
             if (result_write_fire) begin
                 sram_act_wea0   <= 4'hF;
-                sram_act_wdata0 <= ch_temp_psum[1][write_addr];
+                sram_act_wdata0 <= fc2_result_rdata;
             end
         end
     end : act_sram_write

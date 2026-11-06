@@ -3,8 +3,8 @@
 > 用途：記錄 RTL 架構最佳化、DC 面積與時序、功能驗證，以及每次修改的取捨。  
 > 最後更新：2026-11-06  
 > 專案：5-Layer Quantized LeNet Accelerator（SystemVerilog）
-> **最新完整驗證版本：V5（OPT-05：五個 Layer 共用唯一 5-PE Array）｜Total Cell Area 565,724.74｜相較 V4 −11.13%｜相較 V0 累計 −40.28%｜Golden／10 ns Timing／Gate-Level Simulation 全部 PASS｜Cycle Count 31,497（與 V4 相同；使用者回報）。**  
-> **上一版 V4（OPT-04B）：** CONV1／CONV2 共用五個 PE，Golden／10 ns Timing／GLS 全 PASS，31,497 cycles；Area 636,574.22。V5 再將 CONV3／FC1／FC2 分時接入相同的五個 PE，**沒有增加 PE 數量或運算週期**。
+> **最新完整驗證版本：V6（OPT-06：CONV2／FC2 共用 Channel PSUM Buffer）｜Total Cell Area 552,503.69｜相較 V5 −2.34%｜相較 V0 累計 −41.67%｜Golden／10 ns Timing／Gate-Level Simulation 全部 PASS｜Cycle Count 31,497（不變；使用者回報）。**  
+> **上一版 V5（OPT-05）：** 五個 Layer 共用唯一五顆 PE；Golden／10 ns Timing／GLS 全 PASS，31,497 cycles；Area 565,724.74。V6 進一步讓 CONV2／FC2 分時共用一份 **640-bit Channel PSUM Buffer**；DC Sequential Cells 從 6,601 降為 5,961（−640）。
 
 ## 1. 最佳化目標與限制
 
@@ -330,7 +330,7 @@
 | PE Instance Sharing | **已由 DC Hierarchy 確認** | 一組 `u_shared_pe_array`、五個 PE |
 | Sequential Cells | **6,601（不變）** | DC Area Report |
 
-**驗證後結論：** **OPT-04B 已確實降低面積，V4 Golden／10 ns Timing／GLS 全 PASS，完成週期維持 31,497（使用者回報）**，因此 **V4 在當時升格為已驗證的最低面積版本；目前 V5 已進一步降低面積且全數驗證通過**。建議歸檔 `lenet.sv`、`conv1.sv`、`conv2.sv`、`shared_pe_array.sv`、`PE.sv` 的實際 Git Commit／Diff，與 V4 的 Timing Report、Golden／GLS Log 和 SDC；不要自行補填尚未提供的 WNS／TNS 數字。
+**驗證後結論：** **OPT-04B 已確實降低面積，V4 Golden／10 ns Timing／GLS 全 PASS，完成週期維持 31,497（使用者回報）**，因此 **V4 在當時升格為已驗證的最低面積版本；目前 V6 已進一步降低面積且全數驗證通過**。建議歸檔 `lenet.sv`、`conv1.sv`、`conv2.sv`、`shared_pe_array.sv`、`PE.sv` 的實際 Git Commit／Diff，與 V4 的 Timing Report、Golden／GLS Log 和 SDC；不要自行補填尚未提供的 WNS／TNS 數字。
 
 **本輪報告：** `report_area(7).log`，Synopsys DC T-2022.03、`slow.db`、Design `lenet`、2026-11-06 21:26:12。SDC 與完整 Compile Options 尚未附檔；與 V3B 的公平比較應以相同 10 ns Constraint 和編譯條件再次確認。
 
@@ -389,9 +389,64 @@
 | PE 實例數 | **五顆** | DC Hierarchy 的 `u_shared_pe_array/gen_shared_pe[0..4].pe_inst` |
 | Sequential Cells | **6,601** | DC `report_area(8).log`；與 V4 相同 |
 
-**驗證後結論：** **V5（OPT-05）目前為已驗證的最低 DC Cell Area 版本：565,724.74，較 V4 降低 11.13%，較 V0 累計降低 40.28%；Golden、10 ns Timing、GLS 全部 PASS，總 Cycle Count 31,497 不變（使用者回報）。** 建議立即建立 Git Tag、保留 V4／V5 RTL Diff、固定 10 ns SDC、`report_area(7).log`／`report_area(8).log`、Golden／GLS／Timing 原始輸出。Area Report 沒有 Wire Load（`Net Interconnect area: undefined`），不能以此宣稱實際佈線後 Core Area、Power 或 Post-Route Timing 成果。
+**驗證後結論（V5 當時）：** **V5（OPT-05）曾為已驗證的最低 DC Cell Area 版本：565,724.74，較 V4 降低 11.13%，較 V0 累計降低 40.28%；Golden、10 ns Timing、GLS 全部 PASS，總 Cycle Count 31,497 不變（使用者回報）。** 建議立即建立 Git Tag、保留 V4／V5 RTL Diff、固定 10 ns SDC、`report_area(7).log`／`report_area(8).log`、Golden／GLS／Timing 原始輸出。Area Report 沒有 Wire Load（`Net Interconnect area: undefined`），不能以此宣稱實際佈線後 Core Area、Power 或 Post-Route Timing 成果。
 
 **本輪報告：** `report_area(8).log`，DC T-2022.03、`slow.db`、Design `lenet`，2026-11-06 22:44:44。
+
+
+### 2.11 V6：OPT-06 — CONV2／FC2 Shared Channel PSUM Buffer（報告日期：2026-11-06 23:54:47）
+
+> **V6 驗證（使用者於 2026-11-06 回報）：Golden PASS、Gate-Level Simulation PASS、10 ns Timing PASS，Cycle Count = 31,497（與 V5 一致）。** 面積與階層數據取自 `report_area(9).log`（DC T-2022.03、`slow.db`）；Timing WNS／TNS、原始 Golden／GLS Log、SDF 設定與該版 Git Commit／完整 RTL Diff 尚待歸檔。
+
+> **設計方向（根據本次先前討論）：** 將 CONV2／FC2 各自的 `logic signed [9:0][31:0] ch_temp_psum[0:1]`（每份 2 × 10 × 32 = **640 bits**）移出原本 Layer，在 `lenet.sv` 只保留一個 `u_shared_ch_temp_buffer`。由於兩層透過 Top FSM 分時執行，共用一份儲存體；CONV2 的 PSUM 更新與 Pooling 讀取、FC2 的 MAC／Bias 更新與最終輸出由共享模組依接口支援。這是與合成結果相符的預期改動，但確切 RTL 變更仍應以 V5→V6 Git Diff 確認。
+
+#### V5 → V6：Top Area 與 Cell Count
+
+| 指標 | V5（OPT-05） | **V6（OPT-06）** | **V6 − V5** |
+|---|---:|---:|---:|
+| **Total Cell Area** | 565,724.74 | **552,503.69** | **−13,221.05（−2.34%）** |
+| Combinational Area | 352,509.24 | **359,770.72** | **+7,261.48（+2.06%）** |
+| Noncombinational Area | 213,215.50 | **192,732.97** | **−20,482.53（−9.61%）** |
+| Buf / Inv Area（Combinational 子集） | 19,951.24 | **19,756.04** | **−195.20** |
+| Total Cells | 40,240 | **40,169** | **−71** |
+| Combinational Cells | 32,838 | **33,402** | **+564** |
+| **Sequential Cells** | **6,601** | **5,961** | **−640（−9.70%）** |
+| Number of Nets | 53,371 | **53,817** | **+446** |
+| Macro / Black Box | 0 | **0** | 0 |
+
+**關鍵觀察：** Sequential Cells 減少 **640 個**，恰好與預期消除的一份 **640-bit Channel PSUM Buffer** 容量一致，是實際減少儲存硬體的強烈支持；但僅憑數量不能逐顆證明全部 640 個 FF 的精確來源。新設計的共享讀寫 MUX、累加與 Decoder 使組合面積增加 **7,261.48**，但非組合面積下降 **20,482.53**，因此 Top 淨減 **13,221.05（2.34%）**。**不可把「兩個 Layer 原本各自下降的面積」直接全算作節省，因為新增的 Shared Buffer 仍佔實體面積。**
+
+#### Shared Channel PSUM Buffer：Hierarchy 與歸因
+
+| Module | V5 Area | **V6 Area** | V6 − V5 |
+|---|---:|---:|---:|
+| `u_conv2` | 104,361.24 | **66,998.07** | **−37,363.17（−35.80%）** |
+| `u_fc2` | 59,278.30 | **25,175.84** | **−34,102.46（−57.53%）** |
+| **`u_shared_ch_temp_buffer`** | 不存在 | **57,930.56** | **+57,930.56（新增共享實體）** |
+| **上述三模組合計** | **163,639.54** | **150,104.47** | **−13,535.07（−8.27%）** |
+| `u_shared_pe_array` | 62,752.88 | **62,717.23** | −35.65 |
+| `u_shared_line_buffer` | 99,058.56 | **98,859.97** | −198.60 |
+| **Top Total Cell Area** | **565,724.74** | **552,503.69** | **−13,221.05（−2.34%）** |
+
+- 新階層 `u_shared_ch_temp_buffer` **57,930.5636**（約占 Top **10.5%**），Local Combinational 32,764.9119、Local Noncombinational 20,640.3833，另包含子階層加法器；**Global Area 不可再與其 Child Areas 重複加總**。
+- `u_conv2` 由 104,361.2428 降到 66,998.0749；`u_fc2` 由 59,278.2990 降到 25,175.8362。這兩層移出的暫存與邏輯已轉移至共享模組，不能只看 Layer 階層下降就宣稱節省約 71,466。
+- 三個相關模組合計的淨改善 **13,535.07**，與整體 Top 淨改善 **13,221.05** 接近；差額來自其他階層及 Top 的重新映射。V5→V6 共享 PE Array 仍為五顆（`gen_shared_pe[0..4].pe_inst`），並未增加 PE 數量。
+- DC 面積報告的 `Net Interconnect area: undefined`，本結果不等於實際 Placement／Routing Core Area 或整體 Power／PPA。
+
+#### V6 驗證狀態
+
+| 驗證項目 | V6 結果 | 證據狀態 |
+|---|---|---|
+| RTL Golden Comparison | **PASS** | 使用者回報；完整 Golden Log 待歸檔 |
+| Gate-Level Simulation | **PASS** | 使用者回報；GLS Log、SDF 設定待歸檔 |
+| 10 ns Setup Timing | **PASS** | 使用者回報；WNS／TNS／Critical Path 數值未提供 |
+| Cycle Count | **31,497** | 使用者回報；相較 V5 **+0 cycles** |
+| Total Cell Area | **552,503.691758** | DC `report_area(9).log` |
+| Sequential Cells | **5,961（−640 vs V5）** | DC `report_area(9).log` |
+
+**累計成果：** V0 `947,242.55 → 552,503.69`，減少 **394,738.86（−41.67%）**；V6 為**目前最低 Cell Area 且 Golden／10 ns Timing／GLS 全 PASS（使用者回報）的版本**。建議保存 V5／V6 Git Diff、SDC／DC Compile Script、Golden／GLS Logs、`report_timing`（WNS／TNS）及專用的 CONV2 Pooling／FC2 Bias Read-Modify-Write 測試，確認實驗完全可重現。
+
+**本輪報告：** `report_area(9).log`，Synopsys DC T-2022.03、`slow.db`、Design `lenet`，2026-11-06 23:54:47。
 
 ## 3. 已進行的架構重構與資源共享
 
@@ -403,8 +458,9 @@
 | R-04 | Weight/Bias 分時讀取 | FC2 先讀 Weight MAC，再以雙 Port 讀 Bias，與 `ch_temp_psum` 相加 | Bias 不進 Shared Weight Buffer |
 | **R-05** | **CONV1／CONV2 Shared PE Array** | **V4：CONV1／CONV2 共用 5 個 PE** | **OPT-04B Top Area −8.94% vs V3B；Golden／10 ns Timing／GLS PASS，31,497 cycles（回報）** |
 | **R-06** | **全五層共享 5-PE Array** | **V5：CONV1／CONV2 使用五顆；CONV3／FC1／FC2 使用其中兩顆，總共只有五顆 PE** | **OPT-05 Top Area −11.13% vs V4；Golden／10 ns Timing／GLS PASS，31,497 cycles（回報）** |
+| **R-07** | **CONV2／FC2 共享 Channel PSUM Buffer** | **V6：Top 只建立一份 640-bit `u_shared_ch_temp_buffer`，兩層分時存取** | **OPT-06 Top Area −2.34% vs V5；Sequential Cells −640；Golden／10 ns Timing／GLS PASS，31,497 cycles（回報）** |
 
-> 注意：**程式重構完成 ≠ 已證實省面積**。R-01～R-04 缺乏重構前同條件的獨立對照，不可宣稱各自省多少；R-05（OPT-04B）與 R-06（OPT-05）則分別有 V3B／V4 與 V4／V5 合成對照；跨階層搬移的 PE 面積不能重複計算。
+> 注意：**程式重構完成 ≠ 已證實省面積**。R-01～R-04 缺乏重構前同條件的獨立對照，不可宣稱各自省多少；R-05～R-07 則分別有 V3B／V4、V4／V5 及 V5／V6 合成對照；跨階層搬移的 PE／Buffer 面積不能重複計算。
 
 ## 4. 各階段最佳化追蹤與下一輪待辦
 
@@ -558,6 +614,17 @@ pe_window[r][c] = line_buffer[r][col+c];
 
 **實驗結論：** V5 已達成 **共用 PE、10 ns Timing PASS、Golden／GLS PASS、0 Cycle Overhead**。需歸檔原始驗證 Log／WNS／TNS／SDC，未量測 Power 和 Layout PPA。
 
+
+### OPT-06：CONV2／FC2 共用 640-bit Channel PSUM Buffer（V6）
+
+**狀態：** **V6 已完成合成及驗證：Top Cell Area 565,724.74 → 552,503.69（−2.34% vs V5），Golden／10 ns Timing／GLS 全部 PASS，Cycle Count 31,497 不變（使用者回報）。**
+
+**修改方向：** `conv2.sv` 與 `fc2.sv` 將各自 640-bit `ch_temp_psum` 移到 Top 唯一一份 `shared_ch_temp_buffer.sv`；Top 處理兩個 Layer 的 PSUM Update、Pooling Read、FC2 Bias Write 與 Result Read。實際 Git Diff 尚待歸檔，不以 Area Report 單獨證明所有 RTL 細節。
+
+**實際合成證據：** DC Hierarchy 出現唯一 `u_shared_ch_temp_buffer` **57,930.56**；`u_conv2` 與 `u_fc2` 面積分別 **104,361.24 → 66,998.07**、**59,278.30 → 25,175.84**；**Sequential Cells 6,601 → 5,961（−640）**。新的共用模組與額外組合邏輯已計入後，Top 真正淨節省 **13,221.05（2.34%）**。
+
+**實驗結論：** V6 達成 **實體暫存資源共享、Golden／10 ns Timing／GLS PASS、0 Cycle Overhead**。目前不宣稱功率、Wire Area、Layout／Post-Route Timing 的成果；補存 WNS／TNS、SDC 與原始模擬紀錄。
+
 ## 5. 優先順序總覽
 
 | 順序 | ID | 主要目標 | 預期改動範圍 | 風險 | 狀態 |
@@ -567,16 +634,17 @@ pe_window[r][c] = line_buffer[r][col+c];
 | 3 | OPT-03 | Shared Line Buffer MUX / Decoder | Window / Write Decode | 中～高 | **V3A Decoder 無明顯收益；V3B Window Read MUX：Top −7.92%、Buffer −37.24%；Golden／10 ns Timing／GLS PASS；31,497 cycles（使用者回報）** |
 | 4 | **OPT-04** | **CONV1/2 PE Sharing** | **Shared PE Array / Layer Datapath** | 高 | **V4 Area −8.94% vs V3B；Golden／10 ns Timing／GLS 全 PASS；31,497 cycles（回報）** |
 | 5 | **OPT-05** | **五個 Layer 共用唯一五顆 PE** | **Top Operand MUX + CONV3／FC1／FC2 PE Result Route** | 高 | **V5 Area −11.13% vs V4；Golden／10 ns Timing／GLS 全 PASS；31,497 cycles（回報）** |
+| 6 | **OPT-06** | **CONV2／FC2 共用 Channel PSUM Buffer** | **Shared 640-bit PSUM Storage + Pooling／Bias Read-Write MUX** | 中～高 | **V6 Area −2.34% vs V5；Sequential Cells −640；Golden／10 ns Timing／GLS 全 PASS；31,497 cycles（回報）** |
 
-> OPT-01、OPT-02、OPT-03B、OPT-04B、**OPT-05** 皆取得明顯的面積下降；OPT-03A 的 Static Write Decoder 則未顯著降低目標模組面積。**V5 是目前面積最低且 Golden／10 ns Timing／GLS 均 PASS 的版本（使用者回報）**：Total Cell Area **565,724.74**，相較 V0 **−40.28%**，Cycle Count **31,497**，與 V3B／V4 相同。
+> OPT-01、OPT-02、OPT-03B、OPT-04B、OPT-05、**OPT-06** 均取得實測面積下降；OPT-03A 的 Static Write Decoder 則未顯著降低目標模組面積。**V6 是目前面積最低且 Golden／10 ns Timing／GLS 均 PASS 的版本（使用者回報）**：Total Cell Area **552,503.69**，相較 V0 **−41.67%**，Cycle Count **31,497**，與 V3B／V4／V5 相同。
 
 ## 6. 每次實驗的量測紀錄
 
-**截至 V5 的累計面積成果：** Cell Area `947,242.55 → 565,724.74`（**−40.28%**）。主要成功最佳化為 OPT-01（CONV2 Quantize）、OPT-02（FC Buffer Banked Read）、OPT-03B（Window Read MUX）、OPT-04B（CONV1／CONV2 Shared PE Array）及 **OPT-05（全部五層共用五顆 PE）**；OPT-03A 保留為 A/B 測試紀錄。**V5 Golden／10 ns Timing／Gate Sim 全 PASS；31,497 cycles 不變（使用者回報）。**
+**截至 V6 的累計面積成果：** Cell Area `947,242.55 → 552,503.69`（**−41.67%**）。主要成功最佳化為 OPT-01（CONV2 Quantize）、OPT-02（FC Buffer Banked Read）、OPT-03B（Window Read MUX）、OPT-04B（CONV1／CONV2 Shared PE Array）、OPT-05（全部五層共用五顆 PE）及 **OPT-06（CONV2／FC2 共用 640-bit PSUM Buffer）**；OPT-03A 保留為 A/B 測試紀錄。**V6 Golden／10 ns Timing／Gate Sim 全 PASS；31,497 cycles 不變（使用者回報）。**
 
 > 以下比較可確認相同的 DC 版本與 `slow.db` Library，**完整 SDC、Clock Period、Synthesis Options 及同一組 Golden 的設定仍須由實驗版本紀錄核實**。沒有 Timing Report 時，只記錄「使用者確認 Timing PASS」，不要自行填寫 WNS。
 
-**Cycle Count：** 使用者於 2026-11-06 確認 **V3B、V4、V5 都是 31,497 cycles**，且與歷史版本一致（歷史版本未逐份附 Log）；V4 和 V5 兩輪 PE Sharing **都沒有增加總週期數**。
+**Cycle Count：** 使用者於 2026-11-06 確認 **V3B、V4、V5、V6 都是 31,497 cycles**，且與歷史版本一致（歷史版本未逐份附 Log）；V4、V5 PE Sharing 和 V6 PSUM Buffer Sharing **都沒有增加總週期數**。
 
 | Version | 主要改動 | RTL / Golden | Clock | WNS (ns) | Total Cell Area | Area Δ vs Baseline | Cycle Count | 備註 |
 |---|---|---|---|---|---:|---:|---|---|
@@ -588,6 +656,7 @@ pe_window[r][c] = line_buffer[r][col+c];
 | **V3B** | **OPT-03B：8-Byte Chunk + Byte Shift Window MUX** | **Golden PASS／GLS PASS（回報）** | **10 ns／PASS（回報）** | 待補 | **699,094.55** | **−26.20%（−248,148.00）** | **31,497** | **`report_area(6).log`；V3A→V3B Top −7.92%；Buffer −37.24%；驗證完成（使用者回報）** |
 | **V4** | **OPT-04B：CONV1／CONV2 共用 5 個 PE** | **Golden／GLS PASS（回報）** | **10 ns / PASS（回報）** | 待補 | **636,574.22** | **−32.80%（−310,668.33）** | **31,497** | **`report_area(7).log`；V3B→V4 Top −8.94%；`u_shared_pe_array` 62,705.35；全數驗證通過（回報）** |
 | **V5** | **OPT-05：五個 Layer 共用唯一 5-PE Array** | **Golden／GLS PASS（回報）** | **10 ns / PASS（回報）** | 待補 | **565,724.74** | **−40.28%（−381,517.81）** | **31,497** | **`report_area(8).log`；V4→V5 Top −11.13%；`u_shared_pe_array` 62,752.88；全數驗證通過（回報）** |
+| **V6** | **OPT-06：CONV2／FC2 共用 640-bit Channel PSUM Buffer** | **Golden／GLS PASS（回報）** | **10 ns / PASS（回報）** | 待補 | **552,503.69** | **−41.67%（−394,738.86）** | **31,497** | **`report_area(9).log`；V5→V6 Top −2.34%；Sequential Cells −640；`u_shared_ch_temp_buffer` 57,930.56；全數驗證通過（回報）** |
 
 ### 2026-11-05 — OPT-01 實驗紀錄（V1）
 
@@ -635,7 +704,7 @@ pe_window[r][c] = line_buffer[r][col+c];
 - **RTL / Golden：** 待提供實測結果。
 - **Gate-Level Simulation：** 使用者表示已修正相關程式；**PASS 證據未提供**（尚需 GLS Log／結果）。
 - **Latch / Multiple Driver / Width / Reset：** 待提供最新檢查結果。
-- **結論：** **V2.1 曾作為後續面積比較的修正版基準**；現在已有 V3A 的後續面積結果。Golden、GLS、10 ns Timing 仍需逐版本補充驗證。
+- **結論：** **V2.1 曾作為後續面積比較的修正版基準**；後續已有 V3A～V6 的面積結果。Golden、GLS、10 ns Timing 仍需逐版本補充驗證。
 
 ### 2026-11-05 — OPT-03A Static Write Decoder 合成紀錄（V3A）
 
@@ -669,7 +738,7 @@ pe_window[r][c] = line_buffer[r][col+c];
 - **Timing：** 10 ns 為既定目標；**V3B 10 ns Timing PASS（使用者回報）**；WNS／TNS／Critical Path Report 待補。
 - **Golden Comparison / RTL Simulation：** **PASS（使用者回報）**；Cycle Count = **31,497**，和之前版本相同。逐項 Window 邊界的專用測試 Log 尚未附上。
 - **Gate-Level Simulation：** **PASS（使用者回報）**；原始 Log 待歸檔。
-- **結論：** **OPT-03B 已達成實測面積節省、Golden PASS、10 ns Timing PASS、Gate-Level Simulation PASS（使用者回報），Cycle Count 不變（31,497）；在當時保存為完整驗證最佳版本；其後新增 V4 面積候選。**
+- **結論：** **OPT-03B 已達成實測面積節省、Golden PASS、10 ns Timing PASS、Gate-Level Simulation PASS（使用者回報），Cycle Count 不變（31,497）；在當時保存為完整驗證最佳版本；其後已有 V4～V6 的面積成果。**
 - **後續：** 將 Golden／Timing／GLS Log、SDC、Git Commit 歸檔後，已進行 OPT-04B Shared PE 及 V4 面積量測；請參考下一段。
 
 ### 2026-11-06 — OPT-04B Shared PE Array 合成與完整驗證紀錄（V4）
@@ -686,7 +755,7 @@ pe_window[r][c] = line_buffer[r][col+c];
 - **RTL Golden：** **PASS（2026-11-06 使用者回報）**；完整 Golden Log 尚待歸檔。
 - **10 ns Timing：** **PASS（2026-11-06 使用者回報）**；WNS／TNS／Critical Path Report 尚待歸檔。
 - **Cycle Count：** **31,497（2026-11-06 使用者回報）**；與 V3B 一致，**Cycle Overhead = 0**。
-- **保留判斷：** **V4 已同時完成 Area 降低、Golden PASS、10 ns Timing PASS、Gate Sim PASS，且不增加 Cycle Count**；保存為 V4 當時的已驗證最佳面積版本（現已由 V5 取代）。原始驗證 Log、SDC、Git Commit 仍建議保存。
+- **保留判斷：** **V4 已同時完成 Area 降低、Golden PASS、10 ns Timing PASS、Gate Sim PASS，且不增加 Cycle Count**；保存為 V4 當時的已驗證最佳面積版本（現已由 V6 取代）。原始驗證 Log、SDC、Git Commit 仍建議保存。
 
 ### V4 完整驗證摘要（2026-11-06 使用者回報）
 
@@ -717,7 +786,24 @@ pe_window[r][c] = line_buffer[r][col+c];
 - **Gate-Level Simulation：** **PASS（使用者回報）**；SDF 設定與原始 Log 尚待歸檔。
 - **Cycle Count：** **31,497（使用者回報）**；與 V4 相同，**Cycle Overhead = 0**。
 - **其他注意：** 主要降低 Combinational Area；未提供 Power、Wire-Load、Floorplan／Routing 的實測結果，不宣稱完整 PPA。
-- **保留判斷：** **V5 已通過 Golden／10 ns Timing／GLS，完成五層五顆 PE 共用且不增加 Cycle，為最新已驗證最低面積版本。** 請保存對應 Git Commit、RTL Diff、SDC、Golden／GLS／Timing Reports。
+- **保留判斷：** **V5 已通過 Golden／10 ns Timing／GLS，完成五層五顆 PE 共用且不增加 Cycle；在當時為最低面積版本，後續已由 V6 取代。** 請保存對應 Git Commit、RTL Diff、SDC、Golden／GLS／Timing Reports。
+
+
+### 2026-11-06 — OPT-06 Shared Channel PSUM Buffer 合成與完整驗證紀錄（V6）
+
+- **修改目標：** CONV2 與 FC2 各自的 `ch_temp_psum`（640 bits × 2）改為共用一份 640-bit PSUM Buffer；保留 CONV2 Pooling、FC2 Bias／MAC、各層 Pipeline 與 SRAM 輸出行為。
+- **修改範圍（依本次討論）：** `conv2.sv`、`fc2.sv`、`lenet.sv`、`shared_ch_temp_buffer.sv`；以 V6 Git Commit／RTL Diff 為準。
+- **合成報告：** `report_area(9).log`，2026-11-06 23:54:47；DC T-2022.03、`slow.db`、Design `lenet`。
+- **Total Cell Area：** **552,503.69**；V5→V6 **−13,221.05（−2.34%）**；V0→V6 **−394,738.86（−41.67%）**。
+- **Combinational／Noncombinational Area：** **359,770.72／192,732.97**；與 V5 相比分別 **+7,261.48／−20,482.53**，共用控制與 MUX 的面積代價已反映於合成結果。
+- **Total／Sequential Cells：** **40,169／5,961**；V5 Sequential Cells **6,601**，因此 **−640**（對應預期減少的一份 640-bit Buffer）。
+- **共享 Buffer Hierarchy：** `u_shared_ch_temp_buffer` **57,930.56**；`u_conv2` **66,998.07**；`u_fc2` **25,175.84**。三個模組合計相較 V5 的兩層面積降低 **13,535.07**；Top 淨下降 **13,221.05**。
+- **共享 PE：** `u_shared_pe_array` **62,717.23**，Hierarchy 仍列出 5 個 PE，不增加共享 PE 數量。
+- **Golden Comparison：** **PASS（使用者 2026-11-06 回報）**。
+- **10 ns Timing：** **PASS（使用者回報）**；WNS／TNS／Critical Path 未提供。
+- **Gate-Level Simulation：** **PASS（使用者回報）**；是否 SDF Back-Annotated、原始 Log 待歸檔。
+- **Cycle Count：** **31,497（使用者回報）**；與 V5 相同，**Cycle Overhead = 0**。
+- **保留判斷：** **V6 已通過 Golden／10 ns Timing／GLS，且 DC 面積比 V5 降低 2.34%，因此成為最新已驗證最低面積版本。** 完整 RTL Diff、SDC、Golden／Timing／GLS 原始輸出仍需歸檔；尚未量測 Power 和 Layout PPA。
 
 ### V3B 功能／時序／Gate-Level 驗證摘要（使用者回報）
 
@@ -768,13 +854,14 @@ pe_window[r][c] = line_buffer[r][col+c];
 
 ## 9. 重要備註
 
-- **已取得 V0、V1、V2、V2.1、V3A、V3B、V4、V5 Area Reports**：V1 對 V0 −8.51%；V2 對 V1 −12.42%；V2.1 對 V2 +0.083%；V3A 對 V2.1 −0.041%；V3B 對 V3A −7.92%；V4 對 V3B −8.94%；**最新 V5 對 V4 −11.13%，對 V0 累計 −40.28%**。**V3B、V4、V5 Golden／10 ns Timing／GLS 均 PASS，Cycle Count 都是 31,497（使用者回報）**；需歸檔 `report_timing`、WNS／TNS、Golden／GLS Log 和完整 Synthesis Options。
+- **已取得 V0、V1、V2、V2.1、V3A、V3B、V4、V5、V6 Area Reports**：V1 對 V0 −8.51%；V2 對 V1 −12.42%；V2.1 對 V2 +0.083%；V3A 對 V2.1 −0.041%；V3B 對 V3A −7.92%；V4 對 V3B −8.94%；V5 對 V4 −11.13%；**最新 V6 對 V5 −2.34%，對 V0 累計 −41.67%**。**V3B、V4、V5、V6 Golden／10 ns Timing／GLS 均 PASS，Cycle Count 都是 31,497（使用者回報）**；需歸檔 `report_timing`、WNS／TNS、Golden／GLS Log 和完整 Synthesis Options。
 - V0 `report_area.log` 顯示 CONV2 四個大型量化乘法器；V1 `report_area(1).log` 的相關大型 Multiplier 變為一個，且有三個 Comparator。**實際節省的是 Top Total Area 80,650.26**；不要把單一 Multiplier 的 Hierarchical Area 當作節省量。
 - V2～V3B 面積結果證實 **FC Buffer 動態 Byte Index 是主要面積瓶頸之一**：Banked Read 後 `u_fc_buffer` Combinational Area 下降 80.65%。**V3A Static Write Decoder 沒有減少 Shared Line Buffer 的面積；V3B 的 Window Read MUX 最佳化則使 Shared Line Buffer Combinational Area 下降 54.27%**。V3B 整體 Golden 和 GLS 已 PASS（使用者回報）；若需要更嚴謹的模組級證據，可額外保存 Chunk 邊界、`row_sel` 與 Valid / SRAM 對齊的 Directed Tests。
 - `shared_line_buffer` 和 `shared_weight_buffer` 已是共用實體；再次「抽 Module」本身不會再省面積，要最佳化的是實際綜合後的 Decoder、MUX、Register 及 Datapath。
 - **V4／V5 的 PE Sharing：** V4 先讓 CONV1／CONV2 共用五顆 PE，V5 再讓 CONV3／FC1／FC2 分時使用同一組五顆；`u_shared_pe_array` 在 V5 為 **62,752.88**，不得把三個 Layer 移走的 PE 面積當作純粹總收益，真正的 V4→V5 Top 淨下降為 **70,849.48（11.13%）**。此外其他 Quantization / Arithmetic Multiplier 仍存在。
+- **V6 的 Channel PSUM Buffer Sharing：** CONV2／FC2 共用一份 640-bit `u_shared_ch_temp_buffer`，Sequential Cells **−640**，但 Combinational Area **+7,261.48**；故不能把兩個 Layer 的合計下降 **71,465.63** 當作 Top 節省，新增共享模組自身 **57,930.56** 已計入，真正 Top 淨節省為 **13,221.05（2.34%）**。
 - 若未來修改 Top Output FF 或 SRAM MUX，要同步檢查 SRAM 讀寫一拍延遲、最後一筆 Write 和 `compute_finish` 時序。
 
 ---
 
-**資料來源：** V0 `report_area.log`（2026-11-05 00:32:10）、V1 `report_area(1).log`（01:34:17）、V2 `report_area(2).log`（09:53:06）、V2.1 `report_area(3).log`（20:12:46）、V3A `report_area(5).log`（23:08:12）、V3B `report_area(6).log`（2026-11-06 14:18:01）、V4 `report_area(7).log`（2026-11-06 21:26:12）、**V5 `report_area(8).log`（2026-11-06 22:44:44）**；先前 RTL 修改討論及使用者回報的 Simulation／Timing 狀態。另 `report_area(4).log` 為不同階層設計結果，不納入同架構比較。**V3B／V4／V5 Golden、10 ns Timing、GLS 均 PASS（使用者回報），Cycle Count 均為 31,497；V5 累計面積節省 40.28%；原始驗證 Log、WNS／TNS 與 SDC 待歸檔。**
+**資料來源：** V0 `report_area.log`（2026-11-05 00:32:10）、V1 `report_area(1).log`（01:34:17）、V2 `report_area(2).log`（09:53:06）、V2.1 `report_area(3).log`（20:12:46）、V3A `report_area(5).log`（23:08:12）、V3B `report_area(6).log`（2026-11-06 14:18:01）、V4 `report_area(7).log`（2026-11-06 21:26:12）、V5 `report_area(8).log`（2026-11-06 22:44:44）、**V6 `report_area(9).log`（2026-11-06 23:54:47）**；先前 RTL 修改討論及使用者回報的 Simulation／Timing 狀態。另 `report_area(4).log` 為不同階層設計結果，不納入同架構比較。**V3B／V4／V5／V6 Golden、10 ns Timing、GLS 均 PASS（使用者回報），Cycle Count 均為 31,497；V6 累計面積節省 41.67%；原始驗證 Log、WNS／TNS 與 SDC 待歸檔。**

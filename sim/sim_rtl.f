@@ -16,7 +16,7 @@ sram_model/SRAM_weight_16384x32b.v
 ../hdl/shared_weight_buffer.sv
 ../hdl/fc1.sv
 ../hdl/reload_controller.sv
-
+../hdl/shared_ch_temp_buffer.sv
 ../hdl/fc2.sv
 ../hdl/PE.sv
 
