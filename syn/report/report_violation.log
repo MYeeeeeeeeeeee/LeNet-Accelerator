@@ -4,7 +4,7 @@ Report : constraint
         -all_violators
 Design : lenet
 Version: T-2022.03
-Date   : Thu Nov  5 23:08:16 2026
+Date   : Fri Nov  6 14:18:05 2026
 ****************************************
 
 
@@ -13,7 +13,7 @@ Date   : Thu Nov  5 23:08:16 2026
                              Required        Actual
    Design                      Area           Area           Slack
    -----------------------------------------------------------------
-   lenet                        0.00       759250.38      -759250.38
+   lenet                        0.00       699094.56      -699094.56
                                                                     (VIOLATED)
 
 

@@ -2,7 +2,7 @@
 ****************************************
 check_design summary:
 Version:     T-2022.03
-Date:        Thu Nov  5 23:03:37 2026
+Date:        Fri Nov  6 14:13:56 2026
 ****************************************
 
                    Name                                            Total
@@ -12,8 +12,8 @@ Inputs/Outputs                                                    643
     Shorted outputs (LINT-31)                                       4
     Constant outputs (LINT-52)                                      7
 
-Cells                                                             293
-    Cells do not drive (LINT-1)                                   175
+Cells                                                             287
+    Cells do not drive (LINT-1)                                   169
     Connected to power or ground (LINT-32)                        112
     Nets connected to multiple pins on same cell (LINT-33)          6
 --------------------------------------------------------------------------------
@@ -46,12 +46,6 @@ Warning: In design 'conv2', cell 'B_101' does not drive any nets. (LINT-1)
 Warning: In design 'conv2', cell 'B_104' does not drive any nets. (LINT-1)
 Warning: In design 'conv2', cell 'B_108' does not drive any nets. (LINT-1)
 Warning: In design 'conv2', cell 'C8179' does not drive any nets. (LINT-1)
-Warning: In design 'shared_line_buffer', cell 'B_120' does not drive any nets. (LINT-1)
-Warning: In design 'shared_line_buffer', cell 'B_121' does not drive any nets. (LINT-1)
-Warning: In design 'shared_line_buffer', cell 'B_122' does not drive any nets. (LINT-1)
-Warning: In design 'shared_line_buffer', cell 'B_123' does not drive any nets. (LINT-1)
-Warning: In design 'shared_line_buffer', cell 'B_124' does not drive any nets. (LINT-1)
-Warning: In design 'shared_line_buffer', cell 'B_125' does not drive any nets. (LINT-1)
 Warning: In design 'shared_weight_buffer', cell 'C1680' does not drive any nets. (LINT-1)
 Warning: In design 'conv3', cell 'C2431' does not drive any nets. (LINT-1)
 Warning: In design 'conv3', cell 'C2435' does not drive any nets. (LINT-1)

@@ -83,14 +83,43 @@ module shared_line_buffer (
         end
     endgenerate
 
-    // Same 5x5 selection as existing CONV1 / CONV2
-    always_comb begin
+
+    // OPT-03B: Banked Window Read
+    // Valid col range: 0 ~ 27
+    // 6 candidate rows, each outputting 5 bytes.
+
+    logic [63:0] selected8[0:5];
+    logic [39:0] window5  [0:5];
+
+    always_comb begin : window_read_mux
+
+        // Step 1: Select 8 consecutive bytes for each row.
+        for (int r = 0; r < 6; r++) begin
+
+            case (col[4:2])
+                3'd0: selected8[r] = line_buffer[r][7:0];
+                3'd1: selected8[r] = line_buffer[r][11:4];
+                3'd2: selected8[r] = line_buffer[r][15:8];
+                3'd3: selected8[r] = line_buffer[r][19:12];
+                3'd4: selected8[r] = line_buffer[r][23:16];
+                3'd5: selected8[r] = line_buffer[r][27:20];
+                3'd6: selected8[r] = line_buffer[r][31:24];
+
+                default: selected8[r] = 64'd0;
+            endcase
+
+            // Step 2: Shift by 0, 8, 16, or 24 bits.
+            // Keep the lowest 40 bits = 5 bytes.
+            window5[r] = selected8[r] >> {col[1:0], 3'b000};
+
+        end
+
+        // Step 3: Choose 5 out of the 6 rows.
         for (int r = 0; r < 5; r++) begin
-            for (int c = 0; c < 5; c++) begin
-                if (!row_sel) pe_window[r][c] = line_buffer[r][col+c];
-                else pe_window[r][c] = line_buffer[r+1][col+c];
-            end
+            if (!row_sel) pe_window[r] = window5[r];
+            else pe_window[r] = window5[r+1];
         end
     end
+
 
 endmodule
