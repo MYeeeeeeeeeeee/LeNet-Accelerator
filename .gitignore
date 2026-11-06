@@ -6,9 +6,8 @@
 /sim/simv
 /sim/simv.daidir/
 /sim/ucli.key
-/sim/novas_dump.log
 /sim/*.rc
-/sim/vfastLog
+/sim/vfastLog/
 
 # Waveforms
 /sim/*.fsdb
@@ -18,7 +17,6 @@
 # Verdi Debug
 /sim/verdiLog/
 /sim/novas.*
-/sim/signal.rc
 /sim/verdi_config_file
 
 # Simulation Logs
@@ -29,17 +27,14 @@
 # ==========================================
 
 /syn/WORK/
-/syn/netlist/*.ddc
-/syn/netlist/*.sdf
+/syn/netlist
 /syn/*.svf
 /syn/*.pvl
 /syn/*.syn
 /syn/*.mr
 /syn/*.pvk
-/syn/netlist
 /syn/*.log
-
-
+/syn/dc_log
 
 # ==========================================
 # Temporary Files

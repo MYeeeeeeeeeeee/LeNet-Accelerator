@@ -1,9 +1,9 @@
 # LeNet Accelerator — Optimization Log
 
 > 用途：記錄 RTL 架構最佳化、DC 面積與時序、功能驗證，以及每次修改的取捨。  
-> 最後更新：2026-11-05  
+> 最後更新：2026-11-06  
 > 專案：5-Layer Quantized LeNet Accelerator（SystemVerilog）
-> **最新量測版本：V2.1（Gate Sim 相關 RTL 修正後）｜Total Cell Area 759,562.73｜Area Saving vs V0 = 19.81%｜Timing／GLS 結果待附證明**
+> **最新量測版本：V3A（OPT-03A：Shared Line Buffer Static Write Decoder）｜Total Cell Area 759,250.41｜Area Saving vs V0 = 19.85%｜Timing／Golden／GLS 待確認**
 
 ## 1. 最佳化目標與限制
 
@@ -156,9 +156,9 @@
 | V2 | OPT-02：FC Buffer Banked Read | 758,936.39 | −19.88% | −12.42% |
 | **V2.1** | **Gate Sim 相關 RTL 修正、保留 OPT-02** | **759,562.73** | **−19.81%** | **+0.083%** |
 
-**相較 V0 累計面積減少：187,679.82（19.81%）。** 相較 V1 減少 **107,029.56（12.35%）**。這是**最新版本**的實測數字；不可再把 V2 的 758,936.39 當作 Gate Sim 修正後版本的面積。
+**相較 V0 累計面積減少：187,679.82（19.81%）。** 相較 V1 減少 **107,029.56（12.35%）**。這是**V2.1 當時**的實測數字；不可把 V2 的 758,936.39 當作 Gate Sim 修正後版本的面積。
 
-#### 最新模組面積（V2.1）
+#### V2.1 當時的模組面積
 
 | Module | V2.1 Area | Top Area 比例 |
 |---|---:|---:|
@@ -183,6 +183,44 @@
 - [ ] 檢查 Latch、Multiple Driver、Unconnected Port、Width Mismatch 與 Reset／未知值行為。
 
 **版本追溯：** `report_area(3).log`（DC T-2022.03、`slow.db`）；Gate Sim 修正的細節目前僅有使用者的描述，不能從 Area Report 逆推出確切的程式修改。下一步優化目標仍為 **OPT-03：Shared Line Buffer MUX / Decoder**。
+
+### 2.7 V3A：OPT-03A — Shared Line Buffer Static Write Decoder（報告日期：2026-11-05 23:08:12）
+
+> **此次修改目的：** 嘗試將 `shared_line_buffer.sv` 原本使用變動 `row_pair` 與 `col_blk` 的寫入選擇，改為固定 Row／4-Byte Block 的 `generate` 與局部 Write Enable Decode；保留 CONV1 Row Shift、CONV2 Reload、CONV3 Vector Mode、5×5 Window Read 和原本的 Port Interface。這是根據本次討論及使用者所述版本命名，**僅憑 Area Report 尚不能確認實際 RTL Diff 或功能等價性**。
+>
+> **注意：** 最新 `report_area(5).log` 可與 V2.1 的 `report_area(3).log` 比較：兩份報告均為 Design `lenet`、DC T-2022.03、`slow.db`，而且都有 `u_shared_line_buffer`、`u_fc_buffer` 等相同層級。完整的 SDC 與 compile options 尚未附上，仍請確認一致。
+
+#### V2.1 → V3A：Top Area 與 Cell 統計
+
+| 指標 | V2.1（GS-Fix） | **V3A（Static Write Decode）** | **V3A − V2.1** |
+|---|---:|---:|---:|
+| **Total Cell Area** | **759,562.73** | **759,250.41** | **−312.32（−0.041%）** |
+| Combinational Area | 545,994.17 | 545,800.67 | −193.50 |
+| Noncombinational Area | 213,568.56 | 213,449.74 | −118.82 |
+| Buf / Inv Area（包含於 Combinational） | 26,005.87 | 26,090.74 | +84.87 |
+| Total Cells | 57,213 | **57,224** | +11 |
+| Combinational Cells | 49,653 | **49,664** | +11 |
+| Sequential Cells | 6,601 | **6,601** | 0 |
+| Macro / Black Box | 0 | 0 | 0 |
+
+#### OPT-03A 的目標模組：Shared Line Buffer
+
+| Shared Line Buffer 指標 | V2.1 | **V3A** | 變化 |
+|---|---:|---:|---:|
+| **Total Area** | **157,744.47** | **157,863.29** | **+118.82（+0.075%）** |
+| Combinational Area | 108,207.55 | 108,326.37 | +118.82 |
+| Noncombinational Area | 49,536.92 | 49,536.92 | 0 |
+| Top Total Area 佔比 | 20.8% | 20.8% | 約相同 |
+
+**觀察與判斷：** Top Total Area 確實下降 312.32，但最佳化的目標 `u_shared_line_buffer` 自身反而增加 118.82。這種不到 **0.1%** 的差異非常小，不能當作 Static Write Decoder 已改善硬體面積的證據；其他模組的 Mapping / Recompile 差異亦會使 Top 總面積小幅變動。更關鍵的是，Buffer 中的 Window Read MUX 仍未修改。
+
+**與歷史版本比較：** V0 947,242.55 → V3A 759,250.41，累計減少 **187,992.14（19.85%）**；V3A 比 V2.1 減少 **312.32（0.041%）**。但相較於 **V2（758,936.39）**，V3A 反而增加 **314.02（0.041%）**，因此不能將 V3A 宣稱為歷史最低面積版本。
+
+**重要：** 本次僅提供 `report_area(5).log`。**V3A 的 Timing PASS、Golden PASS、Gate-Level Simulation PASS、RTL 等價性、實際修改檔案與 Git Commit 均尚待確認**。Clock Target 仍以專案原定 **10 ns** 為目標，但 Area Report 本身不提供 WNS／TNS。
+
+**本輪結論：** **OPT-03A = 已完成面積試驗，但未證明針對 Shared Line Buffer 有有效的面積改善；先保留獨立 Commit 作為 A/B 實驗，不建議只因 Top 減少 0.041% 就直接取代已驗證版本。** 若 Golden 與 Timing 都通過且實作比較有價值，可以暫留；否則回退 Static Write Decoder，接著研究 OPT-03B 的 Window Read MUX。
+
+**相關報告：** `report_area(3).log`（V2.1，2026-11-05 20:12:46）；`report_area(5).log`（V3A，2026-11-05 23:08:12）。`report_area(4).log` 的模組階層為 `PE_B_*`、`PE_T_*`、`shared_qr_*`，沒有原本 `u_shared_line_buffer`，**不屬於本組可直接比較的 LeNet 版本序列，不能視為 OPT-03A 面積結果**。
 
 ## 3. 已進行的架構重構（尚未單獨量測面積收益）
 
@@ -259,7 +297,7 @@ current_max = quantize_psum(pool_psum_max, scale_CONV2_buf);
 
 ### OPT-02：FC Buffer — 8-Byte Aligned Banked Read
 
-**狀態：** **V2 完成 Area 量測（−12.42% vs V1）；V2.1 已完成 Gate Sim 相關 RTL 修正後的最新 Area 量測，`u_fc_buffer` 面積維持不變。Timing／Golden／GLS PASS 證據仍待補。**  
+**狀態：** **V2 完成 Area 量測（−12.42% vs V1）；V2.1 已完成 Gate Sim 相關 RTL 修正後的 Area 量測，`u_fc_buffer` 面積維持不變。Timing／Golden／GLS PASS 證據仍待補。**  
 **優先級：** P1（已實施，待驗證）  
 **檔案：** `fc_buffer.sv`（本次主要修改），`reload_controller.sv` 原有對齊寫入介面維持
 
@@ -305,11 +343,11 @@ for (int lane = 0; lane < 8; lane++)
 
 ### OPT-03：Shared Line Buffer — 靜態寫入 Decode 與 Window MUX
 
-**狀態：** 待設計 / 待驗證  
+**狀態：** **OPT-03A 已執行面積試驗：Top −0.041%，但 `u_shared_line_buffer` +0.075%；未證明目標模組面積改善。OPT-03B（Window Read MUX）待設計。V3A Timing／Golden／GLS 待確認。**  
 **優先級：** P2  
 **檔案：** `shared_line_buffer.sv`、必要時各 CONV Controller
 
-**現況：** 最新 V2.1 `u_shared_line_buffer` Total **157,744.47**，其中 Combinational **108,207.55**、Noncombinational **49,536.92**，占 Top **20.8%**。目前是主要的 Buffer 最佳化對象；可能較貴的結構包括：
+**現況：** V3A `u_shared_line_buffer` Total **157,863.29**，其中 Combinational **108,326.37**、Noncombinational **49,536.92**，占 Top **20.8%**。OPT-03A Static Write Decoder 已試做，但目標模組面積比 V2.1 增加 118.82；下一步先分析 Window Read MUX。原本較貴的結構包括：
 
 ```systemverilog
 line_buffer[row_pair*2][col_blk*4+:4] <= wdata0;
@@ -319,8 +357,8 @@ pe_window[r][c] = line_buffer[r][col+c];
 
 **候選方向：**
 
-1. 用固定 Row、固定 Column Block 的 `generate` / explicit enable decode 取代部分動態寫入位置。
-2. 依 CONV1/2 的合法 Column 範圍限制 Window MUX；比較扇入數與 Critical Path。
+1. **OPT-03A 已測：** 固定 Row／Column Block 的 `generate` + explicit enable decode。**目標模組面積略增 0.075%**；保留紀錄，避免重複投入。
+2. **OPT-03B 待做：** 依 CONV1/2 的合法 Column 範圍限制 Window Read MUX；比較扇入數與 Critical Path。
 3. 分析 CONV1 Row Shift 造成的選擇邏輯與大量 FF 更新。
 4. 切勿為省 MUX 擅自增加 Pipeline Stage，除非同時修正 PE Valid / Weight / Activation 對齊。
 
@@ -341,12 +379,14 @@ CONV1 與 CONV2 目前各自例化 5 個 PE、每個 PE 5 個 8-bit Multipliers�
 |---|---|---|---|---|---|
 | 1 | OPT-01 | CONV2 去除重複 Quantization | Pooling / Arithmetic | 低～中 | **V1 合成完成：10 ns PASS／Area −8.51%；Golden 待補** |
 | 2 | OPT-02 | FC Buffer Banked Read | 讀寫儲存路徑 | 中 | **V2 Area −12.42% vs V1；V2.1 修正後 Area 759,562.73；Timing／Golden／GLS 待確認** |
-| 3 | OPT-03 | Shared Line Buffer MUX / Decoder | Window / Write Decode | 中～高 | 待實作 |
+| 3 | OPT-03 | Shared Line Buffer MUX / Decoder | Window / Write Decode | 中～高 | **V3A Static Write Decode：目標模組 +0.075%；OPT-03B 待實作** |
 | 4 | OPT-04 | CONV1/2 PE Sharing | Datapath / Control / Pipeline | 高 | 待評估 |
 
-> OPT-01 與 OPT-02 均已完成合成面積量測。**最新可追溯的合成面積版本為 V2.1**，不是 V2。先確認 V2.1 的 Golden、Gate-Level Simulation 與 Timing，再進行 OPT-03（Shared Line Buffer）。
+> OPT-01、OPT-02 已完成面積量測；OPT-03A 已完成面積試驗，**對目標 Shared Line Buffer 沒有明顯收益**。**最新可追溯的合成面積版本為 V3A**；但仍需 V3A 的 Golden、Gate-Level Simulation 與 Timing 驗證，再決定是否保留修改或回退。
 
 ## 6. 每次實驗的量測紀錄
+
+**截至 V3A 的累計成果：** Cell Area `947,242.55 → 759,250.41`（**−19.85%**）。其中真正顯著的節省已在 OPT-01（CONV2 Quantize）與 OPT-02（FC Buffer Banked Read）取得；OPT-03A 的目標模組目前未見收益。
 
 > 所有版本使用相同 Library、SDC、Clock Period、Synthesis Options 和同一組 Golden。沒有完整 Timing Report 時，只記錄「使用者確認 Timing PASS」，不要自行填寫 WNS。
 
@@ -356,7 +396,8 @@ CONV1 與 CONV2 目前各自例化 5 個 PE、每個 PE 5 個 8-bit Multipliers�
 | V1 | OPT-01：Max Pool before Quantization | **待補 Golden** | **10 ns / PASS（回報）** | 待補 | **866,592.29** | **−8.51%（−80,650.26）** | 待補 | `report_area(1).log`；合成日期 2026-11-05 01:34:17 |
 | V2 | OPT-02：FC Buffer Banked Read | **Golden 待確認** | **10 ns 目標／Timing 未提供** | 待補 | **758,936.39** | **−19.88%（−188,306.16）** | 待補 | `report_area(2).log`；V1→V2 −12.42% |
 | **V2.1** | **Gate Sim 相關 RTL 修正（保留 OPT-02）** | **Golden／GLS 結果待提供** | **10 ns 目標／Timing 未提供** | 待補 | **759,562.73** | **−19.81%（−187,679.82）** | 待補 | **`report_area(3).log`；V2→V2.1 +0.083%；Seq Cells +4；FC Buffer 不變** |
-| V3 | OPT-03：Line Buffer MUX Optimization | 待測 | 待測 | 待測 | 待測 | 待測 | 待測 |  |
+| **V3A** | **OPT-03A：Shared Line Buffer Static Write Decoder** | **Golden／GLS 待確認** | **10 ns 目標／Timing 未提供** | 待補 | **759,250.41** | **−19.85%（−187,992.14）** | 待補 | **`report_area(5).log`；相較 V2.1 Top −0.041%，Shared Line Buffer +0.075%** |
+| V3B | OPT-03B：Window Read MUX Optimization | 待測 | 待測 | 待測 | 待測 | 待測 | 待測 |  |
 | V4 | OPT-04：Shared PE（如實施） | 待測 | 待測 | 待測 | 待測 | 待測 | 待測 |  |
 
 ### 2026-11-05 — OPT-01 實驗紀錄（V1）
@@ -405,7 +446,23 @@ CONV1 與 CONV2 目前各自例化 5 個 PE、每個 PE 5 個 8-bit Multipliers�
 - **RTL / Golden：** 待提供實測結果。
 - **Gate-Level Simulation：** 使用者表示已修正相關程式；**PASS 證據未提供**（尚需 GLS Log／結果）。
 - **Latch / Multiple Driver / Width / Reset：** 待提供最新檢查結果。
-- **結論：** **以 V2.1 作為後續面積比較的最新修正版基準**；待 Golden、GLS、10 ns Timing 完成驗證，再確認是否可定為正式 Golden Baseline。
+- **結論：** **V2.1 曾作為後續面積比較的修正版基準**；現在已有 V3A 的後續面積結果。Golden、GLS、10 ns Timing 仍需逐版本補充驗證。
+
+### 2026-11-05 — OPT-03A Static Write Decoder 合成紀錄（V3A）
+
+- **Git Commit / Branch：** 待補，與 V2.1 應各自保留 RTL Snapshot。
+- **修改動機：** 嘗試降低 Shared Line Buffer 的動態 Row／Column Write Selection 面積。
+- **修改方向（據對話）：** 採用固定位置的 Block FF 與 Enable Decode；不變更 Buffer 容量、5×5 Read Window 或 Pipeline。
+- **合成報告：** `report_area(5).log`，2026-11-05 23:08:12，`slow.db`，DC T-2022.03。
+- **Top Cell Area：** **759,250.41**；比 V2.1 減少 **312.32（0.041%）**；比 V0 減少 **187,992.14（19.85%）**。
+- **`u_shared_line_buffer` Area：** **157,863.29**；比 V2.1 **增加 118.82（0.075%）**，沒有確認節省目標模組的面積。
+- **Sequential Cells：** **6,601**，和 V2.1 一致。
+- **Timing：** 10 ns 為既定目標；**本版 Timing PASS 未提供**，WNS／TNS／Critical Path 待補。
+- **Golden Comparison / RTL Simulation：** 待提供，不推定 PASS。
+- **Gate-Level Simulation：** 待提供，不推定 PASS。
+- **合成可比性：** Top/主要 Module 階層一致、同 DC/Library；完整 SDC／Script 尚未提供。
+- **結論：** **OPT-03A 面積改善不顯著；目標模組甚至略增。** 保留作為 A/B 實驗結果；若沒有 Timing／功耗／可維護性等額外收益，不應僅因 Top −0.041% 而採用。
+- **後續：** 驗證 V3A 功能及 Timing；必要時回退並執行 OPT-03B（Window Read MUX），且同樣逐次保留 DC Area Report。
 
 **Area Saving 計算：** `Saving (%) = (Baseline Area - New Area) / Baseline Area × 100%`
 
@@ -446,12 +503,12 @@ CONV1 與 CONV2 目前各自例化 5 個 PE、每個 PE 5 個 8-bit Multipliers�
 
 ## 9. 重要備註
 
-- **已取得 V0、V1、V2、V2.1 Area Reports**：V1 相對 V0 減少 8.51%；V2 相對 V1 減少 12.42%；**最新 V2.1 相對 V2 增加 0.083%，相對 V0 累計減少 19.81%**。仍缺 V2.1 `report_timing`、WNS／TNS、Golden／RTL Simulation、Gate-Level Simulation Log 和完整 Synthesis Options，**不得宣稱 V2.1 Timing／Golden／GLS PASS**。
+- **已取得 V0、V1、V2、V2.1、V3A Area Reports**：V1 對 V0 −8.51%；V2 對 V1 −12.42%；V2.1 對 V2 +0.083%；**最新 V3A 對 V2.1 −0.041%，對 V0 累計 −19.85%**。仍缺 V3A `report_timing`、WNS／TNS、Golden／RTL Simulation、Gate-Level Simulation Log 和完整 Synthesis Options，**不得宣稱 V3A Timing／Golden／GLS PASS**。
 - V0 `report_area.log` 顯示 CONV2 四個大型量化乘法器；V1 `report_area(1).log` 的相關大型 Multiplier 變為一個，且有三個 Comparator。**實際節省的是 Top Total Area 80,650.26**；不要把單一 Multiplier 的 Hierarchical Area 當作節省量。
-- V2、V2.1 面積結果證實 **FC Buffer 動態 Byte Index 是主要面積瓶頸之一**：Banked Read 後 `u_fc_buffer` Combinational Area 下降 80.65%。Shared Line Buffer 的動態 Window／Write Decode 仍是下一個優化對象。
+- V2、V2.1、V3A 面積結果證實 **FC Buffer 動態 Byte Index 是主要面積瓶頸之一**：Banked Read 後 `u_fc_buffer` Combinational Area 下降 80.65%。**V3A Static Write Decoder 沒有減少 Shared Line Buffer 的面積**，下一步改研究動態 Window Read MUX，注意不能擅自改變 Valid / SRAM 的週期對齊。
 - `shared_line_buffer` 和 `shared_weight_buffer` 已是共用實體；再次「抽 Module」本身不會再省面積，要最佳化的是實際綜合後的 Decoder、MUX、Register 及 Datapath。
 - 若未來修改 Top Output FF 或 SRAM MUX，要同步檢查 SRAM 讀寫一拍延遲、最後一筆 Write 和 `compute_finish` 時序。
 
 ---
 
-**資料來源：** V0 `report_area.log`（2026-11-05 00:32:10）、V1 `report_area(1).log`（01:34:17）、V2 `report_area(2).log`（09:53:06）、**V2.1 `report_area(3).log`（20:12:46）**；先前 RTL／FC Buffer 修改討論，以及使用者回報的 V0／V1 10 ns Timing PASS。本次 Gate Sim 相關修正的確切 RTL Diff 和 GLS PASS 證據未附上；**V2.1 Timing、Golden／GLS 均待確認**。
+**資料來源：** V0 `report_area.log`（2026-11-05 00:32:10）、V1 `report_area(1).log`（01:34:17）、V2 `report_area(2).log`（09:53:06）、V2.1 `report_area(3).log`（20:12:46）、**V3A `report_area(5).log`（23:08:12）**；先前 RTL／Shared Line Buffer 修改討論，以及使用者回報的 V0／V1 10 ns Timing PASS。另 `report_area(4).log` 為不同階層的設計結果，未納入相同架構比較。**V3A Timing、Golden、GLS 均待確認。**

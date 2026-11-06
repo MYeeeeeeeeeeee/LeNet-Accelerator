@@ -24,35 +24,64 @@ module shared_line_buffer (
     output logic [63:0] vector_data
 );
 
+
+    // 6 rows x 8 blocks x 32 bits = 192 Bytes
+    // Each block contains 4 bytes.
+    logic [31:0] blocks[0:5][0:7];
+
+    // Reconstruct the original line_buffer view.
     logic [31:0][7:0] line_buffer[0:5];
 
     assign vector_data = line_buffer[0][7:0];
 
-    // Single FF owner for all stored bytes
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            foreach (line_buffer[i]) line_buffer[i] <= '0;
-        end else if (load_valid) begin
-            if (vector_mode) begin
-                line_buffer[0][3:0] <= wdata0;
-                line_buffer[0][7:4] <= wdata1;
-            end else if (mode_conv1 && !init_load) begin  // CONV1 after the initial strip
+    generate
+        for (genvar r = 0; r < 6; r++) begin : GEN_ROW
+            for (genvar b = 0; b < 8; b++) begin : GEN_BLOCK
 
-                if (shift_rows) begin
-                    for (int i = 0; i < 4; i++) line_buffer[i] <= line_buffer[i+2];
-                end else begin
+                localparam logic [3:0] BLOCK_ID = b;
+                localparam logic [2:0] PAIR_ID  = r / 2;
+
+                logic [31:0] shift_source;
+
+                // Each block has one FF owner.
+                assign line_buffer[r][b*4+:4] = blocks[r][b];
+
+                // Prevent out-of-range row indexing.
+                if (r < 4) begin : GEN_SHIFT_SOURCE
+                    assign shift_source = blocks[r+2][b];
+                end else begin : GEN_NO_SHIFT
+                    assign shift_source = 32'd0;
                 end
 
-                line_buffer[4][col_blk*4+:4] <= wdata0;
-                line_buffer[5][col_blk*4+:4] <= wdata1;
+                always_ff @(posedge clk or negedge rst_n) begin
+                    if (!rst_n) begin
+                        blocks[r][b] <= 32'd0;
+                    end else if (load_valid) begin
 
-            end else begin
-                // CONV1 initial load, or CONV2 full reload
-                line_buffer[row_pair*2][col_blk*4+:4]   <= wdata0;
-                line_buffer[row_pair*2+1][col_blk*4+:4] <= wdata1;
+                        // CONV3: update the first 8 bytes.
+                        if (vector_mode) begin
+                            if ((r == 0) && (b == 0)) blocks[r][b] <= wdata0;
+                            else if ((r == 0) && (b == 1)) blocks[r][b] <= wdata1;
+                        end  // CONV1: shift previous rows,
+                             // then load new data into rows 4 and 5.
+                        else if (mode_conv1 && !init_load) begin
+                            if (r < 4) begin
+                                if (shift_rows) blocks[r][b] <= shift_source;
+                            end else if (col_blk == BLOCK_ID) begin
+                                if (r == 4) blocks[r][b] <= wdata0;
+                                else blocks[r][b] <= wdata1;
+                            end
+                        end  // CONV1 initial load / CONV2 full reload.
+                        else if ((row_pair == PAIR_ID) && (col_blk == BLOCK_ID)) begin
+
+                            if ((r % 2) == 0) blocks[r][b] <= wdata0;
+                            else blocks[r][b] <= wdata1;
+                        end
+                    end
+                end
             end
         end
-    end
+    endgenerate
 
     // Same 5x5 selection as existing CONV1 / CONV2
     always_comb begin

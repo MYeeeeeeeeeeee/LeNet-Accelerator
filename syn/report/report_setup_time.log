@@ -1,0 +1,381 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 4
+Design : lenet
+Version: T-2022.03
+Date   : Thu Nov  5 23:08:12 2026
+****************************************
+
+ # A fanout number of 1000 was used for high fanout net computations.
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+  Startpoint: u_fc1/pe_out_s4_reg[0][0]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_fc1/neuron_data_reg[3]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  u_fc1/pe_out_s4_reg[0][0]/CK (DFFRX4)                   0.00 #     0.00 r
+  u_fc1/pe_out_s4_reg[0][0]/Q (DFFRX4)                    0.33       0.33 r
+  u_fc1/add_327/A[0] (fc1_DW01_add_8)                     0.00       0.33 r
+  u_fc1/add_327/U174/Y (NAND2X4)                          0.07       0.40 f
+  u_fc1/add_327/U163/Y (OAI21X2)                          0.17       0.57 r
+  u_fc1/add_327/U204/Y (INVX3)                            0.07       0.64 f
+  u_fc1/add_327/U179/Y (OAI21X1)                          0.15       0.79 r
+  u_fc1/add_327/U178/Y (XNOR2X2)                          0.18       0.96 f
+  u_fc1/add_327/SUM[3] (fc1_DW01_add_8)                   0.00       0.96 f
+  u_fc1/add_329/B[3] (fc1_DW01_add_9)                     0.00       0.96 f
+  u_fc1/add_329/U342/Y (NAND2XL)                          0.14       1.10 r
+  u_fc1/add_329/U308/Y (INVX1)                            0.06       1.16 f
+  u_fc1/add_329/U264/Y (AOI21X1)                          0.10       1.27 r
+  u_fc1/add_329/U300/Y (OAI21X1)                          0.10       1.37 f
+  u_fc1/add_329/U279/Y (AOI21X1)                          0.15       1.52 r
+  u_fc1/add_329/U307/Y (INVX1)                            0.10       1.62 f
+  u_fc1/add_329/U271/Y (AOI21X2)                          0.12       1.74 r
+  u_fc1/add_329/U270/Y (XOR2X2)                           0.15       1.88 f
+  u_fc1/add_329/SUM[6] (fc1_DW01_add_9)                   0.00       1.88 f
+  u_fc1/U50/Y (MXI2X2)                                    0.11       1.99 r
+  u_fc1/U195/Y (CLKINVX1)                                 0.12       2.11 f
+  u_fc1/mult_377_C345/a[6] (fc1_DW_mult_uns_2)            0.00       2.11 f
+  u_fc1/mult_377_C345/U3061/Y (BUFX8)                     0.15       2.26 f
+  u_fc1/mult_377_C345/U2955/Y (OR2X4)                     0.17       2.43 f
+  u_fc1/mult_377_C345/U2888/Y (NAND2X2)                   0.05       2.48 r
+  u_fc1/mult_377_C345/U2692/Y (XNOR2X1)                   0.19       2.67 r
+  u_fc1/mult_377_C345/U2711/Y (INVX4)                     0.10       2.78 f
+  u_fc1/mult_377_C345/U3548/Y (OAI21XL)                   0.21       2.98 r
+  u_fc1/mult_377_C345/U1703/Y (XOR2X1)                    0.24       3.23 f
+  u_fc1/mult_377_C345/U2947/ICO (CMPR42X2)                0.25       3.48 f
+  u_fc1/mult_377_C345/U2989/ICO (CMPR42X2)                0.20       3.67 f
+  u_fc1/mult_377_C345/U2988/ICO (CMPR42X2)                0.20       3.87 f
+  u_fc1/mult_377_C345/U2986/ICO (CMPR42X2)                0.20       4.06 f
+  u_fc1/mult_377_C345/U2924/ICO (CMPR42X2)                0.20       4.26 f
+  u_fc1/mult_377_C345/U2978/ICO (CMPR42X2)                0.20       4.45 f
+  u_fc1/mult_377_C345/U2946/ICO (CMPR42X2)                0.20       4.65 f
+  u_fc1/mult_377_C345/U2977/ICO (CMPR42X2)                0.20       4.84 f
+  u_fc1/mult_377_C345/U2956/ICO (CMPR42X2)                0.20       5.04 f
+  u_fc1/mult_377_C345/U2884/ICO (CMPR42X2)                0.20       5.23 f
+  u_fc1/mult_377_C345/U2886/ICO (CMPR42X2)                0.20       5.43 f
+  u_fc1/mult_377_C345/U2923/ICO (CMPR42X2)                0.20       5.62 f
+  u_fc1/mult_377_C345/U2921/ICO (CMPR42X2)                0.20       5.82 f
+  u_fc1/mult_377_C345/U2945/ICO (CMPR42X2)                0.20       6.01 f
+  u_fc1/mult_377_C345/U2944/ICO (CMPR42X2)                0.20       6.21 f
+  u_fc1/mult_377_C345/U3358/CO (CMPR42X2)                 0.53       6.74 f
+  u_fc1/mult_377_C345/U2658/ICO (CMPR42X2)                0.22       6.96 f
+  u_fc1/mult_377_C345/U2630/ICO (CMPR42X2)                0.19       7.15 f
+  u_fc1/mult_377_C345/U3359/S (CMPR42X2)                  0.56       7.71 f
+  u_fc1/mult_377_C345/U2927/Y (NAND2X1)                   0.11       7.82 r
+  u_fc1/mult_377_C345/U2722/Y (OAI21X2)                   0.09       7.90 f
+  u_fc1/mult_377_C345/U2731/Y (AOI21X2)                   0.16       8.06 r
+  u_fc1/mult_377_C345/U2727/Y (OAI21X4)                   0.08       8.15 f
+  u_fc1/mult_377_C345/U2882/Y (AOI21X2)                   0.12       8.27 r
+  u_fc1/mult_377_C345/U2876/Y (BUFX8)                     0.14       8.41 r
+  u_fc1/mult_377_C345/U2937/Y (OAI21X2)                   0.08       8.49 f
+  u_fc1/mult_377_C345/U2932/Y (NAND2X2)                   0.06       8.55 r
+  u_fc1/mult_377_C345/U2931/Y (NAND2X2)                   0.06       8.61 f
+  u_fc1/mult_377_C345/product[59] (fc1_DW_mult_uns_2)     0.00       8.61 f
+  u_fc1/U39/Y (OR3X6)                                     0.20       8.81 f
+  u_fc1/U42/Y (OR3X6)                                     0.23       9.03 f
+  u_fc1/U41/Y (NOR4X4)                                    0.19       9.23 r
+  u_fc1/U40/Y (NAND3X2)                                   0.11       9.33 f
+  u_fc1/U33/Y (NOR3BX2)                                   0.14       9.47 r
+  u_fc1/U32/Y (NOR2X1)                                    0.09       9.56 f
+  u_fc1/U35/Y (AO21XL)                                    0.23       9.79 f
+  u_fc1/neuron_data_reg[3]/D (DFFRX1)                     0.00       9.79 f
+  data arrival time                                                  9.79
+
+  clock clk (rise edge)                                  10.00      10.00
+  clock network delay (ideal)                             0.00      10.00
+  u_fc1/neuron_data_reg[3]/CK (DFFRX1)                    0.00      10.00 r
+  library setup time                                     -0.21       9.79
+  data required time                                                 9.79
+  --------------------------------------------------------------------------
+  data required time                                                 9.79
+  data arrival time                                                 -9.79
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+  Startpoint: u_fc1/pe_out_s4_reg[0][0]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_fc1/neuron_data_reg[2]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  u_fc1/pe_out_s4_reg[0][0]/CK (DFFRX4)                   0.00 #     0.00 r
+  u_fc1/pe_out_s4_reg[0][0]/Q (DFFRX4)                    0.33       0.33 r
+  u_fc1/add_327/A[0] (fc1_DW01_add_8)                     0.00       0.33 r
+  u_fc1/add_327/U174/Y (NAND2X4)                          0.07       0.40 f
+  u_fc1/add_327/U163/Y (OAI21X2)                          0.17       0.57 r
+  u_fc1/add_327/U204/Y (INVX3)                            0.07       0.64 f
+  u_fc1/add_327/U179/Y (OAI21X1)                          0.15       0.79 r
+  u_fc1/add_327/U178/Y (XNOR2X2)                          0.18       0.96 f
+  u_fc1/add_327/SUM[3] (fc1_DW01_add_8)                   0.00       0.96 f
+  u_fc1/add_329/B[3] (fc1_DW01_add_9)                     0.00       0.96 f
+  u_fc1/add_329/U342/Y (NAND2XL)                          0.14       1.10 r
+  u_fc1/add_329/U308/Y (INVX1)                            0.06       1.16 f
+  u_fc1/add_329/U264/Y (AOI21X1)                          0.10       1.27 r
+  u_fc1/add_329/U300/Y (OAI21X1)                          0.10       1.37 f
+  u_fc1/add_329/U279/Y (AOI21X1)                          0.15       1.52 r
+  u_fc1/add_329/U307/Y (INVX1)                            0.10       1.62 f
+  u_fc1/add_329/U271/Y (AOI21X2)                          0.12       1.74 r
+  u_fc1/add_329/U270/Y (XOR2X2)                           0.15       1.88 f
+  u_fc1/add_329/SUM[6] (fc1_DW01_add_9)                   0.00       1.88 f
+  u_fc1/U50/Y (MXI2X2)                                    0.11       1.99 r
+  u_fc1/U195/Y (CLKINVX1)                                 0.12       2.11 f
+  u_fc1/mult_377_C345/a[6] (fc1_DW_mult_uns_2)            0.00       2.11 f
+  u_fc1/mult_377_C345/U3061/Y (BUFX8)                     0.15       2.26 f
+  u_fc1/mult_377_C345/U2955/Y (OR2X4)                     0.17       2.43 f
+  u_fc1/mult_377_C345/U2888/Y (NAND2X2)                   0.05       2.48 r
+  u_fc1/mult_377_C345/U2692/Y (XNOR2X1)                   0.19       2.67 r
+  u_fc1/mult_377_C345/U2711/Y (INVX4)                     0.10       2.78 f
+  u_fc1/mult_377_C345/U3548/Y (OAI21XL)                   0.21       2.98 r
+  u_fc1/mult_377_C345/U1703/Y (XOR2X1)                    0.24       3.23 f
+  u_fc1/mult_377_C345/U2947/ICO (CMPR42X2)                0.25       3.48 f
+  u_fc1/mult_377_C345/U2989/ICO (CMPR42X2)                0.20       3.67 f
+  u_fc1/mult_377_C345/U2988/ICO (CMPR42X2)                0.20       3.87 f
+  u_fc1/mult_377_C345/U2986/ICO (CMPR42X2)                0.20       4.06 f
+  u_fc1/mult_377_C345/U2924/ICO (CMPR42X2)                0.20       4.26 f
+  u_fc1/mult_377_C345/U2978/ICO (CMPR42X2)                0.20       4.45 f
+  u_fc1/mult_377_C345/U2946/ICO (CMPR42X2)                0.20       4.65 f
+  u_fc1/mult_377_C345/U2977/ICO (CMPR42X2)                0.20       4.84 f
+  u_fc1/mult_377_C345/U2956/ICO (CMPR42X2)                0.20       5.04 f
+  u_fc1/mult_377_C345/U2884/ICO (CMPR42X2)                0.20       5.23 f
+  u_fc1/mult_377_C345/U2886/ICO (CMPR42X2)                0.20       5.43 f
+  u_fc1/mult_377_C345/U2923/ICO (CMPR42X2)                0.20       5.62 f
+  u_fc1/mult_377_C345/U2921/ICO (CMPR42X2)                0.20       5.82 f
+  u_fc1/mult_377_C345/U2945/ICO (CMPR42X2)                0.20       6.01 f
+  u_fc1/mult_377_C345/U2944/ICO (CMPR42X2)                0.20       6.21 f
+  u_fc1/mult_377_C345/U3358/CO (CMPR42X2)                 0.53       6.74 f
+  u_fc1/mult_377_C345/U2658/ICO (CMPR42X2)                0.22       6.96 f
+  u_fc1/mult_377_C345/U2630/ICO (CMPR42X2)                0.19       7.15 f
+  u_fc1/mult_377_C345/U3359/S (CMPR42X2)                  0.56       7.71 f
+  u_fc1/mult_377_C345/U2927/Y (NAND2X1)                   0.11       7.82 r
+  u_fc1/mult_377_C345/U2722/Y (OAI21X2)                   0.09       7.90 f
+  u_fc1/mult_377_C345/U2731/Y (AOI21X2)                   0.16       8.06 r
+  u_fc1/mult_377_C345/U2727/Y (OAI21X4)                   0.08       8.15 f
+  u_fc1/mult_377_C345/U2882/Y (AOI21X2)                   0.12       8.27 r
+  u_fc1/mult_377_C345/U2876/Y (BUFX8)                     0.14       8.41 r
+  u_fc1/mult_377_C345/U2937/Y (OAI21X2)                   0.08       8.49 f
+  u_fc1/mult_377_C345/U2932/Y (NAND2X2)                   0.06       8.55 r
+  u_fc1/mult_377_C345/U2931/Y (NAND2X2)                   0.06       8.61 f
+  u_fc1/mult_377_C345/product[59] (fc1_DW_mult_uns_2)     0.00       8.61 f
+  u_fc1/U39/Y (OR3X6)                                     0.20       8.81 f
+  u_fc1/U42/Y (OR3X6)                                     0.23       9.03 f
+  u_fc1/U41/Y (NOR4X4)                                    0.19       9.23 r
+  u_fc1/U40/Y (NAND3X2)                                   0.11       9.33 f
+  u_fc1/U33/Y (NOR3BX2)                                   0.14       9.47 r
+  u_fc1/U32/Y (NOR2X1)                                    0.09       9.56 f
+  u_fc1/U47/Y (AO21XL)                                    0.23       9.79 f
+  u_fc1/neuron_data_reg[2]/D (DFFRX1)                     0.00       9.79 f
+  data arrival time                                                  9.79
+
+  clock clk (rise edge)                                  10.00      10.00
+  clock network delay (ideal)                             0.00      10.00
+  u_fc1/neuron_data_reg[2]/CK (DFFRX1)                    0.00      10.00 r
+  library setup time                                     -0.21       9.79
+  data required time                                                 9.79
+  --------------------------------------------------------------------------
+  data required time                                                 9.79
+  data arrival time                                                 -9.79
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+  Startpoint: u_fc1/pe_out_s4_reg[0][0]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_fc1/neuron_data_reg[1]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  u_fc1/pe_out_s4_reg[0][0]/CK (DFFRX4)                   0.00 #     0.00 r
+  u_fc1/pe_out_s4_reg[0][0]/Q (DFFRX4)                    0.33       0.33 r
+  u_fc1/add_327/A[0] (fc1_DW01_add_8)                     0.00       0.33 r
+  u_fc1/add_327/U174/Y (NAND2X4)                          0.07       0.40 f
+  u_fc1/add_327/U163/Y (OAI21X2)                          0.17       0.57 r
+  u_fc1/add_327/U204/Y (INVX3)                            0.07       0.64 f
+  u_fc1/add_327/U179/Y (OAI21X1)                          0.15       0.79 r
+  u_fc1/add_327/U178/Y (XNOR2X2)                          0.18       0.96 f
+  u_fc1/add_327/SUM[3] (fc1_DW01_add_8)                   0.00       0.96 f
+  u_fc1/add_329/B[3] (fc1_DW01_add_9)                     0.00       0.96 f
+  u_fc1/add_329/U342/Y (NAND2XL)                          0.14       1.10 r
+  u_fc1/add_329/U308/Y (INVX1)                            0.06       1.16 f
+  u_fc1/add_329/U264/Y (AOI21X1)                          0.10       1.27 r
+  u_fc1/add_329/U300/Y (OAI21X1)                          0.10       1.37 f
+  u_fc1/add_329/U279/Y (AOI21X1)                          0.15       1.52 r
+  u_fc1/add_329/U307/Y (INVX1)                            0.10       1.62 f
+  u_fc1/add_329/U271/Y (AOI21X2)                          0.12       1.74 r
+  u_fc1/add_329/U270/Y (XOR2X2)                           0.15       1.88 f
+  u_fc1/add_329/SUM[6] (fc1_DW01_add_9)                   0.00       1.88 f
+  u_fc1/U50/Y (MXI2X2)                                    0.11       1.99 r
+  u_fc1/U195/Y (CLKINVX1)                                 0.12       2.11 f
+  u_fc1/mult_377_C345/a[6] (fc1_DW_mult_uns_2)            0.00       2.11 f
+  u_fc1/mult_377_C345/U3061/Y (BUFX8)                     0.15       2.26 f
+  u_fc1/mult_377_C345/U2955/Y (OR2X4)                     0.17       2.43 f
+  u_fc1/mult_377_C345/U2888/Y (NAND2X2)                   0.05       2.48 r
+  u_fc1/mult_377_C345/U2692/Y (XNOR2X1)                   0.19       2.67 r
+  u_fc1/mult_377_C345/U2711/Y (INVX4)                     0.10       2.78 f
+  u_fc1/mult_377_C345/U3548/Y (OAI21XL)                   0.21       2.98 r
+  u_fc1/mult_377_C345/U1703/Y (XOR2X1)                    0.24       3.23 f
+  u_fc1/mult_377_C345/U2947/ICO (CMPR42X2)                0.25       3.48 f
+  u_fc1/mult_377_C345/U2989/ICO (CMPR42X2)                0.20       3.67 f
+  u_fc1/mult_377_C345/U2988/ICO (CMPR42X2)                0.20       3.87 f
+  u_fc1/mult_377_C345/U2986/ICO (CMPR42X2)                0.20       4.06 f
+  u_fc1/mult_377_C345/U2924/ICO (CMPR42X2)                0.20       4.26 f
+  u_fc1/mult_377_C345/U2978/ICO (CMPR42X2)                0.20       4.45 f
+  u_fc1/mult_377_C345/U2946/ICO (CMPR42X2)                0.20       4.65 f
+  u_fc1/mult_377_C345/U2977/ICO (CMPR42X2)                0.20       4.84 f
+  u_fc1/mult_377_C345/U2956/ICO (CMPR42X2)                0.20       5.04 f
+  u_fc1/mult_377_C345/U2884/ICO (CMPR42X2)                0.20       5.23 f
+  u_fc1/mult_377_C345/U2886/ICO (CMPR42X2)                0.20       5.43 f
+  u_fc1/mult_377_C345/U2923/ICO (CMPR42X2)                0.20       5.62 f
+  u_fc1/mult_377_C345/U2921/ICO (CMPR42X2)                0.20       5.82 f
+  u_fc1/mult_377_C345/U2945/ICO (CMPR42X2)                0.20       6.01 f
+  u_fc1/mult_377_C345/U2944/ICO (CMPR42X2)                0.20       6.21 f
+  u_fc1/mult_377_C345/U3358/CO (CMPR42X2)                 0.53       6.74 f
+  u_fc1/mult_377_C345/U2658/ICO (CMPR42X2)                0.22       6.96 f
+  u_fc1/mult_377_C345/U2630/ICO (CMPR42X2)                0.19       7.15 f
+  u_fc1/mult_377_C345/U3359/S (CMPR42X2)                  0.56       7.71 f
+  u_fc1/mult_377_C345/U2927/Y (NAND2X1)                   0.11       7.82 r
+  u_fc1/mult_377_C345/U2722/Y (OAI21X2)                   0.09       7.90 f
+  u_fc1/mult_377_C345/U2731/Y (AOI21X2)                   0.16       8.06 r
+  u_fc1/mult_377_C345/U2727/Y (OAI21X4)                   0.08       8.15 f
+  u_fc1/mult_377_C345/U2882/Y (AOI21X2)                   0.12       8.27 r
+  u_fc1/mult_377_C345/U2876/Y (BUFX8)                     0.14       8.41 r
+  u_fc1/mult_377_C345/U2937/Y (OAI21X2)                   0.08       8.49 f
+  u_fc1/mult_377_C345/U2932/Y (NAND2X2)                   0.06       8.55 r
+  u_fc1/mult_377_C345/U2931/Y (NAND2X2)                   0.06       8.61 f
+  u_fc1/mult_377_C345/product[59] (fc1_DW_mult_uns_2)     0.00       8.61 f
+  u_fc1/U39/Y (OR3X6)                                     0.20       8.81 f
+  u_fc1/U42/Y (OR3X6)                                     0.23       9.03 f
+  u_fc1/U41/Y (NOR4X4)                                    0.19       9.23 r
+  u_fc1/U40/Y (NAND3X2)                                   0.11       9.33 f
+  u_fc1/U33/Y (NOR3BX2)                                   0.14       9.47 r
+  u_fc1/U32/Y (NOR2X1)                                    0.09       9.56 f
+  u_fc1/U38/Y (AO21XL)                                    0.23       9.79 f
+  u_fc1/neuron_data_reg[1]/D (DFFRX1)                     0.00       9.79 f
+  data arrival time                                                  9.79
+
+  clock clk (rise edge)                                  10.00      10.00
+  clock network delay (ideal)                             0.00      10.00
+  u_fc1/neuron_data_reg[1]/CK (DFFRX1)                    0.00      10.00 r
+  library setup time                                     -0.21       9.79
+  data required time                                                 9.79
+  --------------------------------------------------------------------------
+  data required time                                                 9.79
+  data arrival time                                                 -9.79
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+  Startpoint: u_fc1/pe_out_s4_reg[0][0]
+              (rising edge-triggered flip-flop clocked by clk)
+  Endpoint: u_fc1/neuron_data_reg[0]
+            (rising edge-triggered flip-flop clocked by clk)
+  Path Group: clk
+  Path Type: max
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock clk (rise edge)                                   0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  u_fc1/pe_out_s4_reg[0][0]/CK (DFFRX4)                   0.00 #     0.00 r
+  u_fc1/pe_out_s4_reg[0][0]/Q (DFFRX4)                    0.33       0.33 r
+  u_fc1/add_327/A[0] (fc1_DW01_add_8)                     0.00       0.33 r
+  u_fc1/add_327/U174/Y (NAND2X4)                          0.07       0.40 f
+  u_fc1/add_327/U163/Y (OAI21X2)                          0.17       0.57 r
+  u_fc1/add_327/U204/Y (INVX3)                            0.07       0.64 f
+  u_fc1/add_327/U179/Y (OAI21X1)                          0.15       0.79 r
+  u_fc1/add_327/U178/Y (XNOR2X2)                          0.18       0.96 f
+  u_fc1/add_327/SUM[3] (fc1_DW01_add_8)                   0.00       0.96 f
+  u_fc1/add_329/B[3] (fc1_DW01_add_9)                     0.00       0.96 f
+  u_fc1/add_329/U342/Y (NAND2XL)                          0.14       1.10 r
+  u_fc1/add_329/U308/Y (INVX1)                            0.06       1.16 f
+  u_fc1/add_329/U264/Y (AOI21X1)                          0.10       1.27 r
+  u_fc1/add_329/U300/Y (OAI21X1)                          0.10       1.37 f
+  u_fc1/add_329/U279/Y (AOI21X1)                          0.15       1.52 r
+  u_fc1/add_329/U307/Y (INVX1)                            0.10       1.62 f
+  u_fc1/add_329/U271/Y (AOI21X2)                          0.12       1.74 r
+  u_fc1/add_329/U270/Y (XOR2X2)                           0.15       1.88 f
+  u_fc1/add_329/SUM[6] (fc1_DW01_add_9)                   0.00       1.88 f
+  u_fc1/U50/Y (MXI2X2)                                    0.11       1.99 r
+  u_fc1/U195/Y (CLKINVX1)                                 0.12       2.11 f
+  u_fc1/mult_377_C345/a[6] (fc1_DW_mult_uns_2)            0.00       2.11 f
+  u_fc1/mult_377_C345/U3061/Y (BUFX8)                     0.15       2.26 f
+  u_fc1/mult_377_C345/U2955/Y (OR2X4)                     0.17       2.43 f
+  u_fc1/mult_377_C345/U2888/Y (NAND2X2)                   0.05       2.48 r
+  u_fc1/mult_377_C345/U2692/Y (XNOR2X1)                   0.19       2.67 r
+  u_fc1/mult_377_C345/U2711/Y (INVX4)                     0.10       2.78 f
+  u_fc1/mult_377_C345/U3548/Y (OAI21XL)                   0.21       2.98 r
+  u_fc1/mult_377_C345/U1703/Y (XOR2X1)                    0.24       3.23 f
+  u_fc1/mult_377_C345/U2947/ICO (CMPR42X2)                0.25       3.48 f
+  u_fc1/mult_377_C345/U2989/ICO (CMPR42X2)                0.20       3.67 f
+  u_fc1/mult_377_C345/U2988/ICO (CMPR42X2)                0.20       3.87 f
+  u_fc1/mult_377_C345/U2986/ICO (CMPR42X2)                0.20       4.06 f
+  u_fc1/mult_377_C345/U2924/ICO (CMPR42X2)                0.20       4.26 f
+  u_fc1/mult_377_C345/U2978/ICO (CMPR42X2)                0.20       4.45 f
+  u_fc1/mult_377_C345/U2946/ICO (CMPR42X2)                0.20       4.65 f
+  u_fc1/mult_377_C345/U2977/ICO (CMPR42X2)                0.20       4.84 f
+  u_fc1/mult_377_C345/U2956/ICO (CMPR42X2)                0.20       5.04 f
+  u_fc1/mult_377_C345/U2884/ICO (CMPR42X2)                0.20       5.23 f
+  u_fc1/mult_377_C345/U2886/ICO (CMPR42X2)                0.20       5.43 f
+  u_fc1/mult_377_C345/U2923/ICO (CMPR42X2)                0.20       5.62 f
+  u_fc1/mult_377_C345/U2921/ICO (CMPR42X2)                0.20       5.82 f
+  u_fc1/mult_377_C345/U2945/ICO (CMPR42X2)                0.20       6.01 f
+  u_fc1/mult_377_C345/U2944/ICO (CMPR42X2)                0.20       6.21 f
+  u_fc1/mult_377_C345/U3358/CO (CMPR42X2)                 0.53       6.74 f
+  u_fc1/mult_377_C345/U2658/ICO (CMPR42X2)                0.22       6.96 f
+  u_fc1/mult_377_C345/U2630/ICO (CMPR42X2)                0.19       7.15 f
+  u_fc1/mult_377_C345/U3359/S (CMPR42X2)                  0.56       7.71 f
+  u_fc1/mult_377_C345/U2927/Y (NAND2X1)                   0.11       7.82 r
+  u_fc1/mult_377_C345/U2722/Y (OAI21X2)                   0.09       7.90 f
+  u_fc1/mult_377_C345/U2731/Y (AOI21X2)                   0.16       8.06 r
+  u_fc1/mult_377_C345/U2727/Y (OAI21X4)                   0.08       8.15 f
+  u_fc1/mult_377_C345/U2882/Y (AOI21X2)                   0.12       8.27 r
+  u_fc1/mult_377_C345/U2876/Y (BUFX8)                     0.14       8.41 r
+  u_fc1/mult_377_C345/U2937/Y (OAI21X2)                   0.08       8.49 f
+  u_fc1/mult_377_C345/U2932/Y (NAND2X2)                   0.06       8.55 r
+  u_fc1/mult_377_C345/U2931/Y (NAND2X2)                   0.06       8.61 f
+  u_fc1/mult_377_C345/product[59] (fc1_DW_mult_uns_2)     0.00       8.61 f
+  u_fc1/U39/Y (OR3X6)                                     0.20       8.81 f
+  u_fc1/U42/Y (OR3X6)                                     0.23       9.03 f
+  u_fc1/U41/Y (NOR4X4)                                    0.19       9.23 r
+  u_fc1/U40/Y (NAND3X2)                                   0.11       9.33 f
+  u_fc1/U33/Y (NOR3BX2)                                   0.14       9.47 r
+  u_fc1/U32/Y (NOR2X1)                                    0.09       9.56 f
+  u_fc1/U46/Y (AO21XL)                                    0.23       9.79 f
+  u_fc1/neuron_data_reg[0]/D (DFFRX1)                     0.00       9.79 f
+  data arrival time                                                  9.79
+
+  clock clk (rise edge)                                  10.00      10.00
+  clock network delay (ideal)                             0.00      10.00
+  u_fc1/neuron_data_reg[0]/CK (DFFRX1)                    0.00      10.00 r
+  library setup time                                     -0.21       9.79
+  data required time                                                 9.79
+  --------------------------------------------------------------------------
+  data required time                                                 9.79
+  data arrival time                                                 -9.79
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.00
+
+
+1

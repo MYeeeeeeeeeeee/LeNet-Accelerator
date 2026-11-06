@@ -1,0 +1,425 @@
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+ 
+****************************************
+Report : power
+        -hier
+        -analysis_effort low
+Design : lenet
+Version: T-2022.03
+Date   : Thu Nov  5 23:08:16 2026
+****************************************
+
+
+Library(s) Used:
+
+    slow (File: /usr/cad/Design_Kit/CBDK_IC_Contest_v2.5/SynopsysDC/db/slow.db)
+
+
+Operating Conditions: slow   Library: slow
+Wire Load Model Mode: top
+
+
+Global Operating Voltage = 1.08 
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000pf
+    Time Units = 1ns
+    Dynamic Power Units = 1mW    (derived from V,C,T units)
+    Leakage Power Units = 1pW
+
+
+--------------------------------------------------------------------------------
+                                       Switch   Int      Leak     Total
+Hierarchy                              Power    Power    Power    Power    %
+--------------------------------------------------------------------------------
+lenet                                     0.599   14.618 6.63e+08   15.879 100.0
+  u_fc2 (fc2)                          4.27e-02    2.400 7.45e+07    2.517  15.9
+    add_136 (fc2_DW01_inc_3_DW01_inc_19)
+                                       8.64e-08 6.48e-07 3.19e+05 3.19e-04   0.0
+    add_387 (fc2_DW01_add_3)           2.02e-05 4.90e-05 1.30e+06 1.37e-03   0.0
+    add_389 (fc2_DW01_add_2)           3.72e-06 8.20e-05 1.59e+06 1.68e-03   0.0
+    add_413 (fc2_DW01_add_1)           7.13e-04 1.01e-02 1.96e+06 1.28e-02   0.1
+    add_419 (fc2_DW01_add_0)           4.62e-04 8.26e-03 1.69e+06 1.04e-02   0.1
+    add_431 (fc2_DW01_inc_0_DW01_inc_16)
+                                       3.55e-08 1.01e-07 1.39e+05 1.39e-04   0.0
+    gen_pe[1].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0)
+                                       2.32e-03 5.80e-03 1.26e+07 2.07e-02   0.1
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_1_DW_mult_tc_6)
+                                       5.81e-04 1.45e-03 1.86e+06 3.90e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_2_DW_mult_tc_8)
+                                       5.98e-04 1.50e-03 1.86e+06 3.95e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_3_DW_mult_tc_10)
+                                       5.73e-04 1.44e-03 1.87e+06 3.89e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_4_DW_mult_tc_12)
+                                       5.67e-04 1.41e-03 1.89e+06 3.87e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW_mult_tc_0_DW_mult_tc_1)
+                                          0.000    0.000 1.86e+06 1.86e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_1_DW01_add_74)
+                                          0.000    0.000 7.35e+05 7.35e-04   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_2_DW01_add_75)
+                                          0.000    0.000 7.18e+05 7.18e-04   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_3_DW01_add_76)
+                                          0.000    0.000 7.12e+05 7.12e-04   0.0
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_0_DW01_add_0_DW01_add_9)
+                                          0.000    0.000 7.18e+05 7.18e-04   0.0
+    gen_pe[0].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1)
+                                       2.78e-03 6.95e-03 1.26e+07 2.23e-02   0.1
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_1_DW_mult_tc_14)
+                                       6.95e-04 1.73e-03 1.86e+06 4.29e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_2_DW_mult_tc_16)
+                                       7.15e-04 1.80e-03 1.86e+06 4.37e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_3_DW_mult_tc_18)
+                                       6.93e-04 1.74e-03 1.86e+06 4.29e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_4_DW_mult_tc_20)
+                                       6.79e-04 1.68e-03 1.88e+06 4.25e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW_mult_tc_0)
+                                          0.000    0.000 1.86e+06 1.86e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_1_DW01_add_80)
+                                          0.000    0.000 7.29e+05 7.29e-04   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_2_DW01_add_81)
+                                          0.000    0.000 7.24e+05 7.24e-04   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_3_DW01_add_82)
+                                          0.000    0.000 7.12e+05 7.12e-04   0.0
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_1_DW01_add_0_DW01_add_10)
+                                          0.000    0.000 7.18e+05 7.18e-04   0.0
+  u_reload_controller (reload_controller)
+                                       6.76e-03    0.506 8.93e+06    0.521   3.3
+    add_94 (reload_controller_DW01_inc_0_DW01_inc_20)
+                                       1.28e-07 6.59e-07 3.19e+05 3.19e-04   0.0
+  u_fc1 (fc1)                          7.70e-02    1.348 7.81e+07    1.503   9.5
+    add_329 (fc1_DW01_add_9)           2.22e-05 4.37e-05 1.13e+06 1.20e-03   0.0
+    add_327 (fc1_DW01_add_8)              0.000    0.000 7.81e+05 7.81e-04   0.0
+    mult_377_C345 (fc1_DW_mult_uns_2)  5.47e-02    0.166 2.46e+07    0.245   1.5
+    add_121 (fc1_DW01_inc_3_DW01_inc_24)
+                                       8.44e-08 7.67e-08 3.19e+05 3.19e-04   0.0
+    add_363 (fc1_DW01_inc_0_DW01_inc_21)
+                                       8.44e-08 8.30e-08 1.39e+05 1.39e-04   0.0
+    gen_pe[1].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2)
+                                       2.32e-03 5.76e-03 1.26e+07 2.07e-02   0.1
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_1_DW_mult_tc_7)
+                                       5.81e-04 1.45e-03 1.86e+06 3.90e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_2_DW_mult_tc_9)
+                                       5.98e-04 1.50e-03 1.86e+06 3.95e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_3_DW_mult_tc_11)
+                                       5.73e-04 1.44e-03 1.87e+06 3.89e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_4_DW_mult_tc_13)
+                                       5.70e-04 1.37e-03 1.92e+06 3.86e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW_mult_tc_0_DW_mult_tc_3)
+                                          0.000    0.000 1.86e+06 1.86e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_1_DW01_add_77)
+                                          0.000    0.000 7.31e+05 7.31e-04   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_2_DW01_add_78)
+                                          0.000    0.000 7.22e+05 7.22e-04   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_3_DW01_add_79)
+                                          0.000    0.000 7.14e+05 7.14e-04   0.0
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_2_DW01_add_0_DW01_add_18)
+                                          0.000    0.000 7.18e+05 7.18e-04   0.0
+    gen_pe[0].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3)
+                                       2.82e-03 6.96e-03 1.27e+07 2.25e-02   0.1
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_1_DW_mult_tc_15)
+                                       6.95e-04 1.73e-03 1.86e+06 4.29e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_2_DW_mult_tc_17)
+                                       7.14e-04 1.80e-03 1.86e+06 4.37e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_3_DW_mult_tc_19)
+                                       6.93e-04 1.74e-03 1.86e+06 4.29e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_4_DW_mult_tc_21)
+                                       7.17e-04 1.69e-03 1.99e+06 4.40e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW_mult_tc_0_DW_mult_tc_2)
+                                          0.000    0.000 1.86e+06 1.86e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_1_DW01_add_83)
+                                          0.000    0.000 7.57e+05 7.57e-04   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_2_DW01_add_84)
+                                          0.000    0.000 7.20e+05 7.20e-04   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_3_DW01_add_85)
+                                          0.000    0.000 7.16e+05 7.16e-04   0.0
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_3_DW01_add_0_DW01_add_19)
+                                          0.000    0.000 7.18e+05 7.18e-04   0.0
+  u_fc_buffer (fc_buffer)              2.40e-02    1.971 3.83e+07    2.034  12.8
+  u_conv3 (conv3)                      7.73e-02    1.151 7.43e+07    1.303   8.2
+    add_342 (conv3_DW01_add_11)           0.000    0.000 1.15e+06 1.15e-03   0.0
+    add_332 (conv3_DW01_add_10)           0.000    0.000 7.61e+05 7.61e-04   0.0
+    mult_389_C357 (conv3_DW_mult_uns_2)
+                                       5.63e-02    0.170 2.48e+07    0.251   1.6
+    add_162 (conv3_DW01_inc_3_DW01_inc_28)
+                                       3.89e-07 5.97e-07 3.19e+05 3.20e-04   0.0
+    add_176 (conv3_DW01_inc_2_DW01_inc_27)
+                                       3.68e-07 3.91e-06 1.19e+05 1.23e-04   0.0
+    add_375 (conv3_DW01_inc_0_DW01_inc_25)
+                                       3.89e-07 6.61e-07 1.19e+05 1.20e-04   0.0
+    gen_pe[1].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4)
+                                       3.11e-03 9.61e-03 1.26e+07 2.53e-02   0.2
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_1_DW_mult_tc_22)
+                                       6.74e-04 1.88e-03 1.86e+06 4.41e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_2_DW_mult_tc_23)
+                                       6.89e-04 1.87e-03 1.87e+06 4.43e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_3_DW_mult_tc_24)
+                                       6.72e-04 1.87e-03 1.87e+06 4.41e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_4_DW_mult_tc_25)
+                                       6.87e-04 1.82e-03 1.91e+06 4.42e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW_mult_tc_0_DW_mult_tc_5)
+                                          0.000    0.000 1.86e+06 1.86e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_1_DW01_add_86)
+                                       1.42e-04 5.20e-04 7.32e+05 1.39e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_2_DW01_add_87)
+                                       1.17e-04 5.07e-04 7.32e+05 1.36e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_3_DW01_add_88)
+                                       9.91e-05 4.70e-04 7.14e+05 1.28e-03   0.0
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_0_DW01_add_27)
+                                       2.78e-05 6.86e-04 7.18e+05 1.43e-03   0.0
+    gen_pe[0].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5)
+                                       3.40e-03 1.05e-02 1.26e+07 2.65e-02   0.2
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_1_DW_mult_tc_26)
+                                       7.30e-04 1.97e-03 1.86e+06 4.57e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_2_DW_mult_tc_27)
+                                       7.52e-04 2.01e-03 1.86e+06 4.63e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_3_DW_mult_tc_28)
+                                       7.31e-04 2.02e-03 1.86e+06 4.61e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_4_DW_mult_tc_29)
+                                       7.24e-04 1.95e-03 1.88e+06 4.56e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW_mult_tc_0_DW_mult_tc_4)
+                                          0.000    0.000 1.86e+06 1.86e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW01_add_1_DW01_add_89)
+                                       1.68e-04 6.28e-04 7.35e+05 1.53e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW01_add_2_DW01_add_90)
+                                       1.41e-04 5.72e-04 7.18e+05 1.43e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW01_add_3_DW01_add_91)
+                                       1.25e-04 5.57e-04 7.16e+05 1.40e-03   0.0
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_5_DW01_add_0_DW01_add_28)
+                                       3.21e-05 7.92e-04 7.18e+05 1.54e-03   0.0
+  u_shared_weight_buffer (shared_weight_buffer)
+                                       1.20e-02    0.421 7.41e+06    0.440   2.8
+  u_shared_line_buffer (shared_line_buffer)
+                                       8.02e-02    3.187 1.03e+08    3.370  21.2
+  u_conv2 (conv2)                         0.173    2.531 1.66e+08    2.870  18.1
+    gt_568 (conv2_DW_cmp_8)               0.000    0.000 2.31e+05 2.31e-04   0.0
+    gt_571 (conv2_DW_cmp_7)               0.000    0.000 2.46e+05 2.46e-04   0.0
+    gt_574 (conv2_DW_cmp_6)               0.000    0.000 2.61e+05 2.61e-04   0.0
+    mult_535_C577 (conv2_DW_mult_uns_4)
+                                          0.108    0.273 3.83e+07    0.419   2.6
+    add_0_root_add_0_root_add_496_4 (conv2_DW01_add_6_DW01_add_54)
+                                          0.000    0.000 1.04e+06 1.04e-03   0.0
+    add_1_root_add_0_root_add_496_4 (conv2_DW01_add_7_DW01_add_55)
+                                       1.25e-07 6.99e-08 9.90e+05 9.90e-04   0.0
+    add_2_root_add_0_root_add_496_4 (conv2_DW01_add_8_DW01_add_56)
+                                       1.97e-07 1.42e-07 9.36e+05 9.37e-04   0.0
+    add_3_root_add_0_root_add_496_4 (conv2_DW01_add_9_DW01_add_57)
+                                       1.97e-07 1.42e-07 9.85e+05 9.85e-04   0.0
+    add_262 (conv2_DW01_inc_3_DW01_inc_33)
+                                       3.55e-08 7.57e-08 3.19e+05 3.19e-04   0.0
+    add_520 (conv2_DW01_add_0_DW01_add_32)
+                                       2.96e-06 5.05e-05 1.77e+06 1.82e-03   0.0
+    gen_pe[4].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6)
+                                       4.72e-03 9.13e-03 1.24e+07 2.62e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW01_add_11)
+                                       2.38e-04 3.30e-04 5.70e+05 1.14e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW01_add_10)
+                                       2.57e-04 3.12e-04 5.60e+05 1.13e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW01_add_9)
+                                       2.26e-04 3.15e-04 4.87e+05 1.03e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_12)
+                                       8.00e-04 1.35e-03 1.98e+06 4.13e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW01_add_8)
+                                       2.32e-04 3.23e-04 5.62e+05 1.12e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_11)
+                                       7.88e-04 1.65e-03 1.99e+06 4.43e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_10)
+                                       7.97e-04 1.71e-03 1.99e+06 4.49e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_9)
+                                       7.84e-04 1.39e-03 2.05e+06 4.22e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_6_DW_mult_tc_2_DW_mult_tc_58)
+                                       5.52e-04 1.65e-03 1.89e+06 4.10e-03   0.0
+    gen_pe[3].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7)
+                                       5.94e-03 1.17e-02 1.26e+07 3.02e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW01_add_11)
+                                       3.24e-04 4.62e-04 5.43e+05 1.33e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW01_add_10)
+                                       3.42e-04 4.35e-04 5.87e+05 1.36e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW01_add_9)
+                                       3.21e-04 4.35e-04 5.28e+05 1.28e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_12)
+                                       1.01e-03 2.05e-03 2.01e+06 5.06e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW01_add_8)
+                                       3.46e-04 4.46e-04 5.52e+05 1.34e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_11)
+                                       9.72e-04 2.01e-03 2.01e+06 4.99e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_10)
+                                       9.60e-04 2.06e-03 1.99e+06 5.01e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_9)
+                                       9.26e-04 1.61e-03 2.01e+06 4.55e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_7_DW_mult_tc_2_DW_mult_tc_56)
+                                       6.83e-04 2.07e-03 2.02e+06 4.78e-03   0.0
+    gen_pe[2].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8)
+                                       6.33e-03 1.21e-02 1.24e+07 3.09e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW01_add_11)
+                                       3.47e-04 4.86e-04 5.73e+05 1.41e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW01_add_10)
+                                       3.50e-04 4.50e-04 5.98e+05 1.40e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW01_add_9)
+                                       3.39e-04 4.58e-04 5.14e+05 1.31e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_12)
+                                       1.04e-03 1.80e-03 1.97e+06 4.81e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW01_add_8)
+                                       3.05e-04 4.40e-04 5.28e+05 1.27e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_11)
+                                       1.04e-03 2.17e-03 1.99e+06 5.20e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_10)
+                                       1.05e-03 2.23e-03 1.99e+06 5.26e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_9)
+                                       1.05e-03 1.74e-03 2.02e+06 4.82e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_8_DW_mult_tc_2_DW_mult_tc_54)
+                                       7.44e-04 2.20e-03 1.94e+06 4.88e-03   0.0
+    gen_pe[1].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9)
+                                       7.42e-03 1.42e-02 1.27e+07 3.43e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW01_add_11)
+                                       4.71e-04 6.84e-04 5.56e+05 1.71e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW01_add_10)
+                                       4.90e-04 6.33e-04 5.86e+05 1.71e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW01_add_9)
+                                       4.56e-04 6.31e-04 5.40e+05 1.63e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_12)
+                                       1.24e-03 2.41e-03 2.02e+06 5.67e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW01_add_8)
+                                       4.49e-04 6.21e-04 5.35e+05 1.60e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_11)
+                                       1.16e-03 2.33e-03 2.02e+06 5.51e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_10)
+                                       1.15e-03 2.32e-03 2.04e+06 5.51e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_9)
+                                       1.10e-03 1.89e-03 2.03e+06 5.02e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_9_DW_mult_tc_2_DW_mult_tc_50)
+                                       8.18e-04 2.43e-03 2.07e+06 5.31e-03   0.0
+    gen_pe[0].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10)
+                                       8.14e-03 1.50e-02 1.27e+07 3.59e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW01_add_11)
+                                       5.72e-04 8.28e-04 5.90e+05 1.99e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW01_add_10)
+                                       5.61e-04 7.35e-04 6.00e+05 1.90e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW01_add_9)
+                                       5.35e-04 7.37e-04 5.05e+05 1.78e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_12)
+                                       1.23e-03 2.06e-03 2.01e+06 5.30e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW01_add_8)
+                                       5.01e-04 7.31e-04 5.29e+05 1.76e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_11)
+                                       1.27e-03 2.49e-03 2.04e+06 5.80e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_10)
+                                       1.27e-03 2.53e-03 2.03e+06 5.83e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_9)
+                                       1.22e-03 2.05e-03 2.03e+06 5.30e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_10_DW_mult_tc_2_DW_mult_tc_52)
+                                       8.90e-04 2.61e-03 2.06e+06 5.56e-03   0.0
+  u_conv1 (conv1)                      9.75e-02    1.071 1.07e+08    1.275   8.0
+    add_0_root_add_0_root_add_487_4 (conv1_DW01_add_21)
+                                       3.13e-04 3.79e-04 7.10e+05 1.40e-03   0.0
+    add_1_root_add_0_root_add_487_4 (conv1_DW01_add_20)
+                                       4.28e-04 4.82e-04 8.77e+05 1.79e-03   0.0
+    add_2_root_add_0_root_add_487_4 (conv1_DW01_add_19)
+                                       3.78e-04 3.88e-04 7.57e+05 1.52e-03   0.0
+    add_3_root_add_0_root_add_487_4 (conv1_DW01_add_18)
+                                       2.66e-04 2.98e-04 6.55e+05 1.22e-03   0.0
+    mult_492 (conv1_DW_mult_uns_4)     4.63e-02    0.120 2.14e+07    0.188   1.2
+    add_247 (conv1_DW01_inc_2_DW01_inc_36)
+                                       1.33e-07 5.73e-07 3.19e+05 3.19e-04   0.0
+    gen_pe[4].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11)
+                                       4.77e-03 9.12e-03 1.26e+07 2.65e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW01_add_11)
+                                       2.36e-04 3.28e-04 5.98e+05 1.16e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW01_add_10)
+                                       2.50e-04 3.08e-04 6.01e+05 1.16e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW01_add_9)
+                                       2.29e-04 3.16e-04 5.16e+05 1.06e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW_mult_tc_12)
+                                       7.94e-04 1.33e-03 1.99e+06 4.12e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW01_add_8)
+                                       2.16e-04 3.06e-04 5.22e+05 1.04e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW_mult_tc_11)
+                                       8.02e-04 1.62e-03 2.03e+06 4.45e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW_mult_tc_10)
+                                       8.23e-04 1.69e-03 2.01e+06 4.53e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW_mult_tc_9)
+                                       7.72e-04 1.29e-03 2.04e+06 4.10e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_11_DW_mult_tc_2_DW_mult_tc_59)
+                                       5.75e-04 1.73e-03 1.98e+06 4.29e-03   0.0
+    gen_pe[3].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12)
+                                       6.12e-03 1.19e-02 1.26e+07 3.06e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW01_add_11)
+                                       3.32e-04 4.64e-04 5.45e+05 1.34e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW01_add_10)
+                                       3.54e-04 4.51e-04 5.82e+05 1.39e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW01_add_9)
+                                       3.25e-04 4.36e-04 5.29e+05 1.29e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW_mult_tc_12)
+                                       1.06e-03 2.07e-03 2.03e+06 5.17e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW01_add_8)
+                                       3.11e-04 4.34e-04 5.58e+05 1.30e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW_mult_tc_11)
+                                       9.54e-04 2.00e-03 2.00e+06 4.95e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW_mult_tc_10)
+                                       1.03e-03 2.10e-03 2.03e+06 5.16e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW_mult_tc_9)
+                                       9.97e-04 1.70e-03 2.09e+06 4.79e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_12_DW_mult_tc_2_DW_mult_tc_57)
+                                       6.62e-04 2.01e-03 1.93e+06 4.60e-03   0.0
+    gen_pe[2].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13)
+                                       6.61e-03 1.24e-02 1.27e+07 3.17e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW01_add_11)
+                                       3.75e-04 5.12e-04 5.83e+05 1.47e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW01_add_10)
+                                       3.62e-04 4.56e-04 5.96e+05 1.41e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW01_add_9)
+                                       3.20e-04 4.27e-04 5.56e+05 1.30e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW_mult_tc_12)
+                                       1.07e-03 1.79e-03 2.00e+06 4.86e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW01_add_8)
+                                       3.21e-04 4.49e-04 5.26e+05 1.30e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW_mult_tc_11)
+                                       1.14e-03 2.25e-03 2.05e+06 5.44e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW_mult_tc_10)
+                                       1.10e-03 2.25e-03 2.03e+06 5.38e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW_mult_tc_9)
+                                       1.08e-03 1.83e-03 2.08e+06 4.99e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_13_DW_mult_tc_2_DW_mult_tc_55)
+                                       7.46e-04 2.21e-03 1.95e+06 4.91e-03   0.0
+    gen_pe[1].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14)
+                                       7.84e-03 1.46e-02 1.29e+07 3.53e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW01_add_11)
+                                       5.09e-04 7.20e-04 5.71e+05 1.80e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW01_add_10)
+                                       5.13e-04 6.84e-04 6.06e+05 1.80e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW01_add_9)
+                                       4.64e-04 6.25e-04 5.36e+05 1.63e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW_mult_tc_12)
+                                       1.28e-03 2.46e-03 2.04e+06 5.78e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW01_add_8)
+                                       4.98e-04 6.35e-04 5.57e+05 1.69e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW_mult_tc_11)
+                                       1.23e-03 2.38e-03 2.09e+06 5.70e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW_mult_tc_10)
+                                       1.21e-03 2.35e-03 2.03e+06 5.60e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW_mult_tc_9)
+                                       1.21e-03 2.01e-03 2.10e+06 5.32e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_14_DW_mult_tc_2_DW_mult_tc_51)
+                                       8.10e-04 2.38e-03 2.02e+06 5.21e-03   0.0
+    gen_pe[0].pe_inst (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15)
+                                       8.35e-03 1.52e-02 1.26e+07 3.62e-02   0.2
+      add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW01_add_11)
+                                       6.00e-04 8.49e-04 5.95e+05 2.04e-03   0.0
+      r426 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW01_add_10)
+                                       5.47e-04 7.22e-04 5.99e+05 1.87e-03   0.0
+      r424 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW01_add_9)
+                                       5.31e-04 7.32e-04 5.12e+05 1.77e-03   0.0
+      r420 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW_mult_tc_12)
+                                       1.29e-03 2.09e-03 2.03e+06 5.40e-03   0.0
+      r425 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW01_add_8)
+                                       5.37e-04 7.51e-04 5.12e+05 1.80e-03   0.0
+      r422 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW_mult_tc_11)
+                                       1.32e-03 2.56e-03 2.06e+06 5.94e-03   0.0
+      r419 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW_mult_tc_10)
+                                       1.28e-03 2.52e-03 2.05e+06 5.85e-03   0.0
+      r421 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW_mult_tc_9)
+                                       1.27e-03 2.12e-03 2.01e+06 5.39e-03   0.0
+      mult_19_I5 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_15_DW_mult_tc_2_DW_mult_tc_53)
+                                       8.50e-04 2.52e-03 1.96e+06 5.32e-03   0.0
+1
