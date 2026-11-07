@@ -6,7 +6,7 @@ Report : timing
         -max_paths 1
 Design : lenet
 Version: T-2022.03
-Date   : Fri Nov  6 23:54:47 2026
+Date   : Sat Nov  7 11:13:57 2026
 ****************************************
 
  # A fanout number of 1000 was used for high fanout net computations.
@@ -16,7 +16,7 @@ Wire Load Model Mode: top
 
   Startpoint: u_conv2/pool_emit_idx_reg[0]
               (rising edge-triggered flip-flop clocked by clk)
-  Endpoint: u_conv2/result_reg_reg[0][5]
+  Endpoint: u_conv1/sram_act_wdata0_reg[24]
             (rising edge-triggered flip-flop clocked by clk)
   Path Group: clk
   Path Type: max
@@ -26,98 +26,119 @@ Wire Load Model Mode: top
   clock clk (rise edge)                                 0.0000     0.0000
   clock network delay (ideal)                           0.0000     0.0000
   u_conv2/pool_emit_idx_reg[0]/CK (DFFRHQX4)            0.0000 #   0.0000 r
-  u_conv2/pool_emit_idx_reg[0]/Q (DFFRHQX4)             0.2061     0.2061 r
-  u_conv2/conv2_pool_col_base[1] (conv2)                0.0000     0.2061 r
+  u_conv2/pool_emit_idx_reg[0]/Q (DFFRHQX4)             0.1972     0.1972 r
+  u_conv2/conv2_pool_col_base[1] (conv2)                0.0000     0.1972 r
   u_shared_ch_temp_buffer/conv2_pool_col_base[1] (shared_ch_temp_buffer)
-                                                        0.0000     0.2061 r
-  u_shared_ch_temp_buffer/U3175/Y (INVX3)               0.0465     0.2525 f
-  u_shared_ch_temp_buffer/U3174/Y (OR2X8)               0.1446     0.3971 f
-  u_shared_ch_temp_buffer/U57/Y (NAND2X1)               0.0731     0.4702 r
-  u_shared_ch_temp_buffer/U228/Y (OR2X4)                0.1179     0.5880 r
-  u_shared_ch_temp_buffer/U241/Y (OR2X6)                0.1063     0.6943 r
-  u_shared_ch_temp_buffer/U240/Y (NOR2X6)               0.0563     0.7507 f
-  u_shared_ch_temp_buffer/U249/Y (BUFX8)                0.1160     0.8666 f
-  u_shared_ch_temp_buffer/U3135/Y (AOI222XL)            0.3018     1.1685 r
-  u_shared_ch_temp_buffer/U1874/Y (OAI221XL)            0.1721     1.3405 f
-  u_shared_ch_temp_buffer/U636/Y (OR3X2)                0.3096     1.6502 f
-  u_shared_ch_temp_buffer/conv2_pool01[3] (shared_ch_temp_buffer)
-                                                        0.0000     1.6502 f
-  u_conv2/conv2_pool01[3] (conv2)                       0.0000     1.6502 f
-  u_conv2/gt_576/A[3] (conv2_DW_cmp_8)                  0.0000     1.6502 f
-  u_conv2/gt_576/U208/Y (NOR2X2)                        0.0901     1.7402 r
-  u_conv2/gt_576/U216/Y (OAI21X1)                       0.0749     1.8151 f
-  u_conv2/gt_576/U196/Y (AOI21X1)                       0.1098     1.9249 r
-  u_conv2/gt_576/U227/Y (OAI21X1)                       0.1032     2.0282 f
-  u_conv2/gt_576/U164/Y (AOI21X2)                       0.1250     2.1531 r
-  u_conv2/gt_576/U167/Y (OAI21X2)                       0.0814     2.2345 f
-  u_conv2/gt_576/GE_LT_GT_LE (conv2_DW_cmp_8)           0.0000     2.2345 f
-  u_conv2/U16/Y (BUFX8)                                 0.1189     2.3533 f
-  u_conv2/U87/Y (BUFX20)                                0.1175     2.4708 f
-  u_conv2/U72/Y (CLKMX2X2)                              0.1913     2.6622 r
-  u_conv2/gt_578/B[3] (conv2_DW_cmp_7)                  0.0000     2.6622 r
-  u_conv2/gt_578/U219/Y (INVX1)                         0.0512     2.7134 f
-  u_conv2/gt_578/U262/Y (NOR2X1)                        0.1136     2.8269 r
-  u_conv2/gt_578/U194/Y (NOR2X1)                        0.0764     2.9033 f
-  u_conv2/gt_578/U285/Y (AOI21X1)                       0.1377     3.0410 r
-  u_conv2/gt_578/U237/Y (OAI21X1)                       0.0830     3.1240 f
-  u_conv2/gt_578/U283/Y (AOI21X1)                       0.1530     3.2771 r
-  u_conv2/gt_578/U236/Y (OAI21X2)                       0.0913     3.3684 f
-  u_conv2/gt_578/GE_LT_GT_LE (conv2_DW_cmp_7)           0.0000     3.3684 f
-  u_conv2/U89/Y (BUFX8)                                 0.1230     3.4914 f
-  u_conv2/U86/Y (BUFX12)                                0.1247     3.6161 f
-  u_conv2/U150/Y (MX2X1)                                0.2571     3.8732 r
-  u_conv2/gt_580/B[30] (conv2_DW_cmp_6)                 0.0000     3.8732 r
-  u_conv2/gt_580/U237/Y (INVX1)                         0.0657     3.9390 f
-  u_conv2/gt_580/U250/Y (NAND2XL)                       0.0751     4.0140 r
-  u_conv2/gt_580/U211/Y (OAI21XL)                       0.1018     4.1158 f
-  u_conv2/gt_580/U255/Y (AOI21X1)                       0.1112     4.2270 r
-  u_conv2/gt_580/U263/Y (OAI21X1)                       0.0961     4.3231 f
-  u_conv2/gt_580/U230/Y (AOI21X2)                       0.1073     4.4304 r
-  u_conv2/gt_580/U238/Y (OAI21X2)                       0.0802     4.5106 f
-  u_conv2/gt_580/GE_LT_GT_LE (conv2_DW_cmp_6)           0.0000     4.5106 f
-  u_conv2/U182/Y (BUFX8)                                0.1230     4.6336 f
-  u_conv2/U27/Y (BUFX16)                                0.0959     4.7296 f
-  u_conv2/U154/Y (BUFX20)                               0.1105     4.8400 f
-  u_conv2/U50/Y (CLKMX2X6)                              0.2615     5.1016 f
-  u_conv2/mult_543_C582/a[22] (conv2_DW_mult_uns_4)     0.0000     5.1016 f
-  u_conv2/mult_543_C582/U4427/Y (XNOR2XL)               0.2097     5.3112 f
-  u_conv2/mult_543_C582/U3238/Y (OAI22X1)               0.1941     5.5053 r
-  u_conv2/mult_543_C582/U3343/S (ADDFXL)                0.7928     6.2981 f
-  u_conv2/mult_543_C582/U3190/CO (ADDFHX1)              0.4077     6.7057 f
-  u_conv2/mult_543_C582/U3189/CO (ADDFHX2)              0.2776     6.9834 f
-  u_conv2/mult_543_C582/U3119/S (ADDFHX2)               0.2312     7.2145 r
-  u_conv2/mult_543_C582/U3436/S (ADDFHX1)               0.3287     7.5432 r
-  u_conv2/mult_543_C582/U2853/Y (NOR2X2)                0.0989     7.6421 f
-  u_conv2/mult_543_C582/U2852/Y (NOR2X2)                0.1135     7.7556 r
-  u_conv2/mult_543_C582/U3507/Y (NAND2X2)               0.0646     7.8203 f
-  u_conv2/mult_543_C582/U3906/Y (OAI21X2)               0.1484     7.9686 r
-  u_conv2/mult_543_C582/U3923/Y (AOI21X2)               0.1066     8.0753 f
-  u_conv2/mult_543_C582/U2752/Y (BUFX8)                 0.1281     8.2034 f
-  u_conv2/mult_543_C582/U4059/Y (OAI21X1)               0.1435     8.3469 r
-  u_conv2/mult_543_C582/U3231/Y (XNOR2X2)               0.1741     8.5209 f
-  u_conv2/mult_543_C582/product[39] (conv2_DW_mult_uns_4)
-                                                        0.0000     8.5209 f
-  u_conv2/U177/Y (OR3X6)                                0.2127     8.7337 f
-  u_conv2/U78/Y (OR3X6)                                 0.2222     8.9559 f
-  u_conv2/U15/Y (OR4X8)                                 0.2895     9.2454 f
-  u_conv2/U24/Y (CLKINVX3)                              0.0545     9.2999 r
-  u_conv2/U179/Y (NAND3X4)                              0.0855     9.3855 f
-  u_conv2/U258/Y (OAI21X1)                              0.1576     9.5431 r
-  u_conv2/U186/Y (INVX1)                                0.0949     9.6380 f
-  u_conv2/U324/Y (CLKMX2X2)                             0.1562     9.7942 f
-  u_conv2/result_reg_reg[0][5]/D (DFFRX1)               0.0000     9.7942 f
-  data arrival time                                                9.7942
+                                                        0.0000     0.1972 r
+  u_shared_ch_temp_buffer/U204/Y (INVX3)                0.0448     0.2420 f
+  u_shared_ch_temp_buffer/U202/Y (OR2X8)                0.1372     0.3792 f
+  u_shared_ch_temp_buffer/U70/Y (OR2X1)                 0.2437     0.6228 f
+  u_shared_ch_temp_buffer/U18/Y (CLKINVX4)              0.0779     0.7007 r
+  u_shared_ch_temp_buffer/U62/Y (INVX4)                 0.0672     0.7679 f
+  u_shared_ch_temp_buffer/U2075/Y (OAI222XL)            0.3267     1.0946 r
+  u_shared_ch_temp_buffer/U498/Y (OR3X2)                0.2169     1.3114 r
+  u_shared_ch_temp_buffer/conv2_pool00[9] (shared_ch_temp_buffer)
+                                                        0.0000     1.3114 r
+  u_conv2/conv2_pool00[9] (conv2)                       0.0000     1.3114 r
+  u_conv2/gt_560/B[9] (conv2_DW_cmp_9)                  0.0000     1.3114 r
+  u_conv2/gt_560/U197/Y (CLKINVX1)                      0.0824     1.3939 f
+  u_conv2/gt_560/U233/Y (NOR2X2)                        0.1532     1.5470 r
+  u_conv2/gt_560/U90/Y (OAI21X4)                        0.0893     1.6363 f
+  u_conv2/gt_560/U235/Y (AOI21X4)                       0.1307     1.7670 r
+  u_conv2/gt_560/U66/Y (OAI21X4)                        0.0764     1.8434 f
+  u_conv2/gt_560/U64/Y (AOI21X4)                        0.1016     1.9450 r
+  u_conv2/gt_560/U1/Y (OAI21X4)                         0.0887     2.0336 f
+  u_conv2/gt_560/GE_LT_GT_LE (conv2_DW_cmp_9)           0.0000     2.0336 f
+  u_conv2/U103/Y (BUFX12)                               0.1433     2.1769 f
+  u_conv2/U20/Y (CLKMX2X2)                              0.1954     2.3722 f
+  u_conv2/gt_562/B[19] (conv2_DW_cmp_5)                 0.0000     2.3722 f
+  u_conv2/gt_562/U267/Y (INVX3)                         0.0551     2.4274 r
+  u_conv2/gt_562/U221/Y (NOR2X2)                        0.0419     2.4693 f
+  u_conv2/gt_562/U218/Y (NOR2X1)                        0.1117     2.5810 r
+  u_conv2/gt_562/U194/Y (AOI21X1)                       0.1059     2.6869 f
+  u_conv2/gt_562/U196/Y (OAI21X2)                       0.1618     2.8487 r
+  u_conv2/gt_562/U3/Y (AOI21X4)                         0.0985     2.9473 f
+  u_conv2/gt_562/U1/Y (OAI21X4)                         0.0820     3.0292 r
+  u_conv2/gt_562/GE_LT_GT_LE (conv2_DW_cmp_5)           0.0000     3.0292 r
+  u_conv2/U102/Y (BUFX12)                               0.1549     3.1841 r
+  u_conv2/U58/Y (MX2X2)                                 0.2328     3.4169 r
+  u_conv2/gt_564/B[18] (conv2_DW_cmp_4)                 0.0000     3.4169 r
+  u_conv2/gt_564/U247/Y (CLKINVX1)                      0.0727     3.4896 f
+  u_conv2/gt_564/U246/Y (NAND2X2)                       0.0624     3.5520 r
+  u_conv2/gt_564/U244/Y (OAI21X2)                       0.0901     3.6421 f
+  u_conv2/gt_564/U51/Y (AOI21X4)                        0.1058     3.7479 r
+  u_conv2/gt_564/U35/Y (OAI21X4)                        0.0786     3.8265 f
+  u_conv2/gt_564/U3/Y (AOI21X4)                         0.1224     3.9489 r
+  u_conv2/gt_564/U1/Y (OAI21X4)                         0.0854     4.0344 f
+  u_conv2/gt_564/GE_LT_GT_LE (conv2_DW_cmp_4)           0.0000     4.0344 f
+  u_conv2/U11/Y (INVX1)                                 0.0872     4.1216 r
+  u_conv2/U8/Y (NAND2X2)                                0.0607     4.1823 f
+  u_conv2/U10/Y (NAND2X2)                               0.0541     4.2364 r
+  u_conv2/quant_psum[31] (conv2)                        0.0000     4.2364 r
+  U1814/Y (NAND2X2)                                     0.0692     4.3056 f
+  U1743/Y (NAND4X4)                                     0.0890     4.3946 r
+  u_shared_quantizer/psum_in[31] (shared_quantizer)     0.0000     4.3946 r
+  u_shared_quantizer/U18/Y (INVX8)                      0.0655     4.4600 f
+  u_shared_quantizer/U20/Y (BUFX20)                     0.1176     4.5776 f
+  u_shared_quantizer/U5/Y (AND2X6)                      0.1885     4.7661 f
+  u_shared_quantizer/mult_18/a[17] (shared_quantizer_DW_mult_uns_2)
+                                                        0.0000     4.7661 f
+  u_shared_quantizer/mult_18/U3747/Y (XNOR2X1)          0.1866     4.9527 f
+  u_shared_quantizer/mult_18/U3323/Y (OAI22X1)          0.2224     5.1751 r
+  u_shared_quantizer/mult_18/U4191/CO (ADDFHX2)         0.4208     5.5958 r
+  u_shared_quantizer/mult_18/U3719/CO (ADDFHX2)         0.2667     5.8626 r
+  u_shared_quantizer/mult_18/U3718/CO (ADDFHX4)         0.3003     6.1629 r
+  u_shared_quantizer/mult_18/U2765/Y (XOR2X4)           0.0914     6.2543 r
+  u_shared_quantizer/mult_18/U2766/Y (XOR2X4)           0.1314     6.3857 r
+  u_shared_quantizer/mult_18/U3103/Y (XOR2X4)           0.1299     6.5156 r
+  u_shared_quantizer/mult_18/U3102/Y (XOR2X4)           0.1271     6.6428 r
+  u_shared_quantizer/mult_18/U3339/Y (NAND2X1)          0.0912     6.7340 f
+  u_shared_quantizer/mult_18/U2815/Y (CLKINVX2)         0.0606     6.7946 r
+  u_shared_quantizer/mult_18/U3201/Y (AOI21X2)          0.0481     6.8427 f
+  u_shared_quantizer/mult_18/U4594/Y (OAI21X2)          0.1246     6.9673 r
+  u_shared_quantizer/mult_18/U3010/Y (NAND2X2)          0.0738     7.0411 f
+  u_shared_quantizer/mult_18/U2732/Y (AND2X8)           0.1206     7.1617 f
+  u_shared_quantizer/mult_18/U3424/Y (OAI21X4)          0.0588     7.2205 r
+  u_shared_quantizer/mult_18/U4586/Y (AOI21X4)          0.0805     7.3010 f
+  u_shared_quantizer/mult_18/U3108/Y (BUFX12)           0.1326     7.4335 f
+  u_shared_quantizer/mult_18/U3067/Y (BUFX12)           0.1175     7.5510 f
+  u_shared_quantizer/mult_18/U3588/Y (OAI21X4)          0.0955     7.6465 r
+  u_shared_quantizer/mult_18/U3587/Y (XOR2X4)           0.1266     7.7731 f
+  u_shared_quantizer/mult_18/product[61] (shared_quantizer_DW_mult_uns_2)
+                                                        0.0000     7.7731 f
+  u_shared_quantizer/U31/Y (NOR3X4)                     0.1049     7.8780 r
+  u_shared_quantizer/U30/Y (NAND3BX2)                   0.0916     7.9697 f
+  u_shared_quantizer/U33/Y (CLKINVX4)                   0.0609     8.0305 r
+  u_shared_quantizer/U34/Y (NAND4BBX4)                  0.1182     8.1487 f
+  u_shared_quantizer/U36/Y (NOR3X4)                     0.1411     8.2898 r
+  u_shared_quantizer/U28/Y (NAND3X2)                    0.1090     8.3988 f
+  u_shared_quantizer/U37/Y (OR2X4)                      0.1750     8.5738 f
+  u_shared_quantizer/quant_out[5] (shared_quantizer)    0.0000     8.5738 f
+  u_conv1/shared_quant_result[5] (conv1)                0.0000     8.5738 f
+  u_conv1/U27/Y (NAND2BX4)                              0.0751     8.6489 r
+  u_conv1/U26/Y (NAND2X2)                               0.0590     8.7078 f
+  u_conv1/U25/Y (CLKINVX4)                              0.0472     8.7550 r
+  u_conv1/U28/Y (OAI32X2)                               0.1078     8.8628 f
+  u_conv1/U40/Y (INVX2)                                 0.0832     8.9460 r
+  u_conv1/U31/Y (OAI2BB1X4)                             0.0635     9.0095 f
+  u_conv1/U41/Y (NAND3X4)                               0.0672     9.0767 r
+  u_conv1/U45/Y (AND3X8)                                0.1732     9.2499 r
+  u_conv1/U81/Y (MX2X2)                                 0.1808     9.4308 f
+  u_conv1/U80/Y (NAND2BX4)                              0.1190     9.5498 f
+  u_conv1/U22/Y (OAI22XL)                               0.1356     9.6853 r
+  u_conv1/sram_act_wdata0_reg[24]/D (DFFSRHQX1)         0.0000     9.6853 r
+  data arrival time                                                9.6853
 
   clock clk (rise edge)                                10.0000    10.0000
   clock network delay (ideal)                           0.0000    10.0000
-  u_conv2/result_reg_reg[0][5]/CK (DFFRX1)              0.0000    10.0000 r
-  library setup time                                   -0.2054     9.7946
-  data required time                                               9.7946
+  u_conv1/sram_act_wdata0_reg[24]/CK (DFFSRHQX1)        0.0000    10.0000 r
+  library setup time                                   -0.3140     9.6860
+  data required time                                               9.6860
   --------------------------------------------------------------------------
-  data required time                                               9.7946
-  data arrival time                                               -9.7942
+  data required time                                               9.6860
+  data arrival time                                               -9.6853
   --------------------------------------------------------------------------
-  slack (MET)                                                      0.0004
+  slack (MET)                                                      0.0007
 
 
 1

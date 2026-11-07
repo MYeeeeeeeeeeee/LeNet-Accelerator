@@ -63,7 +63,11 @@ module conv2 (
     input logic signed [31:0] conv2_pool00,
     input logic signed [31:0] conv2_pool01,
     input logic signed [31:0] conv2_pool10,
-    input logic signed [31:0] conv2_pool11
+    input logic signed [31:0] conv2_pool11,
+
+    output logic signed [31:0] quant_psum,
+    output logic        [31:0] quant_scale,
+    input  logic        [ 7:0] shared_quant_result
 
 
 );
@@ -530,24 +534,6 @@ module conv2 (
     assign conv2_pool_col_base = pool_col_base;
 
 
-    // 32-bit PSUM -> ReLU -> Quantization
-    function automatic logic [7:0] quantize_psum(input logic signed [31:0] psum_value,
-                                                 input logic [31:0] scale_value);
-        logic [31:0] positive;
-        logic [63:0] product;
-        logic [63:0] shifted;
-
-        begin
-            if (psum_value <= 0) return 8'd0;
-            positive = $unsigned(psum_value);
-            product  = positive * scale_value;
-            shifted  = product >> 16;
-
-            if (shifted > 64'd127) return 8'd127;
-            else return shifted[7:0];
-        end
-    endfunction
-
     // Wait for the final PSUM write to complete.
     always_ff @(posedge clk or negedge rst_n) begin : pool_emit_control
         if (!rst_n) begin
@@ -568,8 +554,6 @@ module conv2 (
     // Select the two adjacent columns used by the current 2x2 pooling window.
     assign pool_col_base = {pool_emit_idx, 1'b0};
 
-    
-
     always_comb begin : pool_max
         pool_psum_max = conv2_pool00;
 
@@ -578,9 +562,12 @@ module conv2 (
         if (conv2_pool10 > pool_psum_max) pool_psum_max = conv2_pool10;
 
         if (conv2_pool11 > pool_psum_max) pool_psum_max = conv2_pool11;
-
-        current_max = quantize_psum(pool_psum_max, scale_CONV2_buf);
     end
+
+    assign quant_psum  = pool_psum_max;
+    assign quant_scale = scale_CONV2_buf;
+    assign current_max = shared_quant_result;
+
 
 
 

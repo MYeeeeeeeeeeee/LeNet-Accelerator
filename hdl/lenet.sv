@@ -242,6 +242,22 @@ module lenet (
 
 
 
+    // Shared ReLU + Quantization
+    logic signed [31:0] c1_quant_psum;
+    logic signed [31:0] c2_quant_psum;
+    logic signed [31:0] c3_quant_psum;
+    logic signed [31:0] fc1_quant_psum;
+
+    logic [31:0] c1_quant_scale;
+    logic [31:0] c2_quant_scale;
+    logic [31:0] c3_quant_scale;
+    logic [31:0] fc1_quant_scale;
+
+    logic signed [31:0] quant_psum_mux;
+    logic [31:0] quant_scale_mux;
+    logic [7:0] shared_quant_result;
+
+
 
     // Delay the external start request by one clock before entering CONV1.
     always_ff @(posedge clk or negedge rst_n) begin : input_flag
@@ -372,7 +388,11 @@ module lenet (
         .wb_wdata0       (c1_wb_wdata0),
         .shared_weight   (shared_weight),
         .pe_req          (c1_pe_req),
-        .shared_pe_result(shared_pe_result)
+        .shared_pe_result(shared_pe_result),
+
+        .quant_psum         (c1_quant_psum),
+        .quant_scale        (c1_quant_scale),
+        .shared_quant_result(shared_quant_result)
     );
 
     conv2 u_conv2 (
@@ -429,7 +449,11 @@ module lenet (
         .conv2_pool00(conv2_pool00),
         .conv2_pool01(conv2_pool01),
         .conv2_pool10(conv2_pool10),
-        .conv2_pool11(conv2_pool11)
+        .conv2_pool11(conv2_pool11),
+
+        .quant_psum         (c2_quant_psum),
+        .quant_scale        (c2_quant_scale),
+        .shared_quant_result(shared_quant_result)
 
 
     );
@@ -524,7 +548,11 @@ module lenet (
         .shared_weight(shared_weight),
 
         .pe_req          (c3_pe_req),
-        .shared_pe_result(shared_pe_result)
+        .shared_pe_result(shared_pe_result),
+
+        .quant_psum         (c3_quant_psum),
+        .quant_scale        (c3_quant_scale),
+        .shared_quant_result(shared_quant_result)
     );
 
     fc_buffer u_fc_buffer (
@@ -582,7 +610,11 @@ module lenet (
 
         .pe_act_vec      (fc1_pe_act_vec),
         .pe_req          (fc1_pe_req),
-        .shared_pe_result(shared_pe_result)
+        .shared_pe_result(shared_pe_result),
+
+        .quant_psum         (fc1_quant_psum),
+        .quant_scale        (fc1_quant_scale),
+        .shared_quant_result(shared_quant_result)
     );
 
 
@@ -694,6 +726,11 @@ module lenet (
         .fc2_result_rdata(fc2_result_rdata)
     );
 
+    shared_quantizer u_shared_quantizer (
+        .psum_in  (quant_psum_mux),
+        .scale_in (quant_scale_mux),
+        .quant_out(shared_quant_result)
+    );
 
 
     // Select the active layer's requests onto the shared physical SRAM pins.
@@ -966,6 +1003,40 @@ module lenet (
             end
         end
     end : pe_data_mux
+
+
+    always_comb begin : quant_input_mux
+        quant_psum_mux  = '0;
+        quant_scale_mux = '0;
+
+        case (cs)
+            CONV1: begin
+                quant_psum_mux  = c1_quant_psum;
+                quant_scale_mux = c1_quant_scale;
+            end
+
+            CONV2: begin
+                quant_psum_mux  = c2_quant_psum;
+                quant_scale_mux = c2_quant_scale;
+            end
+
+            CONV3: begin
+                quant_psum_mux  = c3_quant_psum;
+                quant_scale_mux = c3_quant_scale;
+            end
+
+            FC1: begin
+                quant_psum_mux  = fc1_quant_psum;
+                quant_scale_mux = fc1_quant_scale;
+            end
+
+            default: begin
+                quant_psum_mux  = '0;
+                quant_scale_mux = '0;
+            end
+        endcase
+    end
+
 
     // Report completion only after every network stage, including reload,
     // has asserted done.

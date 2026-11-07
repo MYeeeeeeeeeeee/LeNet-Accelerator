@@ -42,7 +42,11 @@ module conv3 (
     input logic signed [4:0][7:0] shared_weight[0:4],
 
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4]
+    input logic signed [19:0] shared_pe_result[0:4],
+
+    output logic signed [31:0] quant_psum,
+    output logic        [31:0] quant_scale,
+    input  logic        [ 7:0] shared_quant_result
 
 
 );
@@ -330,10 +334,12 @@ module conv3 (
     end
 
     // Pipeline 4: select the first-group sum or accumulate the PSUM.
-    assign psum_next = (group_idx_mac_s4 == 6'd0) ? conv_sum_ext : scalar_psum + conv_sum_ext;
+    assign psum_next   = (group_idx_mac_s4 == 6'd0) ? conv_sum_ext : scalar_psum + conv_sum_ext;
+    assign quant_psum  = psum_next;
+    assign quant_scale = scale_CONV3_buf;
 
     // Pipeline 4: update PSUM and emit one quantized neuron per completed vector.
-    always_ff @(posedge clk or negedge rst_n) begin
+    always_ff @(posedge clk or negedge rst_n) begin : neuron_output
         if (!rst_n) begin
             scalar_psum  <= '0;
             neuron_valid <= 1'b0;
@@ -345,7 +351,7 @@ module conv3 (
                 scalar_psum <= psum_next;
 
                 if (group_idx_mac_s4 == 6'd49) begin
-                    neuron_data  <= quantize_psum(psum_next, scale_CONV3_buf);
+                    neuron_data  <= shared_quant_result;
                     neuron_valid <= 1'b1;
                 end else begin
                     neuron_data  <= '0;
@@ -356,7 +362,7 @@ module conv3 (
                 neuron_valid <= 1'b0;
             end
         end
-    end
+    end : neuron_output
 
     // Pipeline 4 control: advance to the next output neuron after completion.
     always_ff @(posedge clk or negedge rst_n) begin : ch_counter

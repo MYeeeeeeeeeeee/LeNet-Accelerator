@@ -46,7 +46,11 @@ module fc1 (
     // PE interface for FC1 activation-vector and result return.
     output logic [63:0] pe_act_vec,
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4]
+    input logic signed [19:0] shared_pe_result[0:4],
+
+    output logic signed [31:0] quant_psum,
+    output logic        [31:0] quant_scale,
+    input  logic        [ 7:0] shared_quant_result
 );
     // input enable buffered to preserve SRAM timing
     logic enable_buf;
@@ -322,6 +326,8 @@ module fc1 (
     assign conv_sum = $signed(pe_out_s4[0]) + $signed(pe_out_s4[1]);
     assign conv_sum_ext = {{12{conv_sum[19]}}, conv_sum};
     assign psum_next = (group_idx_mac_s4 == 6'd0) ? conv_sum_ext : scalar_psum + conv_sum_ext;
+    assign quant_psum = psum_next;
+    assign quant_scale = scale_FC1_buf;
 
     // Pipeline 4: update PSUM and emit one quantized neuron per completed vector.
     // Group 14 is the final vector group for one output neuron.
@@ -337,7 +343,7 @@ module fc1 (
                 scalar_psum <= psum_next;
 
                 if (group_idx_mac_s4 == 6'd14) begin
-                    neuron_data  <= quantize_psum(psum_next, scale_FC1_buf);
+                    neuron_data  <= shared_quant_result;
                     neuron_valid <= 1'b1;
                 end else begin
                     neuron_data  <= '0;

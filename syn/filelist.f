@@ -12,3 +12,4 @@
 ../hdl/shared_ch_temp_buffer.sv
 ../hdl/fc2.sv
 ../hdl/PE.sv
+../hdl/shared_quantizer.sv

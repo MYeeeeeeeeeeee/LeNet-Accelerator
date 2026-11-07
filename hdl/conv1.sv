@@ -49,9 +49,14 @@ module conv1 (
 
     input logic signed [4:0][7:0] shared_weight[0:4],
 
-    // OPT-04B: request shared CONV1/CONV2 combinational PE array.
+    // request shared CONV1/CONV2 combinational PE array.
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4]
+    input logic signed [19:0] shared_pe_result[0:4],
+
+    // shared quantize
+    output logic signed [31:0] quant_psum,
+    output logic        [31:0] quant_scale,
+    input  logic        [ 7:0] shared_quant_result
 
 );
     // input enable buffered to preserve SRAM timing
@@ -136,10 +141,8 @@ module conv1 (
     logic [31:0] pack_data;
     logic signed [3:0][7:0] result_reg;
     logic signed [19:0] conv_sum;
-    logic [19:0] relu_out;
     logic [7:0] quant_out;
-    logic [63:0] scale_temp;
-    logic [63:0] quant_shifted;
+
 
     // Completion state is owned by this layer instead of the parent Top.
     logic conv1_done;
@@ -267,11 +270,9 @@ module conv1 (
             fill_cnt <= 5'd0;
         end else if (act_read_fire) begin
             if (strip_idx == 5'd0) begin
-                if (fill_cnt != 5'd24)
-                    fill_cnt <= fill_cnt + 1;
+                if (fill_cnt != 5'd24) fill_cnt <= fill_cnt + 1;
             end else begin
-                if (fill_cnt != 5'd8)
-                    fill_cnt <= fill_cnt + 1;
+                if (fill_cnt != 5'd8) fill_cnt <= fill_cnt + 1;
             end
         end
     end : line_counter
@@ -465,26 +466,20 @@ module conv1 (
 
     // Pipeline 4 arithmetic post-processing: accumulate the five PE results,
     // apply ReLU, multiply by the layer scale, shift, and saturate to 8 bits.
-    always_comb begin : relu_quant
+
+    always_comb begin : conv_sum_comb
         if (s4_valid) begin
             conv_sum = $signed(pe_out_s4[0]) + $signed(pe_out_s4[1]) + $signed(pe_out_s4[2]) +
                 $signed(pe_out_s4[3]) + $signed(pe_out_s4[4]);
-
-            relu_out = (conv_sum < 0) ? '0 : $unsigned(conv_sum);
-
-            scale_temp = relu_out * scale_CONV1_buf;
-            quant_shifted = scale_temp >> 16;
-
-            if (quant_shifted > 64'd127) quant_out = 8'd127;
-            else quant_out = quant_shifted[7:0];
         end else begin
             conv_sum = '0;
-            relu_out = '0;
-            scale_temp = '0;
-            quant_shifted = '0;
-            quant_out = '0;
         end
     end
+
+    assign quant_psum  = {{12{conv_sum[19]}}, conv_sum};
+    assign quant_scale = scale_CONV1_buf;
+    assign quant_out   = s4_valid ? shared_quant_result : 8'd0;
+
 
     // Compare the current quantized result with the running 2x2 pool maximum.
     always_comb begin : compare_max
@@ -555,8 +550,7 @@ module conv1 (
         if (!rst_n) begin
             done <= 1'b0;
             done_delay <= 1'b0;
-        end 
-        else begin
+        end else begin
             done_delay <= {done_delay[0], conv1_done};
             done <= done_delay[1];
         end
