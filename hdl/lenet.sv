@@ -257,6 +257,8 @@ module lenet (
     logic [31:0] quant_scale_mux;
     logic [7:0] shared_quant_result;
 
+    logic [14:0] fc1_group_nonzero;
+
 
 
     // Delay the external start request by one clock before entering CONV1.
@@ -569,7 +571,9 @@ module lenet (
         .reload_we(reload_fc_we),
         .reload_waddr(reload_fc_waddr),
         .reload_wdata(reload_fc_wdata),
-        .reload_wstrb(reload_fc_wstrb)
+        .reload_wstrb(reload_fc_wstrb),
+
+        .fc1_group_nonzero(fc1_group_nonzero)
 
     );
 
@@ -602,6 +606,8 @@ module lenet (
         .fc_buf_re   (fc1_buf_re),
         .fc_buf_raddr(fc1_buf_raddr),
         .fc_buf_rdata(fc_buf_rdata),
+
+        .fc1_group_nonzero(fc1_group_nonzero),
 
         .wb_load_valid(fc1_wb_load_valid),
         .wb_wdata0    (fc1_wb_wdata0),

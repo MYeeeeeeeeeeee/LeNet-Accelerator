@@ -17,7 +17,9 @@ module fc_buffer (
     // FC1 / FC2: 64-bit aligned read
     input  logic        fc_buf_re,
     input  logic [ 6:0] fc_buf_raddr,
-    output logic [63:0] fc_buf_rdata
+    output logic [63:0] fc_buf_rdata,
+
+    output logic [14:0] fc1_group_nonzero
 );
 
     // 15 words x 64 bits = 120 bytes
@@ -25,6 +27,7 @@ module fc_buffer (
 
     // Static bank and byte-lane decoding
     for (genvar b = 0; b < 15; b++) begin : GEN_BANK
+        assign fc1_group_nonzero[b] = |bank[b];
         for (genvar lane = 0; lane < 8; lane++) begin : GEN_LANE
 
             localparam logic [3:0] BANK_ID = b;

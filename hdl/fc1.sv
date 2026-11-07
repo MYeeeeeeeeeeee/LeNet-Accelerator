@@ -32,6 +32,7 @@ module fc1 (
     output logic        fc_buf_re,
     output logic [ 6:0] fc_buf_raddr,
     input  logic [63:0] fc_buf_rdata,
+    input  logic [14:0] fc1_group_nonzero,
 
     output logic       fc_buf_we,
     output logic [6:0] fc_buf_waddr,
@@ -65,17 +66,22 @@ module fc1 (
     logic s1_valid, s2_valid, s3_valid, s4_valid;
     logic load_valid_s1, load_valid_s2, load_valid_s3, load_valid_s4;
     logic weight_valid_s1, weight_valid_s2, weight_valid_s3, weight_valid_s4;
-    logic pe_valid;
-    logic vector_read_fire;
-    logic pack_valid;
+    logic        pe_valid;
+    logic        vector_read_fire;
+    logic        pack_valid;
 
     // Output-neuron, activation-vector, and MAC-group control state.
-    logic change_out_ch;
-    logic [7:0] out_ch;
-    logic [4:0] act_idx;
-    logic [5:0] weight_idx;
+    logic        change_out_ch;
+    logic [ 7:0] out_ch;
+    logic [ 4:0] act_idx;
+
+    logic [14:0] issue_mask;
+    logic [ 4:0] issue_group;
+    logic        issue_found;
+
     logic [5:0] group_idx_s2, group_idx_s3, group_idx_s4;
     logic [5:0] group_idx_buf;
+
     logic vector_buf_valid;
     logic [5:0] group_idx_mac_s4;
     logic neuron_valid;
@@ -107,7 +113,7 @@ module fc1 (
 
     // Common pipeline control assignments.
     assign s1_valid         = enable_buf;
-    assign load_valid_s1    = s1_valid && (act_idx < 5'd15) && (out_ch < 'd84);
+    assign load_valid_s1    = s1_valid && issue_found && (out_ch < 8'd84);
     assign vector_read_fire = load_valid_s1 && !pack_valid;
     assign weight_valid_s1  = vector_read_fire;
     assign wb_load_valid    = weight_valid_s4;
@@ -123,7 +129,7 @@ module fc1 (
 
     // Pipeline 1: arbitrate activation-vector reads and packed-output writes.
     // A packed output write takes priority over issuing a new vector read.
-    assign buffer_act_addr  = act_idx * 8;
+    assign buffer_act_addr  = {issue_group, 3'b000};
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
         if (!rst_n) begin
             sram_act_addr0 <= '0;
@@ -151,7 +157,7 @@ module fc1 (
         end else if (change_out_ch) begin
             act_idx <= 17'd0;
         end else if (vector_read_fire) begin
-            act_idx <= act_idx + 1'b1;
+            act_idx <= issue_group + 5'd1;
         end
     end : act_read_idx_ff
 
@@ -159,9 +165,8 @@ module fc1 (
     // Pipeline 1: decode and issue weight addresses for the current vector.
     // Each request fetches two adjacent weight words for the two PEs.
     assign global_w_offset = out_ch * 16'd30 + fc1_weight_offset;
-    assign w_0_idex = {weight_idx, 1'b0};
-    assign w_1_idex = {weight_idx, 1'b1};
-
+    assign w_0_idex = {issue_group, 1'b0};
+    assign w_1_idex = {issue_group, 1'b1};
     always_ff @(posedge clk or negedge rst_n) begin : weight_addr_gen
         if (!rst_n) begin
             sram_weight_addr0 <= '0;
@@ -172,16 +177,6 @@ module fc1 (
         end
     end : weight_addr_gen
 
-    // Pipeline 1: advance or restart the weight-vector index.
-    always_ff @(posedge clk or negedge rst_n) begin : weight_read_idx_ff
-        if (!rst_n) begin
-            weight_idx <= '0;
-        end else if (change_out_ch) begin
-            weight_idx <= '0;
-        end else if (vector_read_fire) begin
-            weight_idx <= weight_idx + 1;
-        end
-    end
 
     // Hold unused write-side ports at reset values. These ports remain in the
     // module interface because they are connected by the surrounding design.
@@ -271,13 +266,31 @@ module fc1 (
             group_idx_s4  <= '0;
             group_idx_buf <= '0;
         end else begin
-            group_idx_s2 <= act_idx;
+            group_idx_s2 <= issue_group;
             group_idx_s3 <= group_idx_s2;
             group_idx_s4 <= group_idx_s3;
 
             if (load_valid_s4) group_idx_buf <= group_idx_s4;
         end
     end : group_idx_pipeline
+
+
+    // Force group 0 and 14 to execute.
+    // This preserves the existing first/last-group logic.
+    assign issue_mask = fc1_group_nonzero | 15'h4001;
+
+    always_comb begin : next_nonzero_group
+        issue_group = 5'd0;
+        issue_found = 1'b0;
+
+        for (int g = 0; g < 15; g++) begin
+            if (!issue_found && (g[4:0] >= act_idx) && issue_mask[g]) begin
+
+                issue_group = g[4:0];
+                issue_found = 1'b1;
+            end
+        end
+    end
 
 
     // Pipeline 2-3: delay the activation vector to match the PE input stage.
