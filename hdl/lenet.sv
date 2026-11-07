@@ -259,6 +259,9 @@ module lenet (
 
     logic [14:0] fc1_group_nonzero;
 
+    logic [49:0] conv3_group_nonzero;
+    logic [6:0] conv2_write_word_idx;
+
 
 
     // Delay the external start request by one clock before entering CONV1.
@@ -509,6 +512,28 @@ module lenet (
     );
 
 
+
+    assign conv2_write_word_idx = c2_act_addr0 - conv2_out_offset;
+
+    always_ff @(posedge clk or negedge rst_n) begin : conv3_zero_bitmap_ff
+        if (!rst_n) begin
+            conv3_group_nonzero <= '0;
+        end else if (compute_start) begin
+            conv3_group_nonzero <= '0;
+        end else if (
+            (cs == CONV2) &&
+            (c2_act_wea0 == 4'hF) &&
+            (c2_act_addr0 >= conv2_out_offset) &&
+            (c2_act_addr0 < conv2_out_offset + 16'd100)
+        ) begin
+            // As long as there is a non-zero byte in the 32-bit word, the corresponding 8-byte group is marked as non-zero.
+            if (|c2_act_wdata0) begin
+                conv3_group_nonzero[conv2_write_word_idx[6:1]] <= 1'b1;
+            end
+        end
+    end : conv3_zero_bitmap_ff
+
+
     conv3 u_conv3 (
         .clk(clk),
         .rst_n(rst_n),
@@ -554,7 +579,9 @@ module lenet (
 
         .quant_psum         (c3_quant_psum),
         .quant_scale        (c3_quant_scale),
-        .shared_quant_result(shared_quant_result)
+        .shared_quant_result(shared_quant_result),
+
+        .conv3_group_nonzero(conv3_group_nonzero)
     );
 
     fc_buffer u_fc_buffer (

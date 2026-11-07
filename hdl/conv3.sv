@@ -46,7 +46,9 @@ module conv3 (
 
     output logic signed [31:0] quant_psum,
     output logic        [31:0] quant_scale,
-    input  logic        [ 7:0] shared_quant_result
+    input  logic        [ 7:0] shared_quant_result,
+
+    input logic [49:0] conv3_group_nonzero
 
 
 );
@@ -113,23 +115,24 @@ module conv3 (
     logic vector_buf_valid;
 
     // Weight index and neuron valid.
-    logic [5:0] weight_idx;
     logic neuron_valid;
 
     // Address offsets.
     logic [16:0] act_0_idex, act_1_idex;
     logic [15:0] w_0_idex, w_1_idex;
+    logic        [ 6:0] issue_group;
+    logic               issue_found;
 
     // PSUM state.
-    logic [5:0] group_idx_mac_s4;
+    logic        [ 5:0] group_idx_mac_s4;
     logic signed [31:0] scalar_psum;
     logic signed [31:0] psum_next;
-    logic [7:0] neuron_data;
+    logic        [ 7:0] neuron_data;
 
 
     // Pipeline 1: qualify the vector request and issue SRAM reads.
     assign s1_valid         = enable_buf;
-    assign load_valid_s1    = s1_valid && (act_idx < 6'd50) && (out_ch < 'd120);
+    assign load_valid_s1    = s1_valid && issue_found  && (out_ch < 'd120);
     assign vector_read_fire = load_valid_s1 && !pack_valid;
 
     // Shared line-buffer interface.
@@ -158,8 +161,8 @@ module conv3 (
     assign pack_valid       = neuron_valid && (package_cnt == 2'd3);
 
     // Pipeline 1: decode and issue activation addresses.
-    assign act_0_idex       = {act_idx, 1'b0};
-    assign act_1_idex       = {act_idx, 1'b1};
+    assign act_0_idex       = {issue_group, 1'b0};
+    assign act_1_idex       = {issue_group, 1'b1};
 
 
     always_ff @(posedge clk or negedge rst_n) begin : act_addr_gen
@@ -176,6 +179,20 @@ module conv3 (
         end
     end : act_addr_gen
 
+
+    always_comb begin : next_nonzero_group
+        issue_group = 7'd0;
+        issue_found = 1'b0;
+
+        for (int g = 0; g < 50; g++) begin
+            if (!issue_found && (g[6:0] >= act_idx) && (conv3_group_nonzero[g] || (g == 0) ||(g == 49))) begin
+                issue_group = g[6:0];
+                issue_found = 1'b1;
+            end
+        end
+    end
+
+
     // Pipeline 1 control: advance or restart the activation read index.
     always_ff @(posedge clk or negedge rst_n) begin : act_read_idx_ff
         if (!rst_n) begin
@@ -183,14 +200,14 @@ module conv3 (
         end else if (change_out_ch) begin
             act_idx <= 17'd0;
         end else if (vector_read_fire) begin
-            act_idx <= act_idx + 1'b1;
+            act_idx <= issue_group  + 1'b1;
         end
     end : act_read_idx_ff
 
     // Pipeline 1: decode and issue weight addresses.
     assign global_w_offset = out_ch * 16'd100 + conv3_weight_offset;
-    assign w_0_idex = {weight_idx, 1'b0};
-    assign w_1_idex = {weight_idx, 1'b1};
+    assign w_0_idex = {issue_group, 1'b0};
+    assign w_1_idex = {issue_group, 1'b1};
 
     always_ff @(posedge clk or negedge rst_n) begin : weight_addr_gen
         if (!rst_n) begin
@@ -201,18 +218,6 @@ module conv3 (
             sram_weight_addr1 <= global_w_offset + w_1_idex;
         end
     end : weight_addr_gen
-
-    // Pipeline 1 control: advance or restart the weight read index.
-    always_ff @(posedge clk or negedge rst_n) begin : weight_read_idx_ff
-        if (!rst_n) begin
-            weight_idx <= '0;
-        end else if (change_out_ch) begin
-            weight_idx <= '0;
-        end else if (vector_read_fire) begin
-            weight_idx <= weight_idx + 1;
-        end
-    end
-
 
     // Weight SRAM writes are unused.
     always_ff @(posedge clk or negedge rst_n) begin : unused_sram_ff
@@ -297,7 +302,7 @@ module conv3 (
             group_idx_s4  <= '0;
             group_idx_buf <= '0;
         end else begin
-            group_idx_s2 <= act_idx;
+            group_idx_s2 <= issue_group[5:0];
             group_idx_s3 <= group_idx_s2;
             group_idx_s4 <= group_idx_s3;
 

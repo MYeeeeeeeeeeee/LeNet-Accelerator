@@ -3,8 +3,8 @@
 > 用途：記錄 RTL 架構最佳化、DC 面積與時序、功能驗證，以及每次修改的取捨。  
 > 最後更新：2026-11-07  
 > 專案：5-Layer Quantized LeNet Accelerator（SystemVerilog）
-> **最新完整驗證版本：V8（OPT-08A：FC1 Zero-Group Skipping）｜Total Cell Area 499,220.61｜vs V7 +1,183.09（+0.24%）｜vs V0 −47.30%｜Golden／10 ns Timing／GLS 全 PASS（使用者回報）｜31,161 cycles（較 V7 減少 336，−1.07%）。**  
-> **面積最佳版本仍是 V7：** 498,037.52；**週期最佳版本是 V8：** 31,161 cycles。V8 透過 FC Buffer 的 8-Byte Zero-Group Bitmap 與 FC1 Group Issue 跳轉，在保留功能／時序條件下縮短執行時間；新 DC Report 為 `report_area(20261107-092431).log`。
+> **最新完整驗證版本：V9（OPT-08B：CONV3 Zero-Activation Group Skipping）｜Total Cell Area 505,781.06｜vs V8 +6,560.45（+1.31%）｜vs V0 −46.60%｜Golden／10 ns Timing／GLS 全 PASS（使用者回報）｜29,481 cycles（vs V8 −1,680、−5.39%；vs V7 −2,016、−6.40%）。**  
+> **面積最佳版本仍為 V7：** 498,037.52；**週期最佳版本為 V9：** 29,481 cycles。V8 的 FC1 Zero-Group Skip 已保留，V9 在其基礎上增加 CONV3 Zero-Group Skip。V9 DC Report：`report_area(20261107-141247).log`。
 
 ## 1. 最佳化目標與限制
 
@@ -554,6 +554,59 @@
 
 **本輪報告：** `report_area(20261107-092431).log`（2026-11-07 17:21:43，DC T-2022.03，`slow.db`）。
 
+### 2.14 V9：OPT-08B — CONV3 Zero-Activation Group Skipping（報告日期：2026-11-07 21:54:24）
+
+> **V9 驗證（使用者於 2026-11-07 回報）：Golden PASS、Gate-Level Simulation PASS、10 ns Timing PASS，Total Cycle Count = 29,481。** Area 數據依 Synopsys Design Compiler `report_area(20261107-141247).log`；WNS、TNS、原始 RTL／GLS Log、SDF 與完整 SDC 尚未附，不自行推斷其數值。V9 是新增性能最佳化，**不是面積改善版本**。
+
+> **設計方向（依本次已討論的 OPT-08B 方案）：** CONV2 將輸出 Activation 寫入 SRAM 時，建立 50-bit 的 CONV3 Activation Group 非零資訊；CONV3 針對 50 個 8-Byte Group，使用 Next Nonzero Group Selector 將 Activation SRAM／Weight SRAM 的位址與 Pipeline Group Metadata 同步跳轉。**保守方案強制執行 Group 0、49**，維持既有 `group_idx==0` 的 PSUM 初始化和 `group_idx==49` 的 Output Completion。上述是改動設計方案；本回合只附 Area Report，**實際 V8→V9 RTL Diff／Bitmap 建立時機與寫入 Port 覆蓋需再由 Git Snapshot 核對**。
+
+#### V8 → V9：合成與效能量化
+
+| 指標 | V8（FC1 Zero-Group Skip） | **V9（+CONV3 Zero-Group Skip）** | V9 − V8 |
+|---|---:|---:|---:|
+| **Total Cell Area** | **499,220.61** | **505,781.06** | **+6,560.45（+1.31%）** |
+| Combinational Area | 306,428.23 | **311,786.92** | **+5,358.69（+1.75%）** |
+| Noncombinational Area | 192,792.38 | **193,994.14** | **+1,201.76（+0.62%）** |
+| Buf / Inv Area（已包含於組合面積） | 18,019.60 | **18,610.29** | **+590.70** |
+| Total Cells | 31,571 | **32,046** | **+475** |
+| Combinational Cells | 24,773 | **25,250** | **+477** |
+| Sequential Cells | 5,955 | **5,995** | **+40** |
+| **Cycle Count** | **31,161** | **29,481** | **−1,680（−5.39%）** |
+| 10 ns 推算執行時間 | 311.61 µs | **294.81 µs** | **−16.80 µs** |
+| Golden / GLS / 10 ns Timing | PASS（回報） | **PASS（回報）** | 維持 |
+
+**Cycle 的物理意義：** 在先前 Golden 圖樣的分析中，CONV3 50 個 8-Byte Groups 有 15 個全零 Group；採用強制保留 Group 0／49 的保守方案後，**每 Neuron 可跳過 14 Group**，共有 120 個輸出 Neuron，估計 `14 × 120 = 1,680` 個 MAC Group Issues 可避免。V8 `31,161 → V9 29,481` 的差值剛好是 **1,680 cycles**，與預估相符。**但僅憑 Cycle Count 並不能逐一證明地址跳轉正確，功能仍以使用者回報 Golden 與 GLS PASS 為驗證依據。** 此為特定 Golden／Pattern，不可將 Group Index 硬編碼；其他測試資料的收益可能不同。
+
+**與早期版本比較：** V7／V6 等未啟用 Zero-Group Skip 時為 **31,497 cycles**，V9 累計減少 **2,016 cycles（−6.40%）**。若 Clock Period 同為 10 ns，等於 **314.97 → 294.81 µs（−20.16 µs）**，相對 V7 的 Latency Speedup 約 **1.0684×**。相較 V8，速度提升約 **1.0570×**。V0 Cell Area `947,242.55 → 505,781.06`，仍淨減 **441,461.49（−46.60%）**。
+
+#### V9 階層面積與硬體成本
+
+| Hierarchical Module | V8 Area | V9 Area | V9 − V8 |
+|---|---:|---:|---:|
+| `u_conv3` | 23,524.27 | **26,116.20** | **+2,591.93** |
+| `lenet` Top Local Combinational | 13,030.94 | **14,653.65** | **+1,622.71** |
+| `u_shared_ch_temp_buffer` | 58,034.11 | **58,641.77** | **+607.67** |
+| `u_shared_quantizer` | 52,166.19 | **52,680.51** | **+514.31** |
+| `u_shared_pe_array` | 69,970.22 | **69,987.20** | **+16.97** |
+| `u_shared_line_buffer` | 101,681.05 | **101,546.95** | **−134.09** |
+| `u_fc_buffer` | 56,582.83 | **56,582.83** | **0.00** |
+
+**歸因說明：** V9 的 `u_conv3` 增加與新 Group Selector 預期方向一致；Top Local / 其他階層的額外面積亦須納入。**整體淨成本以 Top Area +6,560.45 為準**，不能把單一 `u_conv3` 差異視為全部成本。Sequential Cells 增加 40 顆，無法單憑 Area Report 判斷究竟對應哪些 Bitmap／控制 FF；須查看 Netlist／RTL Diff。報告仍顯示 Top 的唯一 `u_shared_pe_array` 下五個 PE、`u_shared_quantizer` 與 `u_shared_ch_temp_buffer`，沒有新增第二組 PE 或另一個 Quantizer。
+
+**Area–Latency 取捨：** V9 相較 V8，Cell Area +1.31% 換得 Latency −5.39%；兩者的 *Cell Area × Clock×Cycles* 代理指標（固定 10 ns）約改善 **4.15%**。這是合成 Cell Area 與推算延遲的組合指標，**不是實測功率、能量或 Post-Route PPA**。**最低面積仍是 V7：498,037.52；最快則是 V9：29,481 cycles。**
+
+**驗證與追溯：**
+
+- [x] DC Area Report：`report_area(20261107-141247).log`，Design `lenet`、DC T-2022.03、`slow.db`，報告日期 2026-11-07 21:54:24，Macro／Black Box = 0。
+- [x] Golden：**PASS（使用者回報）**。
+- [x] 10 ns Timing：**PASS（使用者回報）**，原始 WNS/TNS／Critical Path 尚未附。
+- [x] Gate-Level Simulation：**PASS（使用者回報）**，原始 GLS／SDF Log 尚未附。
+- [x] Cycle Count：**29,481**，V8→V9 減少 **1,680**、V7→V9 減少 **2,016**。
+- [ ] 補存 V8／V9 的 `conv3.sv`、`lenet.sv`、CONV2→CONV3 寫 SRAM 路徑、Git Commit／Diff、固定 10 ns SDC、DC Script、WNS／TNS、Golden／GLS Log。
+- [ ] Directed Tests：全部零 Group、沒有零 Group、Group 0／49 零值、重跑不同 Pattern、CONV2 最後寫回與 CONV3 讀取前 Bitmap 完整性、Activation／Weight 的 Group Metadata 對齊；**規格有未公開的測試 Pattern，不能只以一張圖驗證通用性**。
+
+**結論：V9 通過使用者回報的 Golden／GLS／10 ns Timing，並在 +1.31% Area 的代價下把 V8 的 Cycle Count 再減少 5.39%；建議同時保留 V7（最低面積）、V8（FC1 Skipping 獨立實驗）與 V9（最低延遲）三個版本。**
+
 ## 3. 已進行的架構重構與資源共享
 
 | 編號 | 項目 | 目前設計 | 備註 |
@@ -567,6 +620,7 @@
 | **R-07** | **CONV2／FC2 共享 Channel PSUM Buffer** | **V6：Top 只建立一份 640-bit `u_shared_ch_temp_buffer`，兩層分時存取** | **OPT-06 Top Area −2.34% vs V5；Sequential Cells −640；Golden／10 ns Timing／GLS PASS，31,497 cycles（回報）** |
 | **R-08** | **四層 Shared ReLU + Quantizer** | **V7：CONV1／CONV2／CONV3／FC1 共用 Top 唯一 `u_shared_quantizer`；保留各自 Pooling／Result FF** | **OPT-07A Top Area −9.86% vs V6；Golden／10 ns Timing／GLS PASS，31,497 cycles（回報）** |
 | **R-09** | **FC1 Zero-Group Skipping** | **V8：15-bit Zero Bitmap + Next Nonzero Group Selector；Activation／Weight Group Index 同步跳轉** | **OPT-08A Cycles 31,497 → 31,161（−336，−1.07%）；Area +0.24% vs V7；Golden／10 ns Timing／GLS PASS（回報）** |
+| **R-10** | **CONV3 Zero-Group Skipping** | **V9：依 CONV2 寫回建立 CONV3 Group 非零資訊（設計方案）、CONV3 Group Selector 同步跳轉 Activation／Weight 位址** | **OPT-08B Cycles 31,161 → 29,481（−1,680，−5.39%）；Area +1.31% vs V8；Golden／10 ns Timing／GLS PASS（回報）** |
 
 > 注意：**程式重構完成 ≠ 已證實省面積**。R-01～R-04 缺乏重構前同條件的獨立對照，不可宣稱各自省多少；R-05～R-08 則分別有 V3B／V4、V4／V5、V5／V6 及 V6／V7 合成對照；跨階層搬移的 PE／Buffer 面積不能重複計算。
 
@@ -747,9 +801,17 @@ pe_window[r][c] = line_buffer[r][col+c];
 
 **狀態：V8 已完成合成與使用者回報的驗證。** Zero Bitmap + Next Nonzero Group Selector 讓 FC1 跳過整組全零的 8-bit Activation，並同步跳轉 Weight 地址；保守版仍執行 Group 0／14，保留原本 PSUM First／Last 邊界。根據本次 Golden，FC1 每個 Neuron 有 4 組可跳、84 個輸出，總共少發出 336 個 MAC Group。
 
-**量測結果：** Cycle Count **31,497 → 31,161（−336，−1.07%）**；Clock Target **10 ns PASS（回報）**；Top Cell Area **498,037.52 → 499,220.61（+1,183.09，+0.24%）**；Golden、GLS PASS（回報）。因為面積增加，**V7 仍為最低面積版本，V8 則是最少週期版本**。不同測試影像的 Zero Group 數量可能不同，不保證每次均省 336 cycles。
+**量測結果：** Cycle Count **31,497 → 31,161（−336，−1.07%）**；Clock Target **10 ns PASS（回報）**；Top Cell Area **498,037.52 → 499,220.61（+1,183.09，+0.24%）**；Golden、GLS PASS（回報）。因為面積增加，**V7 仍為最低面積版本；V8 是當時的最少週期版本（其後已由 V9 超越）**。不同測試影像的 Zero Group 數量可能不同，不保證每次均省 336 cycles。
 
 **注意：** OPT-08A 省的是有效 Group Issue，不只是讓 Activation=0 時乘法器輸出零；每次跳轉必須對齊 FC Buffer Activation、SRAM Weight Address、Group Index Pipeline 和 Valid。保留專案原本的 Output Register／量化拍點；保存 V7/V8 兩個 Git Tag，以利評估 Area–Latency 取捨。
+
+### OPT-08B：CONV3 Zero-Activation Group Skipping（V9）
+
+**狀態：V9 已合成與完成使用者回報的 Golden／10 ns Timing／GLS 驗證。** 依先前方案觀察 CONV2 寫出的 400 個 Activation（50 × 8-Byte Group）建立動態 Zero Bitmap；CONV3 Issue 端跳過中間全零 Group，並同步跳轉 Activation SRAM、Weight SRAM、Group Index Pipeline 與 Valid。保守版仍執行 Group 0／49 以維持 First／Last 條件；RTL Diff 與 Bitmap 實際寫入接法待補存。
+
+**結果：** V8→V9 Total Cell Area **499,220.61 → 505,781.06（+6,560.45，+1.31%）**；Cycle **31,161 → 29,481（−1,680，−5.39%）**；對 V7 的累計 Cycle 下降為 **2,016（−6.40%）**。Golden／10 ns Timing／Gate Sim **PASS（使用者回報）**。先前特定 Golden 預期可省 **14 × 120 = 1,680** 個 CONV3 MAC Group Issues，與實測 Cycle 差吻合；不同 Pattern 的效益不保證一致。
+
+**保留判斷：** V7 = 最低 Cell Area 498,037.52；V9 = 最低 Cycle 29,481；V8 = FC1 Skip 單獨對照。V9 並非 Cell Area 最佳，但 Area–Latency 取捨相較 V8 為正面。先保存已通過版本，再考慮是否移除強制執行的 Last Group、擴充 FC2 或針對面積成本重新最佳化；不要在同一輪混合多個改動。
 
 ## 5. 優先順序總覽
 
@@ -763,17 +825,18 @@ pe_window[r][c] = line_buffer[r][col+c];
 | 6 | **OPT-06** | **CONV2／FC2 共用 Channel PSUM Buffer** | **Shared 640-bit PSUM Storage + Pooling／Bias Read-Write MUX** | 中～高 | **V6 Area −2.34% vs V5；Sequential Cells −640；Golden／10 ns Timing／GLS 全 PASS；31,497 cycles（回報）** |
 | 7 | **OPT-07A** | **四層共用 ReLU + Quantization** | **Top PSUM／Scale MUX + 單一 `shared_quantizer.sv`** | 中～高 | **V7 Area −9.86% vs V6；Golden／10 ns Timing／GLS 全 PASS；31,497 cycles（回報）** |
 | 8 | **OPT-08A** | **FC1 8-Byte Zero-Group Skipping** | **Zero Bitmap、Group Selector、Activation/Weight Issue 同步** | 中～高 | **V8 Cycles −336（−1.07%）；Area +0.24% vs V7；Golden／10 ns Timing／GLS PASS（回報）** |
+| 9 | **OPT-08B** | **CONV3 8-Byte Zero-Group Skipping** | **CONV2 寫回非零資訊、CONV3 Issue／地址同步跳轉** | 中～高 | **V9 Cycles −1,680（−5.39% vs V8）；Area +1.31% vs V8；Golden／10 ns Timing／GLS PASS（回報）** |
 | 後續 | OPT-07B | Pooling Dataflow 評估 | CONV1 Sequential Pool vs CONV2 Parallel Pool | 高 | 尚未修改／量測 |
 
-> OPT-01、OPT-02、OPT-03B、OPT-04B、OPT-05、OPT-06、OPT-07A 均取得實測面積下降；OPT-03A 未顯著降低目標模組面積。**V7 是已驗證最低面積版本**：498,037.52（vs V0 −47.42%）；**V8 是已驗證最少週期版本**：31,161 cycles（vs V7 −336，−1.07%），但 Cell Area 為 499,220.61（vs V7 +0.24%）。OPT-07B 尚未實驗。
+> OPT-01、OPT-02、OPT-03B、OPT-04B、OPT-05、OPT-06、OPT-07A 均取得實測面積下降；OPT-03A 未顯著降低目標模組面積。**V7 為已驗證最低面積版本：498,037.52（vs V0 −47.42%）**；**V9 為已驗證最少週期版本：29,481 cycles（vs V8 −1,680，−5.39%；vs V7 −2,016，−6.40%）**，V9 Cell Area 為 505,781.06（vs V8 +1.31%）。OPT-07B 尚未實驗。
 
 ## 6. 每次實驗的量測紀錄
 
-**截至 V8 的成果：** V7 保持歷史最低 Cell Area **498,037.52（相較 V0 −47.42%）**；V8 以 **499,220.61（相較 V0 −47.30%；比 V7 +0.24%）** 換得 **31,161 cycles**（比 V7 的 31,497 少 336，−1.07%）。V7／V8 Golden／10 ns Timing／Gate Sim 全 PASS（使用者回報）。OPT-01～OPT-07A 的逐輪面積最佳化成果和 OPT-03A A/B 試驗保留於以下表格；OPT-08A 是首次以 Cycle Reduction 為主的實驗。
+**截至 V9 的成果：** V7 保持歷史最低 Cell Area **498,037.52（vs V0 −47.42%）**；V8 在 V7 上增加 FC1 Group Skip，Area **499,220.61**、**31,161 cycles**；V9 再加入 CONV3 Group Skip，Area **505,781.06**、**29,481 cycles**。V8→V9 **Cycle −1,680（−5.39%）／Area +6,560.45（+1.31%）**；V7／V8／V9 Golden／10 ns Timing／Gate Sim 全 PASS（使用者回報）。以下保留 OPT-01～OPT-07A 的逐輪面積實驗、OPT-03A 的 A/B 試驗，以及 OPT-08A／08B 的效能／面積取捨。
 
 > 以下比較可確認相同的 DC 版本與 `slow.db` Library，**完整 SDC、Clock Period、Synthesis Options 及同一組 Golden 的設定仍須由實驗版本紀錄核實**。沒有 Timing Report 時，只記錄「使用者確認 Timing PASS」，不要自行填寫 WNS。
 
-**Cycle Count：** 使用者確認 **V3B、V4、V5、V6、V7 均為 31,497 cycles**；V8 FC1 Zero-Group Skipping 後 **31,161 cycles**，少 **336 cycles**。早期歷史版本的逐份原始 Cycle Logs 仍待補。
+**Cycle Count：** 使用者確認 **V3B、V4、V5、V6、V7 均為 31,497 cycles**；V8 FC1 Group Skip 降到 **31,161**（−336）；V9 再增加 CONV3 Group Skip 降到 **29,481**（相較 V8 −1,680；較 V7 累計 −2,016）。各輪原始 Simulation Cycle Logs 待歸檔。
 
 | Version | 主要改動 | RTL / Golden | Clock | WNS (ns) | Total Cell Area | Area Δ vs Baseline | Cycle Count | 備註 |
 |---|---|---|---|---|---:|---:|---|---|
@@ -788,7 +851,8 @@ pe_window[r][c] = line_buffer[r][col+c];
 | **V6** | **OPT-06：CONV2／FC2 共用 640-bit Channel PSUM Buffer** | **Golden／GLS PASS（回報）** | **10 ns / PASS（回報）** | 待補 | **552,503.69** | **−41.67%（−394,738.86）** | **31,497** | **`report_area(9).log`；V5→V6 Top −2.34%；Sequential Cells −640；`u_shared_ch_temp_buffer` 57,930.56；全數驗證通過（回報）** |
 | **V7** | **OPT-07A：四層 Shared ReLU + Quantizer** | **Golden／GLS PASS（回報）** | **10 ns / PASS（回報）** | 待補 | **498,037.52** | **−47.42%（−449,205.03）** | **31,497** | **`report_area(10).log`；V6→V7 Top −9.86%；`u_shared_quantizer` 51,470.26；Combinational Area −54,883.73；全數驗證通過（回報）** |
 
-| **V8** | **OPT-08A：FC1 Zero-Activation Group Skipping** | **Golden／GLS PASS（回報）** | **10 ns / PASS（回報）** | 待補 | **499,220.61** | **−47.30%（−448,021.94）** | **31,161** | **`report_area(20261107-092431).log`；V7→V8 Area +0.24%；Cycles −336（−1.07%）；目前 Speed 最佳、但不是 Area 最低版本** |
+| **V8** | **OPT-08A：FC1 Zero-Activation Group Skipping** | **Golden／GLS PASS（回報）** | **10 ns / PASS（回報）** | 待補 | **499,220.61** | **−47.30%（−448,021.94）** | **31,161** | **`report_area(20261107-092431).log`；V7→V8 Area +0.24%；Cycles −336（−1.07%）；V8 當時 Speed 最佳，後續被 V9 超越** |
+| **V9** | **OPT-08B：CONV3 Zero-Activation Group Skipping** | **Golden／GLS PASS（回報）** | **10 ns / PASS（回報）** | 待補 | **505,781.06** | **−46.60%（−441,461.49）** | **29,481** | **`report_area(20261107-141247).log`；V8→V9 Area +1.31%，Cycles −1,680（−5.39%）；最新 Speed 最佳** |
 
 ### 2026-11-05 — OPT-01 實驗紀錄（V1）
 
@@ -965,6 +1029,19 @@ pe_window[r][c] = line_buffer[r][col+c];
 - **Golden / GLS / Timing：** **Golden PASS、Gate-Level Simulation PASS、10 ns Timing PASS（使用者回報）**；WNS/TNS、原始 Log 與 SDF Details 待歸檔。
 - **保留判斷：** **V7 = Area 最佳（498,037.52）**；**V8 = Cycle 最佳（31,161 cycles，Area +0.24%）**。本次 Golden 的四組全零 FC1 Group 是特定圖樣的結果；請保留通用動態 Bitmap 機制並測試其他 Pattern。
 
+### 2026-11-07 — OPT-08B CONV3 Zero-Group Skipping 合成與完整驗證紀錄（V9）
+
+- **變更定位：** 在 V8 的 FC1 Zero-Group Skipping 之上增加 CONV3 動態 Group Zero Detection 與 Group Issue 跳轉。依前輪方案，CONV2 SRAM 寫回期間建立 Group Bitmap，CONV3 跳過中間全零 Group，但保留 Group 0 和 49；精確 RTL 差異仍需歸檔確認。
+- **DC 報告：** `report_area(20261107-141247).log`，2026-11-07 21:54:24；DC T-2022.03、`slow.db`、Design `lenet`。
+- **Total Cell Area：** **505,781.059212**；相較 V8 **+6,560.450985（+1.31%）**；相較 V0 仍 **−441,461.49（−46.60%）**；相較 V7 Area 最低值 **+7,743.54（+1.55%）**。
+- **Combinational／Noncombinational：** **311,786.92／193,994.14**，相較 V8 分別 **+5,358.69／+1,201.76**。
+- **Cell Count：** Total **32,046（+475）**，Sequential **5,995（+40）**，Combinational **25,250（+477）**。
+- **主要階層：** `u_conv3` **26,116.20（+2,591.93）**；`u_shared_pe_array` **69,987.20**（五個 PE），`u_shared_quantizer` **52,680.51**；新控制成本與其餘重新映射均反映於整體 +6,560.45。
+- **Golden／10 ns Timing／GLS：** **全部 PASS（使用者 2026-11-07 回報）**；原始 Log、WNS／TNS、SDF 設定待歸檔。
+- **Cycle Count：** **29,481**（V8 31,161 → V9 −1,680，−5.39%；V7 31,497 → V9 −2,016，−6.40%）。對固定 10 ns，V8→V9 **311.61 → 294.81 µs**。
+- **效益來源與限制：** 特定 Golden 下 CONV3 估計有 14 個可跳過的中間全零 Group，120 Neurons 共 **1,680** 個 Issue；Cycle 差一致，但其他 Pattern 可能不同。不能以固定 Zero Group Index 或只針對單一 Golden 做硬體最佳化。
+- **判斷：** **保留 V9 作為目前最快已回報全驗證版本。** 其面積仍比 V7 最小值大，請分別保留 V7（Area）、V8（FC1 Skipping 單獨實驗）與 V9（Speed）三個 Commit／Tags。
+
 ### V3B 功能／時序／Gate-Level 驗證摘要（使用者回報）
 
 | 驗證項目 | V3B 結果 | 證據狀態 |
@@ -1014,7 +1091,7 @@ pe_window[r][c] = line_buffer[r][col+c];
 
 ## 9. 重要備註
 
-- **已取得 V0、V1、V2、V2.1、V3A、V3B、V4、V5、V6、V7、V8 Area Reports**：V1 對 V0 −8.51%；V2 對 V1 −12.42%；V2.1 對 V2 +0.083%；V3A 對 V2.1 −0.041%；V3B 對 V3A −7.92%；V4 對 V3B −8.94%；V5 對 V4 −11.13%；V6 對 V5 −2.34%；V7 對 V6 −9.86%；**V8 對 V7 +0.24% Area、−1.07% Cycles**。**V7 為面積最低（498,037.52）、V8 為週期最低（31,161）**，V7／V8 的 Golden／10 ns Timing／GLS 均 PASS（使用者回報）；原始 WNS／TNS／GLS Logs 仍待歸檔。
+- **已取得 V0、V1、V2、V2.1、V3A、V3B、V4、V5、V6、V7、V8、V9 Area Reports**：V1 對 V0 −8.51%；V2 對 V1 −12.42%；V2.1 對 V2 +0.083%；V3A 對 V2.1 −0.041%；V3B 對 V3A −7.92%；V4 對 V3B −8.94%；V5 對 V4 −11.13%；V6 對 V5 −2.34%；V7 對 V6 −9.86%；**V8 對 V7 +0.24% Area、−1.07% Cycles；V9 對 V8 +1.31% Area、−5.39% Cycles**。**V7 為面積最低（498,037.52）、V9 為週期最低（29,481）**，V7／V8／V9 的 Golden／10 ns Timing／GLS 均 PASS（使用者回報）；原始 WNS／TNS／GLS Logs 仍待歸檔。
 - V0 `report_area.log` 顯示 CONV2 四個大型量化乘法器；V1 `report_area(1).log` 的相關大型 Multiplier 變為一個，且有三個 Comparator。**實際節省的是 Top Total Area 80,650.26**；不要把單一 Multiplier 的 Hierarchical Area 當作節省量。
 - V2～V3B 面積結果證實 **FC Buffer 動態 Byte Index 是主要面積瓶頸之一**：Banked Read 後 `u_fc_buffer` Combinational Area 下降 80.65%。**V3A Static Write Decoder 沒有減少 Shared Line Buffer 的面積；V3B 的 Window Read MUX 最佳化則使 Shared Line Buffer Combinational Area 下降 54.27%**。V3B 整體 Golden 和 GLS 已 PASS（使用者回報）；若需要更嚴謹的模組級證據，可額外保存 Chunk 邊界、`row_sel` 與 Valid / SRAM 對齊的 Directed Tests。
 - `shared_line_buffer` 和 `shared_weight_buffer` 已是共用實體；再次「抽 Module」本身不會再省面積，要最佳化的是實際綜合後的 Decoder、MUX、Register 及 Datapath。
@@ -1026,4 +1103,4 @@ pe_window[r][c] = line_buffer[r][col+c];
 
 ---
 
-**資料來源：** V0 `report_area.log`（2026-11-05 00:32:10）、V1 `report_area(1).log`（01:34:17）、V2 `report_area(2).log`（09:53:06）、V2.1 `report_area(3).log`（20:12:46）、V3A `report_area(5).log`（23:08:12）、V3B `report_area(6).log`（2026-11-06 14:18:01）、V4 `report_area(7).log`（2026-11-06 21:26:12）、V5 `report_area(8).log`（2026-11-06 22:44:44）、V6 `report_area(9).log`（2026-11-06 23:54:47）、**V7 `report_area(10).log`（2026-11-07 11:13:57）、V8 `report_area(20261107-092431).log`（2026-11-07 17:21:43）**；先前 RTL 修改討論及使用者回報的 Simulation／Timing 狀態。另 `report_area(4).log` 為不同階層設計結果，不納入同架構比較。**V3B／V4／V5／V6／V7 的 Cycle Count 均為 31,497；V8 為 31,161（−336）。V7／V8 均回報 Golden／10 ns Timing／GLS PASS；V7 歷史最低 Area 498,037.52，V8 最少 Cycle 31,161。原始驗證 Log、WNS／TNS 與 SDC 待歸檔。**
+**資料來源：** V0 `report_area.log`（2026-11-05 00:32:10）、V1 `report_area(1).log`（01:34:17）、V2 `report_area(2).log`（09:53:06）、V2.1 `report_area(3).log`（20:12:46）、V3A `report_area(5).log`（23:08:12）、V3B `report_area(6).log`（2026-11-06 14:18:01）、V4 `report_area(7).log`（2026-11-06 21:26:12）、V5 `report_area(8).log`（2026-11-06 22:44:44）、V6 `report_area(9).log`（2026-11-06 23:54:47）、V7 `report_area(10).log`（2026-11-07 11:13:57）、V8 `report_area(20261107-092431).log`（2026-11-07 17:21:43）、**V9 `report_area(20261107-141247).log`（2026-11-07 21:54:24）**；先前 RTL 修改討論及使用者回報的模擬／Timing 狀態。`report_area(4).log` 屬不同階層設計，不納入同架構比較。**V7 最低 Cell Area 為 498,037.52；V9 最少 Cycle 為 29,481（較 V8 −1,680、較 V7 −2,016），Area 505,781.06；V7／V8／V9 Golden／10 ns Timing／GLS 全 PASS（使用者回報）。** 未提供完整 SDC、實際 WNS／TNS、GLS／Golden 原始 Log、Power 或 Post-Route PPA。

@@ -2,13 +2,13 @@
 ****************************************
 check_design summary:
 Version:     T-2022.03
-Date:        Sat Nov  7 17:17:22 2026
+Date:        Sat Nov  7 21:49:43 2026
 ****************************************
 
                    Name                                            Total
 --------------------------------------------------------------------------------
-Inputs/Outputs                                                   1939
-    Unconnected ports (LINT-28)                                  1870
+Inputs/Outputs                                                   1941
+    Unconnected ports (LINT-28)                                  1872
     Shorted outputs (LINT-31)                                      61
     Constant outputs (LINT-52)                                      8
 
@@ -17,6 +17,7 @@ Cells                                                             124
     Connected to power or ground (LINT-32)                          5
 --------------------------------------------------------------------------------
 
+Warning: In design 'lenet', cell 'B_50' does not drive any nets. (LINT-1)
 Warning: In design 'conv1', cell 'C2664' does not drive any nets. (LINT-1)
 Warning: In design 'conv1', cell 'C2670' does not drive any nets. (LINT-1)
 Warning: In design 'conv1', cell 'C2676' does not drive any nets. (LINT-1)
@@ -42,14 +43,13 @@ Warning: In design 'conv2', cell 'C2608' does not drive any nets. (LINT-1)
 Warning: In design 'conv2', cell 'C2641' does not drive any nets. (LINT-1)
 Warning: In design 'conv2', cell 'C2654' does not drive any nets. (LINT-1)
 Warning: In design 'shared_weight_buffer', cell 'C1680' does not drive any nets. (LINT-1)
-Warning: In design 'conv3', cell 'C2148' does not drive any nets. (LINT-1)
-Warning: In design 'conv3', cell 'C2152' does not drive any nets. (LINT-1)
-Warning: In design 'conv3', cell 'C2161' does not drive any nets. (LINT-1)
-Warning: In design 'conv3', cell 'C2165' does not drive any nets. (LINT-1)
-Warning: In design 'conv3', cell 'C2174' does not drive any nets. (LINT-1)
-Warning: In design 'conv3', cell 'B_11' does not drive any nets. (LINT-1)
-Warning: In design 'conv3', cell 'C2191' does not drive any nets. (LINT-1)
-Warning: In design 'conv3', cell 'C2195' does not drive any nets. (LINT-1)
+Warning: In design 'conv3', cell 'C2787' does not drive any nets. (LINT-1)
+Warning: In design 'conv3', cell 'C2791' does not drive any nets. (LINT-1)
+Warning: In design 'conv3', cell 'C3045' does not drive any nets. (LINT-1)
+Warning: In design 'conv3', cell 'C3049' does not drive any nets. (LINT-1)
+Warning: In design 'conv3', cell 'B_60' does not drive any nets. (LINT-1)
+Warning: In design 'conv3', cell 'C3067' does not drive any nets. (LINT-1)
+Warning: In design 'conv3', cell 'C3071' does not drive any nets. (LINT-1)
 Warning: In design 'fc_buffer', cell 'C11300' does not drive any nets. (LINT-1)
 Warning: In design 'fc_buffer', cell 'C11317' does not drive any nets. (LINT-1)
 Warning: In design 'fc_buffer', cell 'C11332' does not drive any nets. (LINT-1)
@@ -1324,6 +1324,8 @@ Warning: In design 'conv3', port 'shared_pe_result[4][3]' is not connected to an
 Warning: In design 'conv3', port 'shared_pe_result[4][2]' is not connected to any nets. (LINT-28)
 Warning: In design 'conv3', port 'shared_pe_result[4][1]' is not connected to any nets. (LINT-28)
 Warning: In design 'conv3', port 'shared_pe_result[4][0]' is not connected to any nets. (LINT-28)
+Warning: In design 'conv3', port 'conv3_group_nonzero[49]' is not connected to any nets. (LINT-28)
+Warning: In design 'conv3', port 'conv3_group_nonzero[0]' is not connected to any nets. (LINT-28)
 Warning: In design 'fc1', port 'sram_act_rdata0[31]' is not connected to any nets. (LINT-28)
 Warning: In design 'fc1', port 'sram_act_rdata0[30]' is not connected to any nets. (LINT-28)
 Warning: In design 'fc1', port 'sram_act_rdata0[29]' is not connected to any nets. (LINT-28)

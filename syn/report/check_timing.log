@@ -16,6 +16,7 @@ End point
 ---------------
 u_conv2/sram_act_addr1_reg[2]/next_state
 u_conv2/sram_act_addr1_reg[11]/next_state
+u_conv3/sram_act_addr1_reg[8]/next_state
 u_conv3/sram_act_addr1_reg[9]/next_state
 u_conv3/sram_act_addr1_reg[10]/next_state
 u_conv3/sram_weight_addr0_reg[0]/next_state
