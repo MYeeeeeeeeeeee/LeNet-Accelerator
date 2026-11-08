@@ -2,7 +2,7 @@
 // Combinational only. Per-layer pipeline FFs stay inside conv1.sv/conv2.sv.
 module shared_pe_array #(
     parameter int INPUT_WIDTH  = 8,
-    parameter int OUTPUT_WIDTH = 20
+    parameter int OUTPUT_WIDTH = 18
 ) (
     input  logic signed [4:0][INPUT_WIDTH-1:0] weight     [0:4],
     input  logic        [4:0][INPUT_WIDTH-1:0] activation [0:4],

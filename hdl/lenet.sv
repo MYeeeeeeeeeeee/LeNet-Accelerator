@@ -34,6 +34,7 @@ module lenet (
     output logic [31:0] sram_act_wdata1,
     input  logic [31:0] sram_act_rdata1
 );
+    parameter int TOP_PE_OUTPUT_WIDTH = 20;
     // ------------------------------------------------------------------------
     // Network controller
     // ------------------------------------------------------------------------
@@ -194,7 +195,7 @@ module lenet (
     //  shared physical PE array  
     logic c1_pe_req, c2_pe_req, c3_pe_req, fc1_pe_req, fc2_pe_req;
     logic shared_pe_valid;
-    logic signed [19:0] shared_pe_result[0:4];
+    logic signed [TOP_PE_OUTPUT_WIDTH-1:0] shared_pe_result[0:4];
     logic [4:0][7:0] pe_act_mux[0:4];
     logic signed [4:0][7:0] pe_weight_mux[0:4];
 
@@ -351,7 +352,12 @@ module lenet (
     end
 
 
-    conv1 u_conv1 (
+
+
+    conv1 #(
+        .PE_OUTPUT_WIDTH(TOP_PE_OUTPUT_WIDTH)
+    ) u_conv1       
+    (
         .clk(clk),
         .rst_n(rst_n),
         .enable(conv1_enable),
@@ -400,7 +406,9 @@ module lenet (
         .shared_quant_result(shared_quant_result)
     );
 
-    conv2 u_conv2 (
+    conv2 #(
+        .PE_OUTPUT_WIDTH(TOP_PE_OUTPUT_WIDTH)
+    ) u_conv2 (
         .clk(clk),
         .rst_n(rst_n),
         .enable(conv2_enable),
@@ -467,7 +475,7 @@ module lenet (
     // Exactly one shared array. No local PE instances inside CONV1/CONV2.
     shared_pe_array #(
         .INPUT_WIDTH (8),
-        .OUTPUT_WIDTH(20)
+        .OUTPUT_WIDTH(TOP_PE_OUTPUT_WIDTH)
     ) u_shared_pe_array (
         .weight(pe_weight_mux),
         .activation(pe_act_mux),
@@ -534,7 +542,10 @@ module lenet (
     end : conv3_zero_bitmap_ff
 
 
-    conv3 u_conv3 (
+
+    conv3 #(
+        .PE_OUTPUT_WIDTH(TOP_PE_OUTPUT_WIDTH)
+    ) u_conv3 (
         .clk(clk),
         .rst_n(rst_n),
         .enable(conv3_enable),
@@ -604,7 +615,9 @@ module lenet (
 
     );
 
-    fc1 u_fc1 (
+    fc1 #(
+        .PE_OUTPUT_WIDTH(TOP_PE_OUTPUT_WIDTH)
+    ) u_fc1 (
         .clk(clk),
         .rst_n(rst_n),
         .enable(fc1_enable),
@@ -673,7 +686,9 @@ module lenet (
         .reload_wstrb(reload_fc_wstrb)
     );
 
-    fc2 u_fc2 (
+    fc2 #(
+        .PE_OUTPUT_WIDTH(TOP_PE_OUTPUT_WIDTH)
+    ) u_fc2 (
         .clk(clk),
         .rst_n(rst_n),
         .enable(fc2_enable),

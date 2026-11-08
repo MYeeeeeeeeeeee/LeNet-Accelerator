@@ -8,7 +8,7 @@ Report : power
         -analysis_effort low
 Design : lenet
 Version: T-2022.03
-Date   : Sat Nov  7 21:54:26 2026
+Date   : Sun Nov  8 22:45:43 2026
 ****************************************
 
 
@@ -47,33 +47,37 @@ lenet                                     0.385   12.948 4.62e+08   13.795 100.0
                                        1.11e-03 1.06e-02 2.08e+06 1.38e-02   0.1
     add_68 (shared_ch_temp_buffer_DW01_add_0)
                                        1.15e-03 1.20e-02 2.44e+06 1.56e-02   0.1
-  u_fc2 (fc2)                          1.84e-02    1.053 2.37e+07    1.095   7.9
-    add_157 (fc2_DW01_inc_3_DW01_inc_17)
+  u_fc2 (fc2_PE_OUTPUT_WIDTH20)        1.84e-02    1.053 2.37e+07    1.095   7.9
+    add_159 (fc2_PE_OUTPUT_WIDTH20_DW01_inc_3_DW01_inc_17)
                                        8.64e-08 7.10e-07 3.19e+05 3.19e-04   0.0
-    add_394 (fc2_DW01_add_1_DW01_add_4)
+    add_396 (fc2_PE_OUTPUT_WIDTH20_DW01_add_1_DW01_add_4)
                                        8.71e-06 2.00e-05 9.58e+05 9.87e-04   0.0
-    add_396 (fc2_DW01_add_0_DW01_add_3)
+    add_398 (fc2_PE_OUTPUT_WIDTH20_DW01_add_0_DW01_add_3)
                                        9.80e-06 2.53e-05 2.35e+06 2.39e-03   0.0
-    add_437 (fc2_DW01_inc_0_DW01_inc_14)
+    add_439 (fc2_PE_OUTPUT_WIDTH20_DW01_inc_0_DW01_inc_14)
                                        3.55e-08 1.02e-07 1.39e+05 1.39e-04   0.0
   u_reload_controller (reload_controller)
                                        6.76e-03    0.506 8.93e+06    0.521   3.8
     add_94 (reload_controller_DW01_inc_0_DW01_inc_18)
                                        1.28e-07 6.59e-07 3.19e+05 3.19e-04   0.0
-  u_fc1 (fc1)                          1.45e-02    1.129 2.70e+07    1.171   8.5
-    add_341 (fc1_DW01_add_9)           1.26e-05 2.11e-05 1.02e+06 1.05e-03   0.0
-    add_339 (fc1_DW01_add_8)              0.000    0.000 6.17e+05 6.17e-04   0.0
-    add_140 (fc1_DW01_inc_2_DW01_inc_21)
+  u_fc1 (fc1_PE_OUTPUT_WIDTH20)        1.45e-02    1.129 2.70e+07    1.171   8.5
+    add_343 (fc1_PE_OUTPUT_WIDTH20_DW01_add_9)
+                                       1.26e-05 2.11e-05 1.02e+06 1.05e-03   0.0
+    add_341 (fc1_PE_OUTPUT_WIDTH20_DW01_add_8)
+                                          0.000    0.000 6.17e+05 6.17e-04   0.0
+    add_142 (fc1_PE_OUTPUT_WIDTH20_DW01_inc_2_DW01_inc_21)
                                        8.44e-08 7.67e-08 3.19e+05 3.19e-04   0.0
-    add_377 (fc1_DW01_inc_0_DW01_inc_19)
+    add_379 (fc1_PE_OUTPUT_WIDTH20_DW01_inc_0_DW01_inc_19)
                                        8.44e-08 8.30e-08 1.39e+05 1.39e-04   0.0
   u_fc_buffer (fc_buffer)              2.44e-02    1.972 3.68e+07    2.033  14.7
-  u_conv3 (conv3)                      1.22e-02    0.982 2.60e+07    1.021   7.4
-    add_342 (conv3_DW01_add_11)        1.21e-05 2.05e-05 1.03e+06 1.07e-03   0.0
-    add_332 (conv3_DW01_add_10)           0.000    0.000 6.07e+05 6.07e-04   0.0
-    add_175 (conv3_DW01_inc_2_DW01_inc_24)
+  u_conv3 (conv3_PE_OUTPUT_WIDTH20)    1.22e-02    0.982 2.60e+07    1.021   7.4
+    add_344 (conv3_PE_OUTPUT_WIDTH20_DW01_add_11)
+                                       1.21e-05 2.05e-05 1.03e+06 1.07e-03   0.0
+    add_334 (conv3_PE_OUTPUT_WIDTH20_DW01_add_10)
+                                          0.000    0.000 6.07e+05 6.07e-04   0.0
+    add_177 (conv3_PE_OUTPUT_WIDTH20_DW01_inc_2_DW01_inc_24)
                                        2.43e-07 6.14e-07 3.19e+05 3.20e-04   0.0
-    add_377 (conv3_DW01_inc_0_DW01_inc_22)
+    add_379 (conv3_PE_OUTPUT_WIDTH20_DW01_inc_0_DW01_inc_22)
                                        8.44e-08 8.32e-08 1.19e+05 1.19e-04   0.0
   u_shared_weight_buffer (shared_weight_buffer)
                                        7.94e-03    0.414 7.39e+06    0.429   3.1
@@ -181,29 +185,32 @@ lenet                                     0.385   12.948 4.62e+08   13.795 100.0
                                        2.95e-04 1.38e-03 9.83e+05 2.66e-03   0.0
       add_0_root_add_35_4 (PE_INPUT_WIDTH8_OUTPUT_WIDTH20_4_DW01_add_0_DW01_add_28)
                                        1.88e-04 1.84e-03 1.09e+06 3.11e-03   0.0
-  u_conv2 (conv2)                      1.14e-02    0.904 2.62e+07    0.942   6.8
-    gt_560 (conv2_DW_cmp_6)               0.000    0.000 3.72e+05 3.72e-04   0.0
-    gt_562 (conv2_DW_cmp_5)               0.000    0.000 3.40e+05 3.40e-04   0.0
-    gt_564 (conv2_DW_cmp_4)               0.000    0.000 3.24e+05 3.24e-04   0.0
-    add_0_root_add_0_root_add_512_4 (conv2_DW01_add_5_DW01_add_40)
+  u_conv2 (conv2_PE_OUTPUT_WIDTH20)    1.14e-02    0.904 2.62e+07    0.942   6.8
+    gt_562 (conv2_PE_OUTPUT_WIDTH20_DW_cmp_6)
+                                          0.000    0.000 3.72e+05 3.72e-04   0.0
+    gt_564 (conv2_PE_OUTPUT_WIDTH20_DW_cmp_5)
+                                          0.000    0.000 3.40e+05 3.40e-04   0.0
+    gt_566 (conv2_PE_OUTPUT_WIDTH20_DW_cmp_4)
+                                          0.000    0.000 3.24e+05 3.24e-04   0.0
+    add_0_root_add_0_root_add_514_4 (conv2_PE_OUTPUT_WIDTH20_DW01_add_5_DW01_add_40)
                                           0.000    0.000 1.01e+06 1.01e-03   0.0
-    add_1_root_add_0_root_add_512_4 (conv2_DW01_add_6_DW01_add_41)
+    add_1_root_add_0_root_add_514_4 (conv2_PE_OUTPUT_WIDTH20_DW01_add_6_DW01_add_41)
                                        1.25e-07 6.99e-08 9.66e+05 9.66e-04   0.0
-    add_2_root_add_0_root_add_512_4 (conv2_DW01_add_7_DW01_add_42)
+    add_2_root_add_0_root_add_514_4 (conv2_PE_OUTPUT_WIDTH20_DW01_add_7_DW01_add_42)
                                        1.97e-07 1.42e-07 1.00e+06 1.00e-03   0.0
-    add_3_root_add_0_root_add_512_4 (conv2_DW01_add_8_DW01_add_43)
+    add_3_root_add_0_root_add_514_4 (conv2_PE_OUTPUT_WIDTH20_DW01_add_8_DW01_add_43)
                                        1.97e-07 1.42e-07 9.45e+05 9.45e-04   0.0
-    add_286 (conv2_DW01_inc_3_DW01_inc_28)
+    add_288 (conv2_PE_OUTPUT_WIDTH20_DW01_inc_3_DW01_inc_28)
                                        3.55e-08 7.57e-08 3.19e+05 3.19e-04   0.0
-  u_conv1 (conv1)                      1.65e-02    0.924 2.34e+07    0.964   7.0
-    add_0_root_add_0_root_add_472_4 (conv1_DW01_add_16)
+  u_conv1 (conv1_PE_OUTPUT_WIDTH20)    1.65e-02    0.924 2.34e+07    0.964   7.0
+    add_0_root_add_0_root_add_474_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_16)
                                        2.54e-04 3.29e-04 7.33e+05 1.32e-03   0.0
-    add_1_root_add_0_root_add_472_4 (conv1_DW01_add_14)
+    add_1_root_add_0_root_add_474_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_14)
                                        2.85e-04 3.18e-04 6.21e+05 1.22e-03   0.0
-    add_2_root_add_0_root_add_472_4 (conv1_DW01_add_13)
+    add_2_root_add_0_root_add_474_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_13)
                                        2.97e-04 3.28e-04 6.43e+05 1.27e-03   0.0
-    add_3_root_add_0_root_add_472_4 (conv1_DW01_add_11_DW01_add_52)
+    add_3_root_add_0_root_add_474_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_11_DW01_add_52)
                                        1.34e-04 1.06e-03 2.35e+06 3.55e-03   0.0
-    add_252 (conv1_DW01_inc_2_DW01_inc_31)
+    add_254 (conv1_PE_OUTPUT_WIDTH20_DW01_inc_2_DW01_inc_31)
                                        1.33e-07 5.73e-07 3.19e+05 3.19e-04   0.0
 1

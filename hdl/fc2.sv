@@ -1,6 +1,8 @@
 // Read/write arbitration and packing retained.
 // "enable" is a LEVEL while Top is in FC2, not an additional start pulse.
-module fc2 (
+module fc2#(
+    parameter PE_OUTPUT_WIDTH = 18
+) (
     // FC2 control and completion handshake.
     input  logic        clk,
     input  logic        rst_n,
@@ -42,7 +44,7 @@ module fc2 (
     // PE interface for FC2 activation-vector and result return.
     output logic [63:0] pe_act_vec,
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4],
+    input logic signed [PE_OUTPUT_WIDTH-1:0] shared_pe_result[0:4],
 
 
     // Shared Channel PSUM Buffer

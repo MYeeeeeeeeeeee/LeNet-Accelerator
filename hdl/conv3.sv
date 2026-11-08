@@ -1,6 +1,8 @@
 // Read/write arbitration and packing retained.
 // "enable" is a LEVEL while Top is in CONV3, not an additional start pulse.
-module conv3 (
+module conv3 #(
+    parameter PE_OUTPUT_WIDTH = 18
+) (
     input  logic        clk,
     input  logic        rst_n,
     input  logic        enable,
@@ -42,7 +44,7 @@ module conv3 (
     input logic signed [4:0][7:0] shared_weight[0:4],
 
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4],
+    input logic signed [PE_OUTPUT_WIDTH-1:0] shared_pe_result[0:4],
 
     output logic signed [31:0] quant_psum,
     output logic        [31:0] quant_scale,

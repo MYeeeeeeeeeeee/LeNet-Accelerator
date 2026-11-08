@@ -1,6 +1,8 @@
 // Read/write arbitration and packing retained.
 // "enable" is a LEVEL while Top is in FC1, not an additional start pulse.
-module fc1 (
+module fc1#(
+    parameter PE_OUTPUT_WIDTH = 18
+) (
     // FC1 control and completion handshake.
     input  logic        clk,
     input  logic        rst_n,
@@ -47,7 +49,7 @@ module fc1 (
     // PE interface for FC1 activation-vector and result return.
     output logic [63:0] pe_act_vec,
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4],
+    input logic signed [PE_OUTPUT_WIDTH-1:0] shared_pe_result[0:4],
 
     output logic signed [31:0] quant_psum,
     output logic        [31:0] quant_scale,

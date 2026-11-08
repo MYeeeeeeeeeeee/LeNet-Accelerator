@@ -1,6 +1,8 @@
 // Existing pipeline, read/write arbitration, packing and SRAM timing retained.
 // "enable" is a LEVEL while Top is in CONV2, not an additional start pulse.
-module conv2 (
+module conv2 #(
+    parameter PE_OUTPUT_WIDTH = 18
+) (
     input  logic        clk,
     input  logic        rst_n,
     input  logic        enable,
@@ -50,7 +52,7 @@ module conv2 (
 
     // request shared CONV1/CONV2 combinational PE array.
     output logic pe_req,
-    input logic signed [19:0] shared_pe_result[0:4],
+    input logic signed [PE_OUTPUT_WIDTH-1:0] shared_pe_result[0:4],
 
     // Shared Channel PSUM Buffer
     output logic               conv2_update_valid,

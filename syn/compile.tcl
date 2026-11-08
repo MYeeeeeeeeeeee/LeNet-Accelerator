@@ -32,8 +32,8 @@ set case_analysis_with_logic_constants true
 set_fix_multiple_port_nets -all -buffer_constants [get_designs * -h]
 
 # check design
-check_design > report/check_design.log
-check_timing > report/check_timing.log
+check_design > report/pre_check_design.log
+check_timing > report/pre_check_timing.log
 
 set_clock_gating_style -max_fanout 10
 
@@ -42,6 +42,10 @@ compile
 # remove dummy ports
 remove_unconnected_ports [get_cells -hierarchical *]
 remove_unconnected_ports [get_cells -hierarchical *] -blast_buses
+
+# check design
+check_design > report/post_check_design.log
+check_timing > report/post_check_timing.log
 
 # Netlist files
 write -format ddc -hierarchy -output netlist/lenet_syn.ddc

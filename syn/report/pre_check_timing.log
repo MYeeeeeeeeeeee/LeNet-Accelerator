@@ -1,0 +1,32 @@
+Information: Checking out the license 'DesignWare'. (SEC-104)
+Information: Updating design information... (UID-85)
+Warning: Design 'lenet' contains 13 high-fanout nets. A fanout number of 1000 will be used for delay calculations involving these nets. (TIM-134)
+
+Information: Checking generated_clocks...
+
+Information: Checking loops...
+
+Information: Checking no_input_delay...
+
+Information: Checking unconstrained_endpoints...
+
+Warning: The following end-points are not constrained for maximum delay.
+
+End point
+---------------
+u_conv2/sram_act_addr1_reg[2]/next_state
+u_conv2/sram_act_addr1_reg[11]/next_state
+u_conv3/sram_act_addr1_reg[8]/next_state
+u_conv3/sram_act_addr1_reg[9]/next_state
+u_conv3/sram_act_addr1_reg[10]/next_state
+u_conv3/sram_weight_addr0_reg[0]/next_state
+u_conv3/sram_weight_addr1_reg[0]/next_state
+u_fc1/sram_weight_addr0_reg[0]/next_state
+u_fc1/sram_weight_addr1_reg[0]/next_state
+
+Information: Checking pulse_clock_cell_type...
+
+Information: Checking no_driving_cell...
+
+Information: Checking partial_input_delay...
+1
