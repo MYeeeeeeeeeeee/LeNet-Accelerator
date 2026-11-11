@@ -84,7 +84,7 @@ module shared_line_buffer (
     endgenerate
 
 
-    // OPT-03B: Banked Window Read
+    // Banked Window Read
     // Valid col range: 0 ~ 27
     // 6 candidate rows, each outputting 5 bytes.
 

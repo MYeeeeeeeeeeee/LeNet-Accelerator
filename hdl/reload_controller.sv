@@ -5,8 +5,8 @@ module reload_controller (
 
     output logic        reload_we,
     output logic [ 6:0] reload_waddr,
-    output logic [63:0] reload_wdata,  // 兩個 SRAM Port 組成的 64-bit 資料
-    output logic [ 7:0] reload_wstrb,  // 8-bit Byte Enable，最後一組只啟用低四個 Bytes
+    output logic [63:0] reload_wdata,  // combine two 32-bit SRAM Port data 
+    output logic [ 7:0] reload_wstrb,  // 8-bit Byte Enable，last group only enable low four Bytes 
     output logic        reload_done,
 
 

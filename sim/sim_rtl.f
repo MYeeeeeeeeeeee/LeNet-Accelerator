@@ -1,6 +1,7 @@
 # Testbench
-lenet_tb.v
-#conv1_only_tb.sv
+tb_top.sv
+test.sv
+lenet_if.sv
 # SRAM behavior model
 sram_model/SRAM_activation_1024x32b.v
 sram_model/SRAM_weight_16384x32b.v

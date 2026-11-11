@@ -1,1 +1,7 @@
-vcs -sverilog -f sim_rtl.f -debug_access+all -R -kdb -licwait 5
+vcs -R -full64 -sverilog \
+    -timescale=1ns/1ps \
+    +define+CYCLE=10 \
+    -debug_access+all \
+    -f sim_rtl.f \
+    -top tb_top \
+    -o simv

@@ -1,4 +1,3 @@
-// CONV1 layer engine split from lenet(20261021-103200).sv.
 // Existing pipeline, read/write arbitration, packing and SRAM timing retained.
 // "enable" is a LEVEL while Top is in CONV1, not an additional start pulse.
 module conv1 #(

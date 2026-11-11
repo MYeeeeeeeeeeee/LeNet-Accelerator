@@ -2,7 +2,7 @@
 
 > **版本：** Revised 2026-11-08 ｜**範圍：** V0–V9 ｜**設計：** 5-Layer Quantized LeNet（SystemVerilog）  
 > **目的：** 紀錄「為什麼改、怎麼改、硬體實測差異、是否通過驗證」，作為 GitHub 與專案面試的可追溯技術文件。  
-> **資料依據：** 原 `Optimization(3).md` 的 DC 報告與使用者回報。原稿保留作為歷史存檔；本檔是重整版。
+> **資料依據：** 原 `Optimization.md` 的 DC 報告與使用者回報。原稿保留作為歷史存檔；本檔是重整版。
 
 ## 1. Executive Summary
 
