@@ -3,7 +3,7 @@
 Report : area
 Design : lenet
 Version: T-2022.03
-Date   : Sun Nov  8 22:45:41 2026
+Date   : Wed Nov 11 22:58:22 2026
 ****************************************
 
 Library(s) Used:
@@ -38,14 +38,14 @@ Hierarchical cell                 Absolute     Percent  Combi-       Noncombi-  
 --------------------------------  -----------  -------  -----------  -----------  ------  -----------------------------------------------------------
 lenet                             505781.0592    100.0   14653.6540    2002.9319  0.0000  lenet
 u_conv1                            24586.8385      4.9    5891.6753   13884.7316  0.0000  conv1_PE_OUTPUT_WIDTH20
-u_conv1/add_0_root_add_0_root_add_474_4
+u_conv1/add_0_root_add_0_root_add_473_4
                                      858.8844      0.2     858.8844       0.0000  0.0000  conv1_PE_OUTPUT_WIDTH20_DW01_add_16
-u_conv1/add_1_root_add_0_root_add_474_4
+u_conv1/add_1_root_add_0_root_add_473_4
                                     1003.1634      0.2    1003.1634       0.0000  0.0000  conv1_PE_OUTPUT_WIDTH20_DW01_add_14
-u_conv1/add_254                      295.3476      0.1     295.3476       0.0000  0.0000  conv1_PE_OUTPUT_WIDTH20_DW01_inc_2_DW01_inc_31
-u_conv1/add_2_root_add_0_root_add_474_4
+u_conv1/add_253                      295.3476      0.1     295.3476       0.0000  0.0000  conv1_PE_OUTPUT_WIDTH20_DW01_inc_2_DW01_inc_31
+u_conv1/add_2_root_add_0_root_add_473_4
                                     1001.4660      0.2    1001.4660       0.0000  0.0000  conv1_PE_OUTPUT_WIDTH20_DW01_add_13
-u_conv1/add_3_root_add_0_root_add_474_4
+u_conv1/add_3_root_add_0_root_add_473_4
                                     1651.5702      0.3    1651.5702       0.0000  0.0000  conv1_PE_OUTPUT_WIDTH20_DW01_add_11_DW01_add_52
 u_conv2                            27608.2105      5.5    7154.5409   13871.1524  0.0000  conv2_PE_OUTPUT_WIDTH20
 u_conv2/add_0_root_add_0_root_add_514_4

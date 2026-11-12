@@ -6,7 +6,7 @@ Report : timing
         -max_paths 4
 Design : lenet
 Version: T-2022.03
-Date   : Sun Nov  8 22:45:41 2026
+Date   : Wed Nov 11 22:58:22 2026
 ****************************************
 
  # A fanout number of 1000 was used for high fanout net computations.

@@ -8,7 +8,7 @@ Report : power
         -analysis_effort low
 Design : lenet
 Version: T-2022.03
-Date   : Sun Nov  8 22:45:43 2026
+Date   : Wed Nov 11 22:58:24 2026
 ****************************************
 
 
@@ -203,14 +203,14 @@ lenet                                     0.385   12.948 4.62e+08   13.795 100.0
     add_288 (conv2_PE_OUTPUT_WIDTH20_DW01_inc_3_DW01_inc_28)
                                        3.55e-08 7.57e-08 3.19e+05 3.19e-04   0.0
   u_conv1 (conv1_PE_OUTPUT_WIDTH20)    1.65e-02    0.924 2.34e+07    0.964   7.0
-    add_0_root_add_0_root_add_474_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_16)
+    add_0_root_add_0_root_add_473_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_16)
                                        2.54e-04 3.29e-04 7.33e+05 1.32e-03   0.0
-    add_1_root_add_0_root_add_474_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_14)
+    add_1_root_add_0_root_add_473_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_14)
                                        2.85e-04 3.18e-04 6.21e+05 1.22e-03   0.0
-    add_2_root_add_0_root_add_474_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_13)
+    add_2_root_add_0_root_add_473_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_13)
                                        2.97e-04 3.28e-04 6.43e+05 1.27e-03   0.0
-    add_3_root_add_0_root_add_474_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_11_DW01_add_52)
+    add_3_root_add_0_root_add_473_4 (conv1_PE_OUTPUT_WIDTH20_DW01_add_11_DW01_add_52)
                                        1.34e-04 1.06e-03 2.35e+06 3.55e-03   0.0
-    add_254 (conv1_PE_OUTPUT_WIDTH20_DW01_inc_2_DW01_inc_31)
+    add_253 (conv1_PE_OUTPUT_WIDTH20_DW01_inc_2_DW01_inc_31)
                                        1.33e-07 5.73e-07 3.19e+05 3.19e-04   0.0
 1

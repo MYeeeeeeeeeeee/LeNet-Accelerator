@@ -380,23 +380,6 @@ module conv3 #(
         end
     end : ch_counter
 
-    // ReLU, scale, and saturate the PSUM.
-    function automatic logic [7:0] quantize_psum(input logic signed [31:0] psum_value,
-                                                 input logic [31:0] scale_value);
-        logic [31:0] positive;
-        logic [63:0] product;
-        logic [63:0] shifted;
-
-        begin
-            if (psum_value <= 0) return 8'd0;
-            positive = $unsigned(psum_value);
-            product  = positive * scale_value;
-            shifted  = product >> 16;
-
-            if (shifted > 64'd127) return 8'd127;
-            else return shifted[7:0];
-        end
-    endfunction
 
     // Pipeline 4 output: pack four quantized neurons into one SRAM word.
     always_ff @(posedge clk or negedge rst_n) begin : package_act
