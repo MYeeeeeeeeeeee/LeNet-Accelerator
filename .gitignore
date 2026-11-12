@@ -8,6 +8,7 @@
 /sim/ucli.key
 /sim/*.rc
 /sim/vfastLog/
+/sim/Makefile
 
 # Waveforms
 /sim/*.fsdb
@@ -35,6 +36,7 @@
 /syn/*.pvk
 /syn/*.log
 /syn/dc_log
+/syn/alib-21/*.alib
 
 # ==========================================
 # Temporary Files
