@@ -24,7 +24,7 @@
 
 ## 硬體架構圖
 
-![LeNet Accelerator Architecture](docs/LeNet_architecture.png)
+![LeNet Accelerator Architecture](docs/LeNet_architecture.jpg)
 
 ## 技術文件
 
